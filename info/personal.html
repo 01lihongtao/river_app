@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit; 
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.mui-bar {
+				height: 100px;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 100px;
+			}
+			
+			.div_warp {
+				margin-right: 20px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!-- 菜单容器 -->
+			<aside class="mui-off-canvas-right" id="offCanvasSideScroll" style="background: #fff;">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<h6 style="padding:5px;">过滤</h6>
+						<ul id="list-option" class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<i class="iconfont icon-xiugai"></i> 所属单位
+								<span id="select_company" style="    max-width: 100px;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							
+							<li class="mui-table-view-cell">
+								<i class="iconfont icon-xiugai"></i> 所属权限
+								<span id="select_role" style="    max-width: 100px;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							
+
+						</ul>
+						<div class="mui-content-padded" style="text-align: right;">
+							<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+							重置
+						</button>
+							<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+							确认
+						</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right" href="#">过滤</a>
+					<h1 class="mui-title">工作人员</h1>
+					<!--
+						<nav id="header_tab" class="mui-bar-tab">
+							<a id="jx_type_ship" class="mui-tab-item mui-active" href="#">
+								养护人员
+							</a>
+							<a class="mui-tab-item" href="#">
+								监理人员
+							</a>
+							<a class="mui-tab-item" href="#">
+								维护人员
+							</a>
+						</nav>
+					-->
+					<div class="mui-input-row mui-search">
+						<input type="search" class="mui-input-clear" placeholder="输入搜索内容">
+					</div>
+				</header>
+				<div id="offCanvasContentScroll" class="mui-content  mui-slider-group mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul id="list" class="mui-table-view">
+							
+						</ul>
+						<div id="page_loading" class="page_loader">
+							<img src="../asset/images/loading.gif"> 加载中...
+						</div>
+						<div id="page_ended" class="page_loader">
+							列表已到最后
+						</div>
+					</div>
+				</div>
+				<div class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/mui.picker.min.js"></script>
+	<script src="../asset/js/mui.poppicker.js"></script>
+	<script src="../asset/js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+//		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+//		var cp_id = user_data.company_id
+
+		var btn_filter = document.getElementById('btn_filter');
+		var select_company = document.getElementById('select_company');
+		var select_role = document.getElementById('select_role');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		
+		var companyPicker = new mui.PopPicker();
+		var company_name_data = [];
+		company_name_data.push({
+			value: "",
+			text: "全部"
+		})
+		companyPicker.setData(company_name_data);
+		select_company.addEventListener('tap', function(event) {
+			companyPicker.show(function(items) {
+				select_company.innerText = items[0]["text"];
+				$(select_company).attr('item_id', items[0]["value"]);
+			});
+		}, false);
+		
+		var rolePicker = new mui.PopPicker();
+		var role_name_data = [];
+		role_name_data.push({
+			value: "",
+			text: "全部"
+		})
+		rolePicker.setData(role_name_data);
+		select_role.addEventListener('tap', function(event) {
+			rolePicker.show(function(items) {
+				select_role.innerText = items[0]["text"];
+				$(select_role).attr('item_id', items[0]["value"]);
+			});
+		}, false);
+		
+		
+		
+		mui.ready(function() {
+			$('#page_loading').show();
+			$('#page_ended').hide();
+			mui.init();
+			init_html()
+//			mui('#header_tab').on('tap', '.mui-tab-item', function() {
+//				var current_text = this.innerText;
+//				console.log(current_text)
+//				if(current_text == '养护人员') {
+//					type = "养护"
+//					init_html()
+//				} else if(current_text == '维护人员') {
+//					type = "维护"
+//					init_html()
+//				} else if(current_text == '监理人员') {
+//					type = "监理"
+//					init_html()
+//				}
+//
+//			})
+
+			mui('body').on('tap', '.link_open', function() {
+				app.open(this.href);
+				return false;
+			});
+		})
+		function clickOk() {
+			
+			offCanvasWrapper.offCanvas('close');
+			init_html(true)
+		}
+		function clickReset() {
+
+			select_company.innerText = '全部';
+			$("#select_company").attr('item_id', "");
+			
+			select_role.innerText = '全部';
+			$("#select_role").attr('item_id', "");
+			
+		}
+		 
+		function init_html() {
+			var post_data = {}
+			
+			if(select_company.innerHTML != '全部') {
+				post_data["company_id"] = $("#select_company").attr('item_id');
+			}
+			if(select_role.innerHTML != '全部') {
+				post_data["type"] = $("#select_role").attr('item_id');
+			}
+			app.ajax(app.url('query/person_list'), post_data, function(ret) {
+				console.log(JSON.stringify(ret))
+				$('#page_loading').hide();
+				$('#page_ended').show();
+				if(ret.code == 0) {
+					var data = ret.data
+					var html = ""
+					var var_company_id_arr = [];
+					var var_role_arr = [];
+					company_name_data = [];
+					company_name_data.push({
+						value: "",
+						text: "全部"
+					})
+					 
+					role_name_data = [];
+					role_name_data.push({
+						value: "",
+						text: "全部"
+					})
+					for(var i = 0; i < data.length; i++) {
+						html += '<li   class="mui-table-view-cell">'
+						html += '	<a class="link_open mui-navigate-right" href="personal_detail.html?id=' + data[i]["id"] + '">'
+						html += data[i]["name"]
+						html += '		<div class="mui-pull-right div_warp">' + data[i]["user_type"] + '</div>'
+						html += '	</a>'
+						html += '</li>'
+					 	
+					 	if(var_company_id_arr.indexOf(data[i]["company_id"])==-1){
+					 		company_name_data.push({
+								value: data[i]["company_id"],
+								text: data[i]["company_name"]
+							})
+					 		var_company_id_arr.push(data[i]["company_id"])
+					 	}
+					 	if(var_role_arr.indexOf(data[i]["user_type"])==-1){
+					 		role_name_data.push({
+								value: data[i]["user_type"],
+								text: data[i]["user_type"]
+							})
+					 		var_role_arr.push(data[i]["user_type"])
+					 	}
+						
+			 
+					}
+					companyPicker.setData(company_name_data);
+					rolePicker.setData(role_name_data);
+					$("#list").html(html)
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+		}
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+		
+	</script>
+
+</html>

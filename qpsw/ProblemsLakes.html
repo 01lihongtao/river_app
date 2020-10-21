@@ -1,0 +1,450 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/mui.picker.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="css/mui.poppicker.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-bar {
+				height: 85px;
+				border-bottom: 1px solid #ddd;
+			}
+
+			.mui-bar-nav~.mui-content {
+				padding-top: 85px;
+			}
+
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+
+			.init-html-h3 {
+				text-align: center;
+				font-size: 18px;
+				font-weight: 100;
+				margin-left: 13px;
+				line-height: 30px;
+			}
+
+			.kq-row {
+				padding: 15px;
+			}
+
+			.kq-6 {
+				width: 50%;
+				float: left;
+			}
+
+			.kq-6:last-child {
+				text-align: right;
+			}
+
+			.kq-6 p {
+				font-size: 16px;
+			}
+
+			.card_show {
+				/* height: 80px; */
+				background-color: rgb(109, 164, 247);
+				border-radius: 0px 0px 5px 5px;
+				margin: -10px 5px 0px 5px;
+			}
+
+			.detail_title {
+				display: inline-block;
+				/* color: white; */
+				text-align: center;
+				width: 17%;
+				/* border:1px solid red; */
+			}
+
+			.detail_title1 {
+				display: inline-block;
+				/* color: white; */
+				text-align: center;
+				width: 20%;
+
+			}
+
+			.search_style {
+				background-color: rgb(109, 164, 247);
+				color: white;
+				text-align: center;
+				padding: 10px;
+				margin: 0px 5px 0px 5px;
+			}
+
+			.detail_title_one {
+				display: inline-block;
+				width: 17%;
+				height: 20px;
+				color: gray;
+				margin: 8px 0px;
+				font-size: 14px;
+				/* font-style: italic; */
+				/* border:1px solid red; */
+				text-align: center;
+				z-index: 9999;
+			}
+
+			.son_css {
+				margin-left: 12px;
+			}
+
+			.btn_show {
+
+
+				background-color: white;
+				margin: 5px 0px;
+			}
+
+			.btn_show span {
+				pading-top: 5px;
+				margin: 0px 5px;
+				border-radius: 3px;
+				display: inline-block;
+				height: 40px;
+			    font-size:14px;
+				font-weight: 500;
+				color: black;
+				border: 1px solid #E8E8E8;
+				width: 22%;
+				text-align: center;
+			}
+
+			.TextCenter {
+				margin-top: 10px;
+			}
+			.add_rec_btn{
+				background-color:white;
+				margin:10px 0px;
+				/* border:1px solid red; */
+			}
+			.add_rec_btn button{
+				width:30%;
+				font-size: 16px;
+				margin-left:5px;
+			}
+			#add_message{
+				background-color: gainsboro;
+			}
+			.detail_name {
+				word-break: break-all;
+				white-space: normal;
+			}
+		</style>
+	</head>
+	<body onload="app.route()">
+		<!-- 侧滑导航根容器 -->
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!-- 主页面容器 -->
+			<div class="mui-inner-wrap">
+				<!-- 主页面标题 -->
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right">今日</a>
+					<h1 class="mui-title">河湖问题</h1>
+					<div class="mui-bar-tab">
+						<a class="mui-tab-item mui-active" href="#">
+							市区管
+						</a>
+						<a class="mui-tab-item" href="#">
+							镇村管
+						</a>
+					</div>
+					<button style="display:none" class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
+				</header>
+				<div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div class="mui-content" id="list">
+
+						</div>
+					</div>
+				</div>
+				<div id="page_ended" class="page_loader">
+					列表已到最后
+				</div>
+				<div class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+	</body>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/mui.min.js "></script>
+	<script src="js/mui.picker.min.js "></script>
+	<script src="js/app.js"></script>
+	<script src=".js/mui.poppicker.js"></script>
+	<script type="text/javascript ">
+		// 时间封装
+		 function getNowTime(type, newDate) {
+		        var date = newDate ? newDate : new Date();
+		        var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+		        var strDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+		        var strDate1 = (date.getDate()-1) < 10 ? "0" + (date.getDate()-1) : (date.getDate()-1);
+		        var strDate2 = (date.getDate()-2) < 10 ? "0" + (date.getDate()-2) : (date.getDate()-2);
+		        if (type == 'start') {
+		            var currentdate = date.getFullYear() + "-" + month + "-" + strDate + " 00" + ":" + "00" + ":" + "00";
+		        } else if (type == 'china') {
+		            var currentdate = date.getFullYear() + "年" + month + "月" + strDate + '日';
+		        } else if(type=="yesterday"){
+		            var currentdate = date.getFullYear() + "-" + month + "-" + strDate1 + " 00" + ":" + "00" + ":" + "00";
+		        }else if(type=="eve"){
+		            var currentdate = date.getFullYear() + "-" + month + "-" + strDate2 + " 00" + ":" + "00" + ":" + "00";
+		        }
+		        else {
+		            var currentdate = date.getFullYear() + "-" + month + "-" + strDate + " 23" + ":" + "59" + ":" + "59";
+		        }
+		        return currentdate; 
+		    }
+			 //日期格式化，返回值形式为yy-mm-dd
+			   function timeFormat (date) {
+			    if (!date || typeof(date) === "string") {
+			      this.error("参数异常，请检查...");
+			    }
+			    var y = date.getFullYear(); //年
+			    var m = date.getMonth() + 1<10? "0"+(date.getMonth()+ 1):date.getMonth() + 1; //月
+			    var d = date.getDate()<10? "0" + date.getDate():date.getDate(); //日
+			    return y + "-" + m + "-" + d + " 00"+":"+"00"+":"+"00";
+			    }
+			    //获取这周的周一
+			   function getFirstDayOfWeek (date) {
+			    var weekday = date.getDay()||7; //获取星期几,getDay()返回值是 0（周日） 到 6（周六） 之间的一个整数。0||7为7，即weekday的值为1-7
+			    date.setDate(date.getDate()-weekday+1);//往前算（weekday-1）天，年份、月份会自动变化
+			    // console.log()
+			    return this.timeFormat(date);
+			    }
+			    //获取当月第一天
+			   function getFirstDayOfMonth (date) {
+			    date.setDate(1);
+			    return this.timeFormat(date);
+			    } 
+		// var selectDateStart = document.getElementById('selectDateStart');
+		// var selectDateEnd = document.getElementById('selectDateEnd');
+		var btn_date_range = document.getElementById('btn_date_range');
+		// var selectType = document.getElementById('selectType'); //这是类型选择
+		var currentUnitType = 3;
+		var currentUnitTypeName = '养护单位';
+		var currentCityType = 1;
+		var currentCityTypeName = '市区';
+		var global_data = [];
+		var g_type = 2001;
+		var message_type=1;
+		var normal_time=null;
+
+		var cunPicker = new mui.PopPicker();
+		mui.init();
+		
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		mui.plusReady(function() {
+			loadData(getNowTime('start'), '2001');
+		});
+		
+		// button filter
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		var filter_Picker = new mui.PopPicker();
+			filter_Picker.setData(
+				[
+				{text:'近三天',value:'0'},
+				{text:'昨天',value:'1'},
+				{text:'今日',value:'2'},
+				{text:'本周',value:'3'},
+				{text:'本月',value:'4'},
+				]
+				
+				);
+		   btn_filter.addEventListener('tap', function() {
+				filter_Picker.show(function(items) {
+					btn_filter.innerText = items[0].text ;
+					console.log(items[0].value)
+					var value=items[0].value;
+					// g_type
+					if(value==0){
+						 normal_time= getNowTime('eve')
+						 loadData(getNowTime('eve'), g_type)
+					}else if(value==1){
+						 normal_time= getNowTime('yesterday')
+						 loadData(getNowTime('yesterday'), g_type)
+					}else if(value==2){
+						normal_time= getNowTime('start')
+						 loadData(getNowTime('start'), g_type)
+					}else if(value==3){
+						normal_time= getNowTime('eve')
+						 loadData(getFirstDayOfWeek(new Date()), g_type)
+					}else if(value==4){
+						normal_time= getFirstDayOfMonth(new Date())
+						 loadData(getFirstDayOfMonth(new Date()), g_type)
+					}
+					
+				})
+			
+		});
+
+		function clickReset() {
+			$('#rdo_all').prop('checked', true);
+		}
+		
+		mui('.mui-bar-tab').on('tap', 'a', function(e) {
+			if (currentUnitTypeName == this.innerText)
+				return;
+			if (this.innerText == '市区管') {
+				currentUnitType = 1;
+				g_type = 2001;
+				loadData(normal_time,g_type);
+			} else if (this.innerText == '镇村管') {
+				currentUnitType = 2;
+				g_type = 2002;
+				loadData(normal_time,g_type);
+			}
+			currentUnitTypeName = this.innerText;
+		})
+
+		function DateDiff(sDate1, sDate2) { //sDate1和sDate2是2002-12-18格式  
+			var aDate, oDate1, oDate2, iDays
+			aDate = sDate1.split("- ")
+			oDate1 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]) //转换为12-18-2002格式  
+			aDate = sDate2.split("- ")
+			oDate2 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0])
+			iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24) //把相差的毫秒数转换为天数  
+			return iDays + 1;
+		}
+		 function add_list(){
+			 message_type=1;
+			// document.getElementById('add_message').style.background ='gainsboro';
+			// document.getElementById('rec_message').style.background ='';
+			 if(g_type==2001){
+				  loadData(normal_time, 2001);
+			 }else{
+				  loadData(normal_time, 2002);
+			 }
+		 }
+		function rec_list(){
+			if(g_type==2001){
+				loadData(normal_time, 2001);
+			}else{
+				loadData(normal_time, 2002);
+			}
+			// document.getElementById('rec_message').style.background ='gainsboro';
+			// document.getElementById('add_message').style.background ='';
+			message_type=2;
+		}
+		//读取数据 
+		function loadData(value, type) {
+			 var params = {
+			            start:value?value:this.getNowTime('start'),
+			            end:getNowTime(),
+			            regionType: type,
+			        }
+			app.showProgressBar();
+			app.ajax(app.getQPVMS_IP() + "sms/findRegionProblemCount", params, function(result) {
+				app.showProgressBar(false);
+				console.log('参数'+JSON.stringify(params))
+				if (result.code == 200) {
+					// console.log("加载的数据"+JSON.stringify(result))
+					var datas = result.data;
+					global_data = result.data
+					var html = '';
+					html = init_html(datas);
+					// document.getElementById('add_message').style.background ='gainsboro';
+					// console.log('市区管2' + JSON.stringify(datas))
+					document.getElementById("list").innerHTML = html;
+				} else {
+					mui.toast("加载数据错误:" + result.error);
+				}
+			})
+		}
+		function init_html(datas) {
+			var subCount = datas.list;
+			// console.log('值是多少' + JSON.stringify(datas))
+			var addTotalCount = datas ? datas.addTotalCount : 0;
+			var addSlightlyCount = datas ? datas.addSlightlyCount : 0;
+			var addGeneralCount = datas ? datas.addGeneralCount : 0;
+			var addMajorCount = datas ? datas.addMajorCount : 0;
+			var recTotalCount = datas ? datas.recTotalCount : 0;
+			var recSlightlyCount = datas ? datas.recSlightlyCount : 0;
+			var recGeneralCount = datas ? datas.recGeneralCount : 0;
+			var recMajorCount = datas ? datas.recMajorCount : 0;
+			
+			var string = '';
+			string += '<div style="background-color:white;margin:10px 0px;border:1px solid #e8e8e8;">'
+			string += '<div  class="btn_show">'
+			string += '<span style="color:#FC4646">新增 <br/>' + addTotalCount + '</span>'
+			string += '<span>轻微<br/> ' + addSlightlyCount + '</span>'
+			string += '<span>一般<br/>' + addGeneralCount + '</span>'
+			string += '<span>重大<br/> ' + addMajorCount + '</span>'
+			string += '</div>'
+			string += '<div  class="btn_show" >'
+			string += '<span style="color:#16C353;">整改  <br/> ' + recTotalCount + '</span>'
+			string += '<span>轻微<br/> ' + recSlightlyCount + '</span>'
+			string += '<span>一般<br/> ' + recGeneralCount + '</span>'
+			string += '<span>重大<br/> ' + recMajorCount + '</span>'
+			string += '</div>'
+			string += '</div>'
+			string += '<div class="add_rec_btn">'
+				string +='<span>' +(message_type==1? '<button type="button" id="add_message" onclick="add_list()" class="mui-btn">新增</button>':'<button type="button"  onclick="add_list()" class="mui-btn">新增</button>')  +'</span>'
+			    
+				string +='<span>' +(message_type==1? '<button type="button" onclick="rec_list()" class="mui-btn">整改</button>':'<button type="button" id="add_message"   onclick="rec_list()" class="mui-btn">整改</button>')  +'</span>'
+				
+				// string +='<button type="button" id="rec_message" onclick="rec_list()" class="mui-btn"> 整改</button>'
+				string +='</div>'
+				string +=
+				'<div  class="TextCenter">' +
+				'<div style="margin:10px 10px  10px 10px;">' +
+				'<span class="detail_title">' + '问题' + '</span>' +
+				'<span class="detail_title">' + '轻微' + '</span>' +
+				'<span class="detail_title">' + '一般' + '</span>' +
+				'<span class="detail_title">' + '重大' + '</span>' +
+				'<span class="detail_title">' + '总数' + '</span>' +
+				'</div>' +
+				//这是下面展示部分
+				'<div>' +
+				'</div>'
+				
+			for (var i = 0; i < subCount.length; i++) {
+				var sonData = subCount[i].riverDetailList; //这是每个片区的值
+				var parentdata = subCount[i]
+				var sonStr = ''
+				for (var j = 0; j < sonData.length; j++) {
+					var app = sonData[j];
+					sonStr += '<li class="son_css">' + '<a class="mui-navigate-left" href="#">' +
+						'<span class="detail_name detail_title_one">' + app.riverName + '</span>' + 
+						'<span class="detail_title_one" >' + (message_type==1?app.problemDetailList[0].reportCount:app.problemDetailList[0].correctCount) + '</span>' +
+						'<span class="detail_title_one" >' + (message_type==1?app.problemDetailList[1].reportCount:app.problemDetailList[1].correctCount) + '</span>' +
+						'<span class="detail_title_one" >' +  (message_type==1?app.problemDetailList[2].reportCount:app.problemDetailList[2].correctCount)+ '</span>' +
+						'<span class="detail_title_one" >' + (message_type==1?app.reportCount:app.correctCount) + '</span>' +
+						'</a>' +
+						'</li>'
+				}
+				string +=
+					'<div class="count_style">' +
+					'<ul class="mui-table-view mui-table-view-chevron">' +
+					'<li class="mui-table-view-cell mui-collapse">' +
+					'<a class="mui-navigate-right" href="#">' +
+					'<span  class="detail_title1 detail_name">' + parentdata.regionName + '</span>' +
+					'<span  class="detail_title1">' + (message_type==1?parentdata.problemDetailList[0].reportCount:parentdata.problemDetailList[0].correctCount) + '</span>' +
+					'<span class="detail_title1"  style="text-align:center;display:inline-block;" >' +(message_type==1?parentdata.problemDetailList[1].reportCount:parentdata.problemDetailList[1].correctCount) + '</span>' +
+					'<span class="detail_title1">' + (message_type==1?parentdata.problemDetailList[2].reportCount:parentdata.problemDetailList[2].correctCount) + '</span>' +
+					'<span class="detail_title1">' + (message_type==1?parentdata.reportCount:parentdata.correctCount) +
+					'</span>' +
+					'</a>' +
+					'<ul class="mui-table-view mui-table-view-chevron">' +
+					sonStr +
+					'</ul>' +
+					'</li>' +
+					'</ul>'
+				'</div>'
+			}
+			
+			return string; 
+		}
+	</script>
+</html>

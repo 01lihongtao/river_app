@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../asset/css/style.css" rel="stylesheet" />
+		<style>
+			.right_warp {
+				width: 130px;
+				height: 100%;
+				margin-right: 10px;
+			}
+			
+			.mui-bar {
+				height: 100px;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 100px;
+			}
+			
+			.div_warp {
+				height: 42px;
+				line-height: 42px;
+				font-size: 16px;
+			}
+			
+			.text-red {
+				color: red;
+			}
+			
+			.text-blue {
+				color: blue;
+			}
+			
+			@media screen and (max-width: 321px) {
+				.div_warp {
+					font-size: 14px;
+				}
+				.right_warp {
+					width: 120px;
+				}
+			}
+			
+			.mui-ellipsis {
+				color: #000000;
+			}
+			
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!-- 菜单容器 -->
+			<aside class="mui-off-canvas-right" id="offCanvasSideScroll" style="background: #fff;">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<h6 style="padding:5px;">过滤</h6>
+						<ul id="list-option" class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<i class="iconfont icon-xiugai"></i> 处理状态
+								<span id="selectProcessState" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 开始时间</span>
+								<span id='selectDate' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 结束时间</span>
+								<span id='selectDate2' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+
+						</ul>
+						<div class="mui-content-padded" style="text-align: right;">
+							<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+							重置
+						</button>
+							<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+							确认
+						</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<!--<a class="mui-btn mui-btn-link mui-pull-right" href="#">过滤</a>-->
+
+					<h1 class="mui-title">水利设施</h1>
+					<div>
+						<a id="map_come" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+						<div class="mui-input-row mui-search">
+
+							<input type="search" id="query_search" class="mui-input-clear" placeholder="输入搜索内容">
+						</div>
+					</div>
+				</header>
+
+				<div id="offCanvasContentScroll" class="mui-content  mui-slider-group mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul class="mui-table-view" id="list">
+
+							<!--<li class="mui-table-view-cell mui-media">
+
+					<a class="link_open mui-navigate-right" href="facilities_detail.html">
+						<img class="mui-media-object mui-pull-left" src="../asset/images/evid1.png">
+						<div class="mui-media-body div_warp">
+							东金泾港水闸
+						</div>
+						<p class='mui-ellipsis'>行政所属：<span class="clr_red">设备断线</span></p>
+						<p class='mui-ellipsis'>圩区所属：<span class="clr_red">内闸位仪001</span></p>
+						<p class='mui-ellipsis'>河流所属：<span class="clr_red">待维护</span></p>
+						<p class='mui-ellipsis'>单位所属：<span class="clr_red">待维护</span></p>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<a class="link_open mui-navigate-right" href="facilities_detail.html">
+						<img class="mui-media-object mui-pull-left" src="../asset/images/evid1.png">
+						<div class="mui-media-body div_warp">
+							洋泾港泵闸
+							<div class='mui-pull-right right_warp'><span class="text-red">泵闸</span>-<span class="text-blue">洋泾港</span></div>
+						</div>
+					</a>
+				</li>-->
+
+							<!--<li class="mui-table-view-cell mui-media">
+					<a class="link_open mui-navigate-right" href="facilities_detail.html">
+						<img class="mui-media-object mui-pull-left" src="../asset/images/evid1.png">
+						<div class="mui-media-body div_warp">
+							新开河水闸
+							<div class='mui-pull-right right_warp'><span class="text-red">泵闸</span>-<span class="text-blue">长浜新开河</span></div>
+						</div>
+					</a>
+				</li>-->
+						</ul>
+						<!--<div id="page_loading" class="page_loader">
+							<img src="../asset/images/loading.gif"> 加载中...
+						</div>-->
+						<div id="page_ended" class="page_loader">
+							列表已到最后
+						</div>
+					</div>
+
+				</div>
+			</div>
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/app.js"></script>
+	<script>
+		var timer;
+		mui.init();
+		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		var cp_id = user_data.company_id
+		var type = app.getUrlParam('type');
+
+		var g_facility_name=""
+		var currentPage = 0;
+		var maxPage = 1;
+		var countPageItems = 30;
+		var isLoading = false;
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		document.getElementById('offCanvasContentScroll').addEventListener('scroll', function(e) {
+			if(isLoading)
+				return;
+//			console.log(mui('#offCanvasContentScroll').scroll().y - mui('#offCanvasContentScroll').scroll().maxScrollY)
+			if((mui('#offCanvasContentScroll').scroll().y - mui('#offCanvasContentScroll').scroll().maxScrollY) < 20) {
+				if(currentPage != maxPage) {
+					init_html(false)
+				}
+			}
+		});
+		mui.ready(function() {
+
+			console.log(type == "map")
+			if(type == "map") {
+				// 从地图过来的
+				$("#map_come").show()
+				$("#back").hide()
+				$("#query_search").parent().css("width", 'calc(100% - 48px)')
+
+				$("#query_search").parent().css("clear", 'none')
+				$("#query_search").parent().css("float", 'right')
+				$(".mui-bar").css("height", '50px')
+				$(".mui-content").css("padding-top", '50px')
+				$(".mui-title").hide()
+
+			} else {
+				$("#back").show()
+				$("#map_come").hide()
+			}
+			
+			//			$('#page_loading').show();
+			$('#page_ended').hide();
+			mui('body').on('tap', '.link_open', function() {
+
+				app.open(this.href);
+				return false;
+			});
+
+			mui('body').on('tap', '.map_navigate', function() {
+
+				facility_id = this.getAttribute("facility_id")
+				if(type == "map") {
+					app.setSetting("var_map_facility_id", facility_id)
+					var parentViewer = mui.currentWebview.opener();
+					mui.fire(parentViewer, 'wga_init_facility');
+					app.ajaxBack()
+				} else {
+					app.open("../map.html?facility_id=" + facility_id)
+				}
+
+				event.stopPropagation();
+				return false
+			})
+
+			document.getElementById("query_search").addEventListener('input', function() {
+				var this_value = this.value
+				g_facility_name = this_value
+				init_html(true)
+
+			});
+			//滑动关闭键盘
+			$("#list").bind("tap swipeup touchmove", function() {
+				//				console.log("swipeup")
+				document.activeElement.blur();
+			})
+			$(".mui-icon-clear").on("tap", function() {
+				g_facility_name=""
+				init_html(true)
+			})
+
+			function input_search_facilty(this_value) {
+				clearTimeout(timer)
+				timer = setTimeout(function() {
+					console.log(this_value);
+					$(".search_list").each(function() {
+
+						if($(this).attr("facility_name").indexOf(this_value) == -1) {
+
+							$(this).hide()
+						} else {
+							//							console.log($(this).attr("facility_name").indexOf(this_value) == -1)
+							$(this).show()
+						}
+					})
+				}, 500)
+			}
+		})
+
+		var init_all_list_flag = true;
+
+		function init_html(load_flag) {
+			console.log("init_html")
+			if(!init_all_list_flag) {
+				return;
+			}
+			init_all_list_flag = false;
+			if(load_flag) {
+				currentPage = 0;
+			}
+			currentPage = currentPage + 1
+			var wDlg = plus.nativeUI.showWaiting("加载中...");
+			console.log(JSON.stringify({
+				company_id: cp_id,
+				page_no: currentPage,
+				page_size: countPageItems,
+			}))
+			app.ajax(app.url('query/facility_list'), {
+				uid:app.getUserId(),
+				// company_id: cp_id,
+				page_no: currentPage,
+				page_size: countPageItems,
+				facility_name:g_facility_name
+			}, function(ret) {
+				wDlg.close();
+				// console.log(JSON.stringify(ret)) 
+				//				$('#page_loading').hide();
+				$('#page_ended').show();
+				if(ret.code == 0) {
+					currentPage = ret.data.page_no
+					maxPage = ret.data.page_count
+					var data = ret.data.items
+					var html = ""
+					for(var i = 0; i < data.length; i++) {
+
+						html += '<li class="mui-table-view-cell mui-media search_list" facility_name="' + data[i]["name"] + '">'
+						html += '	<a class="link_open mui-navigate-right" href="facilities_detail.html?id=' + data[i]["id"] + '">'
+
+						html += '		<img class="mui-media-object mui-pull-left" src="' + (data[i]["url_img_thumb"] ? (app.prefix(data[i]["url_img_thumb"])) : "../asset/images/empty_big.png") + '">'
+						html += '		<div class="mui-media-body div_warp">'
+						html += data[i]["name"]
+						if(data[i]["lon"] && data[i]["lat"])
+							html += '<span class="map_navigate iconfont icon-dingwei mui-pull-right" facility_id="' + data[i]["id"] + '"  style="color: red;font-size: 22px;"></span>'
+						html += '		</div>'
+
+						//						html+='			<div class="mui-pull-right right_warp"><span class="text-red">'+data[i]["type"]+'</span>-<span class="text-blue">'+data[i]["river"]+'</span></div>'
+						html += '<p class="mui-ellipsis">行政所属：<span class="clr_red">' + (data[i]["street"]?data[i]["street"]:"") + "/" + (data[i]["village"]?data[i]["village"]:"") + '</span></p>'
+						html += '<p class="mui-ellipsis">圩区所属：<span class="clr_red">' + (data[i]["control_area"]?data[i]["control_area"]:"") + '</span></p>'
+						html += '<p class="mui-ellipsis">河流所属：<span class="clr_red">' + (data[i]["river"]?data[i]["river"]:"") + '</span></p>'
+						html += '<p class="mui-ellipsis">单位所属：<span class="clr_red">' + (data[i]["company_name"]?data[i]["company_name"]:"") + '</span></p>'
+
+						html += '	</a>'
+						html += '</li>'
+					}
+					if(load_flag) {
+
+						mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+						$("#list").html(html);
+
+					} else {
+						console.log(".append(html)")
+						$("#list").append(html);
+					}
+
+				} else {
+					mui.toast(ret.error);
+				}
+				init_all_list_flag = true
+			});
+			
+		}
+		mui.plusReady(function() {
+			init_html(true)
+			plus.screen.lockOrientation("portrait-primary");
+		});
+	</script>
+
+</html>

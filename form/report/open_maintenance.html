@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+
+	</head>
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a id="filter" class="mui-btn mui-btn-link mui-pull-right" href="#">选择</a>
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">日常养护记录表</h1>
+		</header>
+		<div id="construction_detail" class="mui-content">
+			<div style="background: #fff;padding-top: 5px;">
+				<div class="mui-input-row mui-search" style="margin: 0 15px;">
+					<input type="search" id="query_search" class="mui-input-clear" placeholder="输入水闸名称" style="    margin-bottom: 0;">
+				</div>
+			</div>
+			<!-- 这是列表部分 -->
+			<div class="mui-scroll">
+				<ul id="list" class="mui-table-view"></ul>
+			</div>
+		</div>
+		<div id="page_loading" class="page_loader">
+			<img src="asset/images/loading.gif"> 加载中...
+		</div>
+		<div id="page_ended" class="page_loader">
+			列表已到最后
+		</div>
+
+		<div id="paying" cur_token="" class="mui-popover mui-popover-action mui-popover-bottom">
+			<div class="h5videodiv1">
+				<video class="h5video1" id="h5sVideo1" autoplay webkit-playsinline playsinline controls="controls">
+
+				</video>
+				<!-- <div class="playpause" id="playpause1"></div> -->
+			</div>
+		</div>
+
+		<div id="popover-list-cards" class="mui-popover mui-popover-action mui-popover-bottom">
+
+			<ul id="popover-list-cards-ul" class="mui-table-view">
+				<div id="offCanvasContentScroll" class="mui-scroll-wrapper">
+					<div id="ul_card_items" class="mui-scroll">
+
+					</div>
+				</div>
+			</ul>
+
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#popover-list-cards"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js "></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		var filter = document.getElementById('filter'); //选择市区管还是镇村管
+		// 这是选择的事件部分 filter
+		var typePicker = new mui.PopPicker({
+			layer: 3
+		});
+		var city_town_data = []
+		typePicker.setData(city_town_data);
+		filter.addEventListener('tap', function() {
+			typePicker.show(function(items) {
+				console.log('看看item值' + JSON.stringify(items))
+				// filter.innerText = items[0].text + "-" + items[1].text
+				filter.innerText = items[1].text
+				// init_html(items[1].value)
+				// filter_facility_name
+				document.getElementById('filter_facility_name').innerText = items[1].text + '列表:'; //船舶名字
+				// $("#filter_facility_name").innerHTML=items[1].text
+
+			});
+		})
+		//这是首先加载 
+		mui.ready(function() {
+			initHtml()
+
+		})
+
+		function initHtml() {
+			var data = [{
+					name: '张马水闸'
+				},
+				{
+					name: '星光水闸'
+				}
+			]
+			var html = '';
+			for (var i = 0; i < data.length; i++) {
+				html += '<li   class="mui-table-view-cell">' +
+					'<a class="link_open mui-navigate-right" href="video_detail.html?id=' + data[i] + '">' +
+					data[i].name +
+					'</a>' +
+					'</li>'
+			}
+		  $("#list").html(html)
+		}
+	</script>
+
+</html>

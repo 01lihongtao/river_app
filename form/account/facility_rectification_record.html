@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link href="../../asset/css/mui.min.css" rel="stylesheet">
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />	
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #fff;
+			}
+
+			#list {
+				/*margin-top: 55px;*/
+			}
+
+			h4 {
+				font-size: 18px !important;
+			}
+
+			.mui-table-view-cell {
+				font-size: 16px !important;
+			}
+
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+
+			.list {
+				font-size: 14px;
+			}
+
+			#offCanvasSideScroll {
+				background: white;
+			}
+
+			.h4_header {
+				margin-top: 55px;
+				background: #fff;
+				font-size: 24px;
+				padding: 10px;
+			}
+
+			.right_warp img,
+			.middle_warp img {
+				max-width: 100%;
+				padding: 0 1px;
+			}
+
+			.div_warp {
+				margin: 0 15px;
+				font-size: 14px;
+				border-bottom: 1px solid #ccc;
+			}
+
+
+
+			.left_warp {
+				width: 35%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+
+			}
+
+			.middle_warp {
+				width: 45%;
+				float: left;
+				text-align: center;
+				padding: 11px 15px;
+			}
+
+			.right_warp {
+				width: 65%;
+				float: left;
+				text-align: center;
+				padding: 11px 15px;
+			}
+
+			.clear {
+				clear: both;
+				/* height: 1px; */
+			}
+			
+			@media screen and (max-width: 321px) {
+				.left_warp {
+					width: 40%;
+				}
+
+				.right_warp {
+					width: 60%;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a id="btn_no" class="mui-btn mui-btn-link mui-pull-right selecting_hide">编号</a>
+			<h1 class="mui-title">整改流程描述</h1>
+		</header>
+
+		<div class="mui-content">
+			<div id="offCanvasContentScroll" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<h4 class="h4_header">
+						<span id="current_month">2018年07月</span>
+						<button id="facility_name" class="mui-pull-right name" style="    margin-top: -8px;">火星水闸</button>
+					</h4>
+					<div id="data_warp">
+						<div class="list">
+							 
+						</div>
+					</div>
+					<div id="page_ended" class="page_loader">
+						列表已到最后
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+
+
+
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/mui.zoom.js"></script>
+	<script src="../../asset/js/mui.previewimage.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		mui.previewImage();
+		var facility_id = app.getUrlParam('id');
+		var current_date = app.getUrlParam('current_date');
+		var inspectionType = app.getUrlParam('inspectionType');
+		$("#current_month").html(current_date)
+
+		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		var facility_name = app.getUrlParam('facility_name');
+		$("#facility_name").html(facility_name)
+		var rectificationSerial = ""
+		var btn_no = document.getElementById('btn_no');
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+
+
+		$(function() {
+
+			init_css()
+
+		})
+
+		function init_css() {
+			$(".left_warp").each(function() {
+				var height = $(this).parent().height()
+				$(this).height(height)
+				$(this).css("line-height", height + "px")
+			})
+		}
+		mui.ready(function() {
+			init_filter()
+		})
+
+		function init_filter() {
+			app.ajaxJson(app.url1('conservancyMaintenance/getMainSerialByCondition'), JSON.stringify({
+				"facilityId": facility_id,
+				"dateTime": current_date,
+				"inspectionType": inspectionType
+			}), function(ret) {
+				console.log(JSON.stringify(ret))
+				if (ret.code == 200) {
+					var picker_data = [];
+
+					for (var i = 0; i < ret["data"].length; i++) {
+						picker_data.push({
+							value: ret["data"][i],
+							text: ret["data"][i]
+						})
+					}
+					if (ret["data"][0])
+						rectificationSerial = ret["data"][0]
+					var personPicker = new mui.PopPicker();
+					//					console.log(JSON.stringify(picker_data))
+					personPicker.setData(picker_data);
+					btn_no.addEventListener('tap', function(event) {
+						personPicker.show(function(items) {
+							problem_no.innerText = items[0]["text"];
+							$(btn_no).attr('item_id', items[0]["text"]);
+							rectificationSerial = items[0]["text"];
+							init_html()
+						});
+					}, false);
+
+					init_html()
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+		}
+
+		function init_html() {
+
+
+			//			var dateTime = new Date().format("yyyy-MM")
+
+			$("#current_month").html(current_date)
+
+			var post_data = {
+				"facilityId": facility_id,
+				"dateTime": current_date,
+				"rectificationSerial": rectificationSerial,
+				"inspectionType": inspectionType
+			}
+
+			console.log(JSON.stringify(post_data))
+
+			if (rectificationSerial) {
+				app.ajaxJson(app.url1('conservancyMaintenance/listConMainImage'), JSON.stringify(post_data), function(ret) {
+					console.log('conservancyMaintenance/listConMainImage' + JSON.stringify(ret))
+					if (ret.code == 200) {
+
+						var html = ""
+						if (ret["data"][0]) {
+
+							var preInfo = ret["data"][0]["conMainImageVO"]["preInfo"]
+							var durInfo = ret["data"][0]["conMainImageVO"]["durInfo"]
+							var afterInfo = ret["data"][0]["conMainImageVO"]["afterInfo"]
+							var empty_html = '<div class="middle_warp" style="padding: 0px;line-height: 10px"><img src="../../asset/images/empty_big_fff.png" /></div>'
+							html += '<div class="list">'
+							html += '	<div class="div_warp" >'
+							html += '		<div class="left_warp">问题编号</div>'
+							html += '		<div class="right_warp" id="problem_no" style="border:1px solid #000000;">' + ret["data"][0][
+								"rectificationSerial"
+							] + '</div>'
+							html += '		<div class="clear"></div>'
+							html += '	</div>'
+							html += '	<div class="div_warp">'
+							html +=
+								'		<div class=" " style="width: 100%; text-align: center;background: #000;color: #fff;padding: 5px 15px;">照片</div>'
+							html += '		<div class="clear"></div>'
+							html += '	</div>'
+
+							html += '	<div class="div_warp">'
+							html += '		<div class="left_warp" style="width: 10%;    padding:  0px;">前</div>'
+
+							
+							if(preInfo && preInfo["images"].length>0){
+								for (var i = 0; i < 5; i++) {
+									if(preInfo["images"][i]){
+										html += '<div class="middle_warp" style="padding: 0px;line-height: 10px">'
+										html += '	<img src="' + app.prefix(preInfo["images"][i]) + '" data-preview-src="' + app.prefix(preInfo["images"][i]) + '"   data-preview-group="1"  />'
+										html += '</div>'
+									}else{
+										if(i==0 || i==1){
+											html += empty_html
+										}
+									}
+								}
+							}else{
+								html += empty_html
+								html += empty_html
+							}
+							
+							html += '		<div class="clear"></div>'
+							html += '	</div>'
+							
+							html += '	<div class="div_warp">'
+							html += '		<div class="left_warp" style="width: 10%;    padding:  0px;">中</div>'
+							if(durInfo && durInfo["images"].length>0){
+								for (var i = 0; i < 5; i++) {
+									if(durInfo["images"][i]){
+										html += '<div class="middle_warp" style="padding: 0px;line-height: 10px">'
+										html += '	<img src="' + app.prefix(durInfo["images"][i]) + '" data-preview-src="' + app.prefix(durInfo["images"][i]) + '"   data-preview-group="1"  />'
+										html += '</div>'
+									}else{
+										if(i==0 || i==1){
+											html += empty_html
+										}
+									}
+								}
+							}else{
+								html += empty_html
+								html += empty_html
+							}
+	 
+							html += '		<div class="clear"></div>'
+							html += '	</div>'
+
+							html += '	<div class="div_warp">'
+							html += '		<div class="left_warp" style="width: 10%;    padding:  0px;">后</div>'
+
+							if(afterInfo && afterInfo["images"].length>0){
+								for (var i = 0; i < 5; i++) {
+									if(afterInfo["images"][i]){
+										html += '<div class="middle_warp" style="padding: 0px;line-height: 10px">'
+										html += '	<img src="' + app.prefix(afterInfo["images"][i]) + '" data-preview-src="' + app.prefix(afterInfo["images"][i]) + '"   data-preview-group="1"  />'
+										html += '</div>'
+									}else{
+										if(i==0 || i==1){
+											html += empty_html
+										}
+									}
+								}
+							}else{
+								html += empty_html
+								html += empty_html
+							}
+	
+							html += '		<div class="clear"></div>'
+							html += '	</div>'
+							html += '	<div class="div_warp">'
+							html +=
+								'		<div class="" style="width: 100%; text-align: center;background: #000;color: #fff;padding: 5px 15px;">描述</div>'
+							html += '		<div class="clear"></div>'
+							html += '	</div>'
+							html += '	<div class="div_warp">'
+							html += '		<div class="left_warp" style="width: 10%;    padding:  0px;">前</div>'
+							html += '		<div class="right_warp" style="width:90% ;">' + (preInfo && preInfo.content ? preInfo.content :
+								"&nbsp;") + '</div>'
+							html += '		<div class="clear"></div>'
+							html += '	</div>'
+							html += '	<div class="div_warp">'
+							html += '		<div class="left_warp" style="width: 10%;    padding:  0px;">中</div>'
+							html += '		<div class="right_warp" style="width:90% ;">' + (durInfo && durInfo.content ? durInfo.content :
+								"&nbsp;") + '</div>'
+							html += '		<div class="clear"></div>'
+							html += '	</div>'
+							html += '	<div class="div_warp">'
+							html += '		<div class="left_warp" style="width: 10%;    padding:  0px;">后</div>'
+							html += '		<div class="right_warp" style="width:90% ;">' + (afterInfo && afterInfo.content ? afterInfo.content :
+								"&nbsp;") + '</div>'
+							html += '		<div class="clear"></div>'
+							html += '	</div>'
+							html += '</div>'
+
+							$("#data_warp").html(html)
+							// console.log(html)
+							$("img").on('load', function() {
+								init_css()
+							});
+
+							setTimeout(function() {
+								init_css()
+							}, 400)
+							//							$('img').onload = function() {
+							//							//code
+							//							console.log("eee")
+							//							}
+						}
+
+					} else {
+						mui.toast(ret.error);
+					}
+				});
+			}
+
+
+		}
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+	</script>
+
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/iconfont.css" rel="stylesheet"/>
+    <link href="./css/mui.picker.min.css" rel="stylesheet" />
+    <link href="./css/mui.poppicker.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet"/> 
+    <style>
+		
+		.mui-table-view span.mui-pull-right {
+		    color: #999;
+		}
+    </style>
+</head>
+<body onload="app.route()">
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<a id="btn_year" class="mui-btn mui-btn-link mui-pull-right">2018年</a>
+		<h1 class="mui-title">保洁报告</h1>
+	</header>
+	<div class="mui-content">
+		<ul id="list" class="mui-table-view">
+			<li class="mui-table-view-cell" dt="201801">
+				<a class="mui-navigate-right">
+					2018年1月报告
+				</a>
+			</li>
+			<li class="mui-table-view-cell" dt="201802">
+				<a class="mui-navigate-right">
+					2018年2月报告
+				</a>
+			</li>
+			<li class="mui-table-view-cell" dt="201803">
+				<a class="mui-navigate-right">
+					2018年3月报告
+				</a>
+			</li>
+			<li class="mui-table-view-cell" dt="201804">
+				<a class="mui-navigate-right">
+					2018年4月报告
+				</a>
+			</li>
+			<li class="mui-table-view-cell" dt="201805">
+				<a class="mui-navigate-right">
+					2018年5月报告
+				</a>
+			</li>
+		</ul>
+	</div>
+</body>
+<script src="js/mui.min.js"></script>
+<script src="./js/mui.picker.min.js"></script>
+<script src="./js/mui.poppicker.js"></script>
+<script src="js/app.js"></script>
+<script type="text/javascript" charset="utf-8">
+	mui.ready(function(){
+		mui.init();
+		
+		mui('#list').on('tap', '.mui-table-view-cell', function() {
+			app.open("report_detail_bj.html?dt=" + this.getAttribute('dt'));
+		})
+	})
+	
+	mui.plusReady(function() {
+		plus.screen.lockOrientation("portrait-primary");
+	});
+	
+	app.eventClickYear(document.getElementById('btn_year'),function(strYear){
+		
+	})
+
+</script>
+</html>

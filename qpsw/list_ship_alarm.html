@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+ 
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <title></title>
+        <link href="css/mui.min.css" rel="stylesheet" />
+        <link href="css/iconfont.css" rel="stylesheet" />
+        <link href="./css/mui.picker.min.css" rel="stylesheet" />
+        <link href="./css/mui.poppicker.css" rel="stylesheet" />
+        <link href="css/style.css" rel="stylesheet" />
+        <style>
+            #offCanvasSideScroll {
+                background: white;
+            }
+            
+            #header {
+                box-shadow: 0 1px 6px #ccc;
+            }
+            
+            #list-option .mui-table-view-cell button {
+                position: relative;
+                right: inherit;
+                -webkit-transform: inherit;
+                transform: inherit;
+            }
+            
+            .mui-table-view span.mui-pull-right {
+                color: #999;
+            }
+            
+            .has_filter {
+                color: red;
+            }
+            
+            .check_item {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .page_loader {
+                text-align: center;
+                color: gray;
+                border-top: 1px solid #ccc;
+                padding-top: 5px;
+            }
+        </style>
+    </head>
+ 
+    <body onload="app.route()">
+        <!--侧滑菜单容器-->
+        <div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+            <!--菜单部分-->
+            <aside id="offCanvasSide" class="mui-off-canvas-right">
+                <div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+                    <div class="mui-scroll">
+                        <h6 style="padding:5px;">过滤</h6>
+                        <ul id="list-option" class="mui-table-view">
+                            <!--<li class="mui-table-view-cell">
+                                <i class="iconfont icon-chuan"></i> 船名
+                                <span id="inputShip" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请输入...</span>
+                            </li>-->
+                            <li class="mui-table-view-cell">
+                                <span><i class="iconfont icon-date1"></i> 开始时间</span>
+                                <span id='selectDate' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+                            </li>
+                            <li class="mui-table-view-cell">
+                                <span><i class="iconfont icon-date1"></i> 结束时间</span>
+                                <span id='selectDate2' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+                            </li>
+                            <li class="mui-table-view-cell mui-hidden">
+                                <i class="iconfont icon-heliu"></i> 河道
+                                <span id="selectRiver" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+                            </li>
+                            <li class="mui-table-view-cell">
+                                <i class="iconfont icon-leibieguanli"></i> 类别
+                                <!--<div id="list_type">
+                                </div>-->
+                                <span id="list_type" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+                            </li>
+                            <li class="mui-table-view-cell">
+                                <i class="mui-icon mui-icon-location"></i> 地区
+                                <span id="region" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+                            </li>
+                        </ul>
+                        <div class="mui-content-padded" style="text-align: right;">
+                            <button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+                            重置
+                        </button>
+                            <button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+                            确认
+                        </button>
+                        </div>
+ 
+                    </div>
+                </div>
+            </aside>
+            <div class="mui-inner-wrap">
+                <header id="header" class="mui-bar mui-bar-nav">
+                    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+                    <a id="btn_select" class="mui-btn mui-btn-link mui-pull-right selecting_hide mui-hidden">选择</a>
+                    <a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right selecting_hide">过滤</a>
+ 
+                    <a id="btn_del" class="mui-btn mui-btn-link mui-pull-right selecting_show mui-hidden">删除</a>
+                    <a id="btn_select_all" class="mui-btn mui-btn-link mui-pull-right selecting_show mui-hidden">全选</a>
+                    <a id="btn_cancel" class="mui-btn mui-btn-link mui-pull-right selecting_show mui-hidden">取消</a>
+                    <h1 class="mui-title">违规报警</h1>
+                </header>
+                <div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+                    <div class="mui-scroll">
+                        <ul id="list" class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+                            <!--
+                    <li item_id="1" class="mui-table-view-cell">
+                        <div class="has_nav mui-navigate-right">
+                            <input type="checkbox" class="mui-pull-right check_item selecting_show mui-hidden"></input>
+                            <img class="mui-media-object mui-pull-left" src="./images/evid1.png">
+                            <div class="mui-media-body">
+                                **河
+                                <p class='mui-ellipsis'>报警类别：<span style="color:red">超时</span></p>
+                                <p class='mui-ellipsis'>具体位置：121°45′35″ - 31°25′33″</p>
+                                <p class='mui-ellipsis'>位置描述：朱家角镇 淀山湖</p>
+                                <p class='mui-ellipsis'>报警时间：2018.01.07 08:00:00</p>
+                                <p class='mui-ellipsis'>状态：<span style="color:red">未解除</span></p>
+                            </div>
+                        </div>
+                    </li>-->
+                        </ul>
+                        <div id="page_loading" class="page_loader">
+                            <img src="./images/loading.gif"> 加载中...
+                        </div>
+                        <div id="page_ended" class="page_loader">
+                            列表已到最后
+                        </div>
+                    </div>
+                </div>
+                <div class="mui-off-canvas-backdrop"></div>
+            </div>
+        </div>
+        <!--侧滑菜单容器-->
+    </body>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/mui.min.js"></script>
+    <script src="./js/mui.picker.min.js"></script>
+    <script src="./js/mui.poppicker.js"></script>
+    <script src="js/app.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        mui.init();
+ 
+        mui('#offCanvasSideScroll').scroll();
+        mui('#offCanvasContentScroll').scroll();
+ 
+        var isSelecting = false;
+        var isSelectAll = false;
+        var currentPage = 0;
+        var maxPage = 1;
+        var isLoading = false;
+        var _name = '',
+            _start = '2018-01-01 00:00:00',
+            _end = '';
+        var arrTypes = [];
+        var list_type_value = "";
+        var startTime = app.getUrlParam('start');
+        var endTime = app.getUrlParam('end');
+        var regionId = app.getUrlParam('regionId');
+ 
+        var picker = new mui.PopPicker();
+        var picker_list_type = new mui.PopPicker();
+        var list_type = JSON.parse(app.getSetting('all_alarm_types'));
+ 
+        list_type.splice(0, 0, {
+            value: "",
+            text: "全部"
+        });
+        picker_list_type.setData(list_type);
+        var area = JSON.parse(app.getSetting('all_area'));
+        area.splice(0, 0, {
+            value: "",
+            text: "全部"
+        });
+        picker.setData(area);
+        // scroll event
+        document.getElementById('offCanvasContentScroll').addEventListener('scroll', function(e) {
+            if(isLoading)
+                return;
+ 
+            if((mui('#offCanvasContentScroll').scroll().y - mui('#offCanvasContentScroll').scroll().maxScrollY) < 20) {
+                if(currentPage != maxPage) {
+                    loadData(true);
+                }
+            }
+        });
+ 
+        // button select
+        var btn_select = document.getElementById('btn_select');
+        btn_select.addEventListener('tap', function() {
+            isSelecting = true;
+            $('.selecting_show').removeClass('mui-hidden');
+            $('.selecting_hide').addClass('mui-hidden');
+            $('.has_nav').removeClass('mui-navigate-right');
+        });
+ 
+        // button cancel
+        var btn_cancel = document.getElementById('btn_cancel');
+        btn_cancel.addEventListener('tap', function() {
+            isSelecting = false;
+            $('.selecting_show').addClass('mui-hidden');
+            $('.selecting_hide').removeClass('mui-hidden');
+            $('.has_nav').addClass('mui-navigate-right');
+        });
+ 
+        // button select all
+        var btn_select_all = document.getElementById('btn_select_all');
+        btn_select_all.addEventListener('tap', function() {
+            isSelectAll = !isSelectAll;
+            if(isSelectAll) {
+                $('.check_item').prop('checked', true);
+            } else {
+                $('.check_item').prop('checked', false);
+            }
+        });
+ 
+        // button del
+        var btn_del = document.getElementById('btn_del');
+        btn_del.addEventListener('tap', function() {
+            var btnArray = ['取消', '是'];
+            mui.confirm('是否真的删除选中项？', '确认', btnArray, function(e) {
+                if(e.index == 1) {}
+            });
+        })
+ 
+        // button filter
+        var btn_filter = document.getElementById('btn_filter');
+        var offCanvasWrapper = mui('#offCanvasWrapper');
+        btn_filter.addEventListener('tap', function() {
+            if(startTime != '') {
+                selectDate.innerText = startTime + ' 00:00:00';
+            }
+            if(endTime != '') {
+                selectDate2.innerText = endTime + ' 23:59:59';
+            }
+            //显示相关的地区
+            if(regionId != '') {
+                var regionValue = $("#region").attr('value');
+                if(regionValue != undefined) {
+                    region.innerText = region.innerText;
+                } else {
+                    region.innerText = getAreaName();
+                }
+            }
+
+            offCanvasWrapper.offCanvas('show');
+        });
+ 
+        var _list = document.getElementById('list');
+        var inputShip = document.getElementById('inputShip');
+        var selectRiver = document.getElementById('selectRiver');
+        var selectDate = document.getElementById('selectDate');
+        var selectDate2 = document.getElementById('selectDate2');
+ 
+        mui.ready(function() {
+            initCtrls();
+            loadData();
+            mui('#list').on('tap', '.mui-table-view-cell', function() {
+                if(isSelecting) {
+                    $(this).find('.check_item').prop('checked', !$(this).find('.check_item').prop('checked'));
+                    return;
+                }
+                app.open("detail_alarm.html?id=" + this.getAttribute('item_id'));
+            })
+            selectDate.addEventListener('tap', function() {
+                app.pickDate(this, true);
+            }, false);
+ 
+            selectDate2.addEventListener('tap', function() {
+                app.pickDate(this, true);
+            }, false);
+ 
+            // river
+            var arrRivers = new Array();
+            arrRivers.push({
+                text: '全部',
+                value: ''
+            });
+            var arr = JSON.parse(app.getSetting('all_rivers') || '[]');
+            if(arr.length > 0)
+                arrRivers = arrRivers.concat(arr);
+            var riverPicker = new mui.PopPicker();
+            riverPicker.setData(arrRivers);
+            selectRiver.addEventListener('tap', function(e) {
+                riverPicker.show(function(items) {
+                    selectRiver.innerText = items[0].text;
+                    $(selectRiver).attr('item_id', items[0].value);
+                    //返回 false 可以阻止选择框的关闭
+                    //return false;
+                });
+            })
+        })
+ 
+        mui.plusReady(function() {
+            plus.screen.lockOrientation("portrait-primary");
+        });
+ 
+        function clickReset() {
+            selectDate.innerText = '请选择...';
+            selectDate2.innerText = '请选择...';
+            region.innerText = '请选择...';
+            list_type.innerText = '请选择...';
+            $('.checkbox_item').prop('checked', true);
+        }
+ 
+        function clickOk() {
+            if(selectDate.innerText != '请选择...')
+                _start = selectDate.innerText;
+            else
+                _start = "2018-01-01 00:00:00";
+ 
+            if(selectDate2.innerText != '请选择...')
+                _end = selectDate2.innerText;
+            else if(startTime != '')
+                _end = endTime + ' 23:59:59';
+            else
+                _end = '';
+//            arrTypes = [];
+//            $(':checked').each(function(idx, item) {
+//                arrTypes.push($(item).attr('item_id'));
+//            });
+ 
+            list_type_value = $("#list_type").attr('value');
+            currentPage = 0;
+ 
+            loadData();
+ 
+            offCanvasWrapper.offCanvas('close');
+        }
+        //取地区名字
+        function getAreaName() {
+            var regionId = app.getUrlParam('regionId');
+            for(i = 0; i < area.length; i++) {
+                if(area[i].value == regionId) {
+                    return area[i].text;
+                }
+            }
+ 
+        }
+        //取警报类型
+        function getAlarmType(name) {
+            var arr = JSON.parse(app.getSetting('all_alarm_types') || '[]');
+            var alname = name;
+            for(i = 0; i < arr.length; i++) {
+                if(arr[i].text == decodeURI(alname)) {
+                    return arr[i].value;
+                }
+            }
+        }
+ 
+        function loadData(bAppend) {
+            if(bAppend)
+            ;
+            else
+                _list.innerHTML = '';
+ 
+            isLoading = true;
+ 
+            $('#page_loading').show();
+            $('#page_ended').hide();
+ 
+            app.showProgressBar();
+ 
+            //判断是否有传过来的url参数
+            var regionId = "";
+            if($("#region").attr('value')){
+                regionId = $("#region").attr('value')
+            }else{
+                if(app.getUrlParam('regionId')){
+                    regionId = app.getUrlParam('regionId')
+                }else{
+                    regionId = ""
+                }
+                
+            }
+            var alarmType = ""
+            
+            if($("#list_type").attr('value')){
+                alarmType = $("#list_type").attr('value');
+            }else{
+                if(app.getUrlParam('alarmTypeName')){
+                    alarmType = getAlarmType(app.getUrlParam('alarmTypeName'))
+                }else{
+                    alarmType = ""
+                }
+            }
+            
+            
+            var startTime = app.getUrlParam('start');
+            var endTime = app.getUrlParam('end');
+            if(startTime != '' && endTime != '') {
+                //                    console.log(2);
+                var startTime = startTime + ' 00:00:00';
+                var endTime = endTime + ' 23:59:59';
+                var mapData = {
+                    regionId: regionId,
+                    alarmType: alarmType,
+                    start: startTime,
+                    end: endTime,
+                };
+ 
+            } else {
+                var mapData = {
+                    regionId: regionId,
+                    alarmType: alarmType, 
+                    start: _start,
+                    end: _end,
+                };
+            }
+ 
+//            console.log(JSON.stringify(mapData));
+            //        console.log(JSON.stringify(mapData));
+            app.ajax(app.url('api/alarm/currentList'), mapData, function(ret) {
+//                console.log(JSON.stringify(ret))
+                app.showProgressBar(false);
+                isLoading = false;
+                if(ret.code == 0) {
+                    var strHtml = '';
+                    var imgUrl = '';
+                    ret.data.forEach(function(item) {
+						strHtml += '<li item_id="' + item.alarmId + '" class="mui-table-view-cell">' +
+							'<a   class="has_nav mui-navigate-right">' +
+							'<div class="mui-media-body">' +
+							'<p class="mui-ellipsis">' +item.shipName +'<span class="mui-pull-right" style="color:red;margin-right:20px">' + item.alarmType + '</span>'+'</p>' +
+							
+							'<p class="mui-ellipsis">' + item.regionName +'<span class="mui-pull-right" style="margin-right:20px">'+ item.updatetime + '</p>' +
+							// '<p class="mui-ellipsis">' + item.updatetime + '</p>' +
+							'</div>' +
+							'</a>' +
+							'</li>';
+                        //                        console.log(JSON.stringify(item));
+                        // strHtml += '<li item_id="' + item.alarmId + '" class="mui-table-view-cell">' +
+                        //     '<a class="has_nav mui-navigate-right">' +
+                        //     '<div class="mui-media-body">' +
+                        //     item.shipName +
+                        //     '<p class="mui-ellipsis">报警类别：<span style="color:red">' + item.alarmType + '</span></p>' +
+                        //     '<p class="mui-ellipsis">具体位置：' + item.regionName + '</p>' +
+                        //     '<p class="mui-ellipsis">报警时间：' + item.updatetime + '</p>' +
+                        //     '</div>' +
+                        //     '</a>' +
+                        //     '</li>';
+                    })
+ 
+                    $(_list).append($(strHtml));
+ 
+                    currentPage = ret.data.pageNum;
+                    maxPage = ret.data.pages;
+                    if(ret.data.pages == ret.data.pageNum) {
+                        $('#page_loading').hide();
+                        $('#page_ended').show();
+                    } else {
+                        $('#page_loading').hide();
+                        $('#page_ended').hide();
+                    }
+                } else {
+                    mui.toast('加载违规报警失败：' + ret.desc);
+ 
+                    $('#page_loading').hide();
+                    $('#page_ended').show();
+                }
+            })
+        }
+ 
+        function initCtrls() {
+            var arr = JSON.parse(app.getSetting('all_alarm_types') || '[]');
+            var strHtml = '';
+            var alarmTypeName = app.getUrlParam('alarmTypeName');
+//            var alarmType = getAlarmType(alarmTypeName);
+//            if(alarmTypeName != '') {
+//                var alarmType = getAlarmType(alarmTypeName);
+//                arr.forEach(function(item) {
+//                    strHtml += '<div class="mui-input-row mui-checkbox mui-left" style="display: inline-block;margin-top:10px">' +
+//                        '<label>' + item.text +
+//                        '<input class="checkbox_item" item_id="' + item.value + '" type="checkbox">' +
+//                        '</label>' +
+//                        '</div>';
+//                })
+//                document.getElementById('list_type').innerHTML = strHtml;
+//                $("input[item_id=" + alarmType + "]").prop("checked", true);
+//            } else {
+//                arr.forEach(function(item) {
+//                    strHtml += '<div class="mui-input-row mui-checkbox mui-left" style="display: inline-block;margin-top:10px">' +
+//                        '<label>' + item.text +
+//                        '<input class="checkbox_item" item_id="' + item.value + '" type="checkbox" checked>' +
+//                        '</label>' +
+//                        '</div>';
+//                })
+//                document.getElementById('list_type').innerHTML = strHtml;
+//            }
+            if(alarmTypeName != '') {
+                document.getElementById('list_type').innerHTML = alarmTypeName;
+            }
+ 
+            
+        }
+        var list_types = document.getElementById('list_type');
+        list_types.addEventListener('tap', function() {　
+            picker_list_type.show(function(items) {
+                list_types.innerText = items[0].text;
+                $("#list_type").attr('value', items[0].value);
+            })
+        })
+        
+        
+        //添加地区
+        var region = document.getElementById('region');
+        region.addEventListener('tap', function() {　
+            picker.show(function(items) {
+                region.innerText = items[0].text;
+                $("#region").attr('value', items[0].value);
+            })
+        })
+    </script>
+ 
+</html>

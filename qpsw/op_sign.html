@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/iconfont.css" rel="stylesheet"/>
+    <link href="./css/mui.picker.min.css" rel="stylesheet" />
+    <link href="./css/mui.poppicker.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet"/> 
+    <style>
+		#list-option .mui-table-view-cell button{
+			position: relative;
+			right: inherit;
+    		-webkit-transform: inherit;
+    		transform: inherit;
+		}
+		
+		.mui-table-view span.mui-pull-right {
+		    color: #999;
+		}
+		
+		.img-selected {
+			width:80px;
+			height:80px;
+			margin-top: 10px;
+		}
+    </style>
+</head>
+<body onload="app.route()">
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<a class="mui-btn mui-btn-link mui-pull-right">提交</a>
+		<h1 class="mui-title">签到</h1>
+	</header>
+	<div class="mui-content">
+		<ul id="list-option" class="mui-table-view">
+			<li class="mui-table-view-cell">
+				签到人员
+			 	<span id="span_user_name" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">张三</span>
+			</li>
+			<li class="mui-table-view-cell">
+				位置信息
+			 	<span id="span_gps" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">N31.255486 - E121.089462</span>
+			</li>
+			<li class="mui-table-view-cell">
+				签到时间
+				<span style="color:red">*</span>
+			 	<span id="selectArea" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">2018-01-10 10:30</span>
+			</li>
+			<li class="mui-table-view-cell">
+				管理区域
+				<span style="color:red">*</span>
+			 	<span id="selectArea" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+			</li>
+			<li class="mui-table-view-cell">
+				行政单位
+				<span style="color:red">*</span>
+			 	<span id="selectArea" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+			</li>
+			<li class="mui-table-view-cell">
+				水利设施
+				<span style="color:red">*</span>
+			 	<span id="selectArea" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+			</li>
+			<li class="mui-table-view-cell">
+				<p>签到照片 (最多<span id="max_photos">3</span>张) (长按显示操作菜单)
+					<button onclick="add_img()" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-right">
+						<i class="iconfont icon-add"></i>
+					</button>
+				</p>
+				<div id="img_list">
+					<!--
+					<img src="images/evid1.png" class="img-selected">
+					<img src="images/evid1.png" class="img-selected">
+					<img src="images/evid1.png" class="img-selected">
+					-->
+				</div>
+			</li>
+		</ul>
+	    <div class="mui-content-padded">
+	        <button type="button" class="mui-btn mui-btn-primary mui-btn-block">提交</button>
+	    </div>
+	</div>
+	
+	<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a onclick="getImage()">拍照</a>
+			</li>
+			<li class="mui-table-view-cell">
+				<a onclick="galleryImgsMaximum()">选取现有的</a>
+			</li>
+		</ul>
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a href="#picture"><b>取消</b></a>
+			</li>
+		</ul>
+	</div>
+	
+	<div id="img_action_list" class="mui-popover mui-popover-action mui-popover-bottom">
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a onclick="del_img()">删除</a>
+			</li>
+		</ul>
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a href="#img_action_list"><b>取消</b></a>
+			</li>
+		</ul>
+	</div>
+</body>
+<script src="js/mui.min.js"></script>
+<script src="./js/mui.picker.min.js"></script>
+<script src="./js/mui.poppicker.js"></script>
+<script src="js/app.js"></script>
+<script type="text/javascript" charset="utf-8">
+	var span_user_name = document.getElementById('span_user_name');
+	var span_gps = document.getElementById('span_gps');
+	var selectArea = document.getElementById('selectArea');
+	var selectRiver = document.getElementById('selectRiver');
+	var selectBankType = document.getElementById('selectBankType');
+	var selectType = document.getElementById('selectType');
+	var img_list = document.getElementById('img_list');
+	var currentImgItem = null;
+	
+	document.getElementById('max_photos').innerText = app.max_count_photos;
+
+	span_user_name.innerHTML = app.getUserName();
+	span_gps.innerHTML = app.getSetting('current_gps');
+	
+	mui.init({
+	  gestureConfig:{
+	    longtap: true
+	   }
+	});
+	
+	mui.ready(function(){
+		var riverPicker = new mui.PopPicker();
+		riverPicker.setData([{
+			value: 'ywj',
+			text: '**河'
+		}, {
+			value: 'aaa',
+			text: '**河'
+		}, {
+			value: 'lj',
+			text: '**河'
+		}, {
+			value: 'ymt',
+			text: '**河'
+		}, {
+			value: 'shq',
+			text: '**河'
+		}, {
+			value: 'zhbh',
+			text: '**河'
+		}, {
+			value: 'zhy',
+			text: '**河'
+		}, {
+			value: 'gyf',
+			text: '**河'
+		}, {
+			value: 'zhz',
+			text: '**河'
+		}, {
+			value: 'gezh', 
+			text: '**河'
+		}]);
+		
+		selectArea.addEventListener('tap',function(){
+			riverPicker.show(function(items) {
+			});
+		})
+		
+		selectType.addEventListener('tap',function(){
+			riverPicker.show(function(items) {
+			});
+		})
+		
+		addEventLongTap();
+	})
+
+	mui.plusReady(function() {
+		plus.screen.lockOrientation("portrait-primary");
+	});
+	
+	function addEventLongTap() {
+		var arrItems = document.querySelectorAll('.img-selected');
+		
+		[].forEach.call(arrItems,function(item){
+			item.addEventListener('longtap',function(){
+				currentImgItem = this;
+				mui('#img_action_list').popover('toggle');
+			})　
+		});
+	}
+	
+	function add_img() {		
+		if(document.querySelectorAll('.img-selected').length >= app.max_count_photos)
+		{
+			mui.toast('取证照片已至最大数量');
+			return;
+		}
+		
+		mui('#picture').popover('toggle');
+	}
+	
+	function del_img() {
+		if(currentImgItem)
+		{
+			currentImgItem.parentNode.removeChild(currentImgItem);
+			currentImgItem = null;
+		}
+		
+		mui('#img_action_list').popover('toggle');
+	}
+	
+	function getImage() {
+//		console.log('getImage');
+		var cmr = plus.camera.getCamera();
+		cmr.captureImage(function(path) {
+			plus.gallery.save(path, function(event) {
+				addImg(event.file);
+			}, function(e) {
+//				console.log('保存失败: ' + JSON.stringify(e));
+			});
+		}, function(e) {
+		}, {
+			filename: '_doc/gallery/',
+			index: 1
+		});
+		
+		mui('#picture').popover('toggle');
+	}
+	
+	function addImg(strSrc) {
+		var newImg = document.createElement('img');
+		newImg.src = strSrc;
+		newImg.classList.add("img-selected");
+		
+		newImg.addEventListener('longtap',function(){
+			currentImgItem = this;
+			mui('#img_action_list').popover('toggle');
+		})　
+		
+		img_list.appendChild(newImg);
+	}
+	
+	function galleryImgsMaximum() {
+		var maxValue = app.max_count_photos - document.querySelectorAll('.img-selected').length;
+		if(maxValue < 0)
+			maxValue = 0;
+			
+		if(maxValue == 0)
+		{
+			alert('取证图片已选至最大数量');
+			mui('#picture').popover('toggle');
+			return;
+		}
+		
+		// 从相册中选择图片
+		plus.gallery.pick(function(e) {
+			for(var i in e.files) {
+				addImg(e.files[i]);
+			}
+		}, function(e) {
+		//	outSet('取消选择图片');
+		}, {
+			filter: 'image',
+			multiple: true,
+			maximum: maxValue,
+			system: false,
+			onmaxed: function() {
+				plus.nativeUI.alert('最多只能选择' + maxValue + '张图片');
+			}
+		}); // 最多选择3张图片
+		
+		mui('#picture').popover('toggle');
+	}
+
+</script>
+</html>

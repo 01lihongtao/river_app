@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit; 
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.mui-bar {
+				height: 50px;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 10px;
+			}
+			
+			.div_warp {
+				margin-right: 20px;
+			}
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+			.contrast_data{
+				width:32%;
+				text-align: center;
+				display: inline-block;
+				/* border:1px solid red; */
+			}
+			#list{
+				padding-top:50px;
+				padding-left:10px;
+			}
+			#container2 {
+				width: 100vw;
+				height: 50vh;
+			}
+			#gate_list2{
+				width: 100vw;
+				height: 20vh;
+			}
+			#pump_list2{
+				width: 100vw;
+				height: 20vh;
+			}
+			.line_color{
+				display: inline-block;
+				width:2px;
+				height:12px;
+				background-color:blue;
+			}
+		</style>
+	</head>
+	<body onload="app.route()">
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!-- 菜单容器 -->
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right  mui-hidden">过滤</a>
+					<h1 id="gate_name" class="mui-title"></h1>
+				</header>
+				<div id="offCanvasContentScroll" class=" mui-slider-group mui-scroll mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul id="list" class="mui-table-view search_list">
+							<li style="margin-bottom:20px;">
+								<div style="font-size: 16px;margin:5px 10px;"><span class="line_color"></span> 水位</div>
+								<div id="container2">
+								</div>
+							</li>
+							<li style="margin-bottom:20px;">
+								<div style="font-size: 16px;margin:5px 10px;"><span class="line_color"></span> 闸位</div>
+								<div id="gate_list2">
+								</div>
+							</li>
+							<li style="margin-bottom:20px;">
+								<div style="font-size: 16px;margin:5px 10px;"><span class="line_color"></span> 水泵</div>
+								<div id="pump_list2">
+								</div>
+							</li>
+						</ul>
+						<div id="page_loading" class="page_loader">
+							<img src="../asset/images/loading.gif"> 加载中...
+						</div>
+						<!-- <div id="page_ended" class="page_loader">
+							列表已到最后
+						</div> -->
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script src="../../asset/js/echarts-all.js"></script>
+	<script src="../../asset/js/mui.enterfocus.js"></script>
+	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=9f4e8708dc930f1ac309d418fc485070&callback=init&plugin=AMap.Geocoder"></script>
+	<script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+	<script type="text/javascript" charset="utf-8">
+		var btn_filter = document.getElementById('btn_filter'); //过滤
+		var _name = app.getSetting('history_water_name');
+		document.getElementById('gate_name').innerHTML = _name ? _name : '曲线图'
+		// 点击过滤展示搜索条件
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+		// 时间封装
+		function getNowTime(type, newDate) {
+			var date = newDate ? newDate : new Date();
+			var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+			var strDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+			var strDate1 = (date.getDate() - 1) < 10 ? "0" + (date.getDate() - 1) : (date.getDate() - 1);
+			var strDate2 = (date.getDate() - 2) < 10 ? "0" + (date.getDate() - 2) : (date.getDate() - 2);
+			if (type == 'start') {
+				var currentdate = date.getFullYear() + "-" + month + "-" + strDate + " 00" + ":" + "00" + ":" + "00";
+			} else if (type == 'china') {
+				var currentdate = date.getFullYear() + "年" + month + "月" + strDate + '日';
+			} else if (type == "yesterday") {
+				var currentdate = date.getFullYear() + "-" + month + "-" + strDate1 + " 00" + ":" + "00" + ":" + "00";
+			} else if (type == "eve") {
+				var currentdate = date.getFullYear() + "-" + month + "-" + strDate2 + " 00" + ":" + "00" + ":" + "00";
+			} else {
+				var currentdate = date.getFullYear() + "-" + month + "-" + strDate + " 23" + ":" + "59" + ":" + "59";
+			}
+			return currentdate;
+		}
+
+		var post_data;
+		// 确定按钮
+		var dom = document.getElementById("container2");
+		var myChart = echarts.init(dom);
+		var g_nei_data = []; //内河水位
+		var g_wai_data = []; //外河水位
+		var water_time = []; //水位时间
+		var g_nei_gate = [];
+		var g_wai_gate = [];
+		var g_date_data = [];
+		// 这是新做功能
+		mui('#offCanvasContentScroll').scroll();
+		//这是首先加载 
+		mui.ready(function() {
+			$('#page_loading').show();
+			mui.init();
+			init_html() //水位
+			gate() //闸门
+			pump() //水泵
+			mui('body').on('tap', '.link_open', function() {
+				app.open(this.href);
+				return false;
+			});
+		})
+		//加工数据
+		function workData(data, num) {
+			var yunxingData = []
+			var duankaiData = []
+			var allData = {}
+			for (var i = 0; i < data.length; i++) {
+				yunxingData.push([data[i].gmtCreate, num])
+				duankaiData.push([data[i].gmtCreate, data[i].isOpen == 3101 ? null : num])
+			}
+			allData.name = data[0].gateName;
+			allData.yunxing = yunxingData;
+			allData.duankai = duankaiData;
+			return allData;
+		}
+
+		function workData2(data, num) {
+			var yunxingData = []
+			var duankaiData = []
+			var allData = {}
+			for (var i = 0; i < data.length; i++) {
+				yunxingData.push([data[i].gmtCreate, num])
+				duankaiData.push([data[i].gmtCreate, data[i].isOpen == 3101 ? null : num])
+			}
+			allData.name = data[0].pumpName;
+			allData.yunxing = yunxingData;
+			allData.duankai = duankaiData;
+			return allData;
+		}
+		// 获取水泵信息
+		function pump(start, end) {
+			var _id = app.getSetting('history_waterID')
+			// var start= app.getSetting('selectStart5');
+			// var end= app.getSetting('selectEnd5')
+			 var start= app.getUrlParam('selectStart5');
+			 var end= app.getUrlParam('selectEnd5')
+			
+			var param = {
+				facilityId: [_id], //区域ID
+				start: start?start:getNowTime('start'),
+				end: end?end:getNowTime(),
+			}
+			console.log('参数2'+JSON.stringify(param))
+			app.ajaxJson(app.url1('newFacilityRecord/getPumpOpenClose'), param, function(ret) {
+				if (ret.code == 200) {
+					// var gateArr = []
+					var gateArr = [];
+					var newgateArr = []
+					var nameArr = ret.data[0].pump; //闸门 
+					
+					// console.log('水泵'+JSON.stringify(nameArr[0]))
+					// console.log('<<<<<<<'+JSON.stringify(ret.data))
+					// console.log('nameArr222<<<<<<<'+JSON.stringify(ret.data.length))
+					var pump=document.getElementById("pump_list2");
+					if(!nameArr || nameArr.length ==0){
+					pump.innerHTML="暂无数据";
+					pump.style.textAlign='center';
+					pump.style.paddingTop="30px"
+					return
+					}
+					
+					if (nameArr && nameArr.length > 0) {
+						for (var l = 0; l < nameArr.length; l++) {
+							gateArr.push(nameArr[l])
+						}
+					}
+					if (gateArr.length > 0) {
+
+						for (var n = 0; n < gateArr.length; n++) {
+							newgateArr.push(workData2(gateArr[n], n + 1))
+						}
+					}
+					// console.log('看看22222' + JSON.stringify(newgateArr))
+					var siteContrast2 = echarts.init(document.getElementById("pump_list2"));
+					var ss = []
+					for (var y = 0; y < newgateArr.length; y++) {
+						ss.push({
+							name: newgateArr[y].name,
+							type: 'line',
+							showSymbol: false,
+							lineStyle: {
+								normal: {
+									width: 4
+								}
+							},
+							itemStyle: {
+								normal: {
+									color: 'rgba(125,213,255,1)'
+								}
+							},
+							data: newgateArr[y].yunxing
+						}, {
+							name: newgateArr[y].name,
+							type: 'line',
+							showSymbol: false,
+							lineStyle: {
+								normal: {
+									width: 4
+								}
+							},
+							itemStyle: {
+								normal: {
+									color: 'rgba(220,220,220,1)'
+								}
+							},
+							data: newgateArr[y].duankai
+						})
+					}
+					siteContrast2.setOption({
+						tooltip: {
+							trigger: 'axis',
+							formatter: function(params) {
+								var arr = []
+								for (var i = 0; i < params.length; i++) {
+									// console.log(params[i], 'echartsasdf33')
+									for (var j = i + 1; j < params.length; j++) {
+										if (params[i].seriesName == params[j].seriesName) {
+											arr.push({
+												aa: params[i],
+												bb: params[j]
+											})
+										}
+									}
+								}
+								var str = '';
+								for (var z = 0; z < arr.length; z++) {
+									if (arr[z].bb.data[1]) {
+										str += arr[z].bb.seriesName + '-关闭' + '<br/>'
+
+									} else {
+										str += arr[z].bb.seriesName + '-运行' + '<br/>'
+										// str+=`${arr[z].bb.seriesName}-运行<br/>`
+									}
+								}
+								return str
+							}
+						},
+						grid: {
+							top: 0,
+							left: '12%'
+						},
+						dataZoom: [{
+								show: false,
+								realtime: true,
+								start: 0,
+								end: 100
+							},
+							{
+								type: 'inside',
+								realtime: true,
+								// start: 65,
+								// end: 85
+							}
+						],
+						xAxis: {
+							type: 'time',
+							boundaryGap: false,
+							axisLine: {
+								show: false
+							},
+							// axisLabel: { show: false },
+							axisTick: {
+								show: false
+							},
+							// splitLine: { show: false },
+						},
+						yAxis: {
+							type: 'value',
+							max: newgateArr.length + 1,
+							minInterval: 1,
+							boundaryGap: [0, 0.1],
+							inverse: true,
+							axisLine: {
+								show: false
+							},
+							axisTick: {
+								show: false
+							},
+							splitLine: {
+								show: false
+							},
+							axisLabel: {
+								formatter: function(v) {
+
+									// return newgateArr[v].name;
+								}
+							},
+
+						},
+						series: ss,
+					})
+				}
+			})
+		}
+		// 获取水闸信息
+		function gate(start, end) {
+			var _id = app.getSetting('history_waterID')
+			var start= app.getUrlParam('selectStart5');
+			var end= app.getUrlParam('selectEnd5')
+			var param = {
+				facilityId: [_id], //区域ID
+				start: start?start:getNowTime('start'),
+				end:end?end: getNowTime(),
+			}
+			app.ajaxJson(app.url1('newFacilityRecord/getGateOpenClose'), param, function(ret) {
+				if (ret.code == 200) {
+					var gateArr = [];
+					var newgateArr = [] 
+					var nameArr = ret.data[0]; //闸门 
+					
+					if(nameArr.inner==null&&nameArr.out==null&&nameArr.regulator==null&&nameArr.gate==null){
+						var noText=document.getElementById("gate_list2")
+						noText.innerHTML="暂无数据";
+						noText.style.textAlign='center';
+						noText.style.paddingTop="30px"
+						return
+					}
+
+					if (nameArr.regulator&&nameArr.regulator.length>0) {
+						let dataNew=nameArr.regulator;
+						for(var j=0;j<dataNew.length;j++){
+							gateArr.push(dataNew[j])
+						}
+						// gateArr = [nameArr.single]
+					} else {
+
+						gateArr.push(nameArr.gate)
+						gateArr.push(nameArr.inner)
+						gateArr.push(nameArr.out)
+					}
+
+					for (var n = 0; n < gateArr.length; n++) {
+						newgateArr.push(workData(gateArr[n], n + 1))
+					}
+					// console.log('看看' + JSON.stringify(newgateArr))
+					var siteContrast = echarts.init(document.getElementById("gate_list2"));
+					var ss = []
+					for (var y = 0; y < newgateArr.length; y++) {
+						ss.push({
+							name: newgateArr[y].name,
+							type: 'line',
+							showSymbol: false,
+							lineStyle: {
+								normal: {
+									width: 4
+								}
+							},
+							itemStyle: {
+								normal: {
+									color: 'rgba(125,213,255,1)'
+								}
+							},
+							data: newgateArr[y].yunxing
+						}, {
+							name: newgateArr[y].name,
+							type: 'line',
+							showSymbol: false,
+							lineStyle: {
+								normal: {
+									width: 4
+								}
+							},
+							itemStyle: {
+								normal: {
+									color: 'rgba(220,220,220,1)'
+								}
+							},
+							data: newgateArr[y].duankai
+						})
+
+
+					}
+
+					siteContrast.setOption({
+						tooltip: {
+							trigger: 'axis',
+							formatter: function(params) {
+								var arr = []
+								for (var i = 0; i < params.length; i++) {
+									for (var j = i + 1; j < params.length; j++) {
+										if (params[i].seriesName == params[j].seriesName) {
+											arr.push({
+												aa: params[i],
+												bb: params[j]
+											})
+										}
+									}
+								}
+								var str = '';
+								for (var z = 0; z < arr.length; z++) {
+									if (arr[z].bb.data[1]) {
+										str += arr[z].bb.seriesName + '-关闭' + '<br/>'
+
+
+									} else {
+										str += arr[z].bb.seriesName + '-运行' + '<br/>'
+										// str+=`${arr[z].bb.seriesName}-运行<br/>`
+									}
+								}
+								return str
+
+							}
+						},
+						grid: {
+							top: 0,
+							left: '12%'
+						},
+						dataZoom: [{
+								show: false,
+								realtime: true,
+								start: 0,
+								end: 100
+							},
+							{
+								type: 'inside',
+								realtime: true,
+								// start: 65,
+								// end: 85
+							}
+						],
+						xAxis: {
+							type: 'time',
+							boundaryGap: false,
+							axisLine: {
+								show: false
+							},
+							// axisLabel: { show: false },
+							axisTick: {
+								show: false
+							},
+							// splitLine: { show: false },
+						},
+						yAxis: {
+							type: 'value',
+							max: newgateArr.length + 1,
+							minInterval: 1,
+							boundaryGap: [0, 0.1],
+							inverse: true,
+							axisLine: {
+								show: false
+							},
+							axisTick: {
+								show: false
+							},
+							splitLine: {
+								show: false
+							},
+							axisLabel: {
+								formatter: function(v) {
+
+									// return newgateArr[v].name;
+								}
+							},
+
+						},
+						series: ss,
+					})
+
+
+
+				}
+			})
+		}
+		// 获取水位信息
+		function init_html(start, end) {
+			if (!app.isLogin()) {
+				return;
+			}
+			var _id = app.getSetting('history_waterID')
+			var start= app.getUrlParam('selectStart5');
+			var end= app.getUrlParam('selectEnd5')
+			var post_data = {
+				facilityId: [_id], //区域ID
+				start: start?start:getNowTime('start'),
+				end: end?end:getNowTime(),
+			};
+			app.ajaxJson(app.url1('newFacilityRecord/getWaterLevel'), post_data, function(ret) {
+				console.log('参数' + JSON.stringify(post_data))
+				// console.log('水位信息值' + JSON.stringify(ret))
+				if (ret.code == 200) {
+					$('#page_loading').hide();
+					g_nei_data = [];
+					g_wai_data = [];
+					water_time = [];
+					var data = ret.data;
+					var videoLength = [];
+					var inWater = data[0].near;
+					var outWater = data[0].out;
+					var max=(data[0].max+0.1).toFixed(1);
+					var min=(data[0].min-0.1).toFixed(1);
+					if(inWater&&inWater.length>0){
+						for (var i = 0; i < inWater.length; i++) {
+							g_nei_data.push(inWater[i].waterLevel);
+							water_time.push(inWater[i].gmtCreate)
+						}
+					}
+					if(outWater&&outWater.length>0){
+						for (var j = 0; j < outWater.length; j++) {
+							g_wai_data.push(outWater[j].waterLevel)
+						}
+					}
+				
+					option = {
+						tooltip: {
+							 trigger: 'axis',
+							formatter: function(a, b, c) {
+								var string = ""
+								for (var i = 0; i < a.length; i++) {
+									if (a[i].value == -2 || a[i].value == -4) {
+										string += a[i].seriesName + ":开启<br>"
+									} else if (a[i].value == null) {
+										string += a[i].seriesName + ":关闭<br>"
+									} else {
+										string += a[i].seriesName + ":" + (a[i].value).toFixed(2)+'米' + "<br>"
+									}
+								}
+								return string;
+							}
+						},
+						legend: {
+							data: ['内河水位', '外河水位']
+						},
+						dataZoom: [{
+								show: false,
+								realtime: true,
+								start: 0,
+								end: 100
+							},
+							{
+								type: 'inside',
+								realtime: true,
+								// start: 65,
+								// end: 85 
+							}
+						],
+						xAxis: {
+							type: 'category',
+							boundaryGap: false,
+							data: water_time,
+						},
+						yAxis: {
+							type: 'value',
+							axisLabel: {
+								formatter: '{value} m'
+							},
+							min:min?min:0,
+							max:max?max:5,
+						},
+						series: [{
+							name: '内河水位',
+							type: 'line',
+							smooth: true,
+							symbol: 'none',
+							sampling: 'average',
+
+							data: g_nei_data,
+
+						}, {
+							name: '外河水位',
+							type: 'line',
+							smooth: true,
+							symbol: 'none',
+							sampling: 'average',
+							data: g_wai_data,
+
+						}, ]
+					};
+					myChart.setOption(option, true);
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+		}
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+	</script>
+
+</html>

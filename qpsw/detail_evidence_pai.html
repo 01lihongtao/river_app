@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/iconfont.css" rel="stylesheet"/>
+    <link href="css/style.css" rel="stylesheet"/> 
+    <style>
+.mui-preview-image.mui-fullscreen {
+                position: fixed;
+                z-index: 20;
+                background-color: #000;
+            }
+            .mui-preview-header,
+            .mui-preview-footer {
+                position: absolute;
+                width: 100%;
+                left: 0;
+                z-index: 10;
+            }
+            .mui-preview-header {
+                height: 44px;
+                top: 0;
+            }
+            .mui-preview-footer {
+                height: 50px;
+                bottom: 0px;
+            }
+            .mui-preview-header .mui-preview-indicator {
+                display: block;
+                line-height: 25px;
+                color: #fff;
+                text-align: center;
+                margin: 15px auto 4;
+                width: 70px;
+                background-color: rgba(0, 0, 0, 0.4);
+                border-radius: 12px;
+                font-size: 16px;
+            }
+            .mui-preview-image {
+                display: none;
+                -webkit-animation-duration: 0.5s;
+                animation-duration: 0.5s;
+                -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+            }
+            .mui-preview-image.mui-preview-in {
+                -webkit-animation-name: fadeIn;
+                animation-name: fadeIn;
+            }
+            .mui-preview-image.mui-preview-out {
+                background: none;
+                -webkit-animation-name: fadeOut;
+                animation-name: fadeOut;
+            }
+            .mui-preview-image.mui-preview-out .mui-preview-header,
+            .mui-preview-image.mui-preview-out .mui-preview-footer {
+                display: none;
+            }
+            .mui-zoom-scroller {
+                position: absolute;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: flex;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                align-items: center;
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                justify-content: center;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                -webkit-backface-visibility: hidden;
+            }
+            .mui-zoom {
+                -webkit-transform-style: preserve-3d;
+                transform-style: preserve-3d;
+            }
+            .mui-slider .mui-slider-group .mui-slider-item img {
+                width: auto;
+                height: auto;
+                max-width: 100%;
+                max-height: 100%;
+            }
+            .mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+                width: 100%;
+            }
+            .mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+                display: inline-table;
+            }
+            .mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+                display: table-cell;
+                vertical-align: middle;
+            }
+            .mui-preview-loading {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                display: none;
+            }
+            .mui-preview-loading.mui-active {
+                display: block;
+            }
+            .mui-preview-loading .mui-spinner-white {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin-left: -25px;
+                margin-top: -25px;
+                height: 50px;
+                width: 50px;
+            }
+            .mui-preview-image img.mui-transitioning {
+                -webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+                transition: transform 0.5s ease, opacity 0.5s ease;
+            }
+            @-webkit-keyframes fadeIn {
+                0% {
+                    opacity: 0;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+            @keyframes fadeIn {
+                0% {
+                    opacity: 0;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+            @-webkit-keyframes fadeOut {
+                0% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                }
+            }
+            @keyframes fadeOut {
+                0% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                }
+            }
+            
+        .img_item {
+            max-height: 200px;
+            max-width: 200px;
+        }
+        
+        .div_correct_title {
+            margin: 10px;
+        }
+        
+        #div_correct {
+            display: none;
+        }
+		.page_loader {
+		    text-align: center;
+		    color: gray;
+		    border-top: 1px solid #ccc;
+		    padding-top: 5px;
+		}
+    </style>
+</head>
+<body>
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+        <a id="btn_action" href="#popover_action" class="mui-btn mui-btn-link mui-pull-right" style="display: none;">操作</a>
+        <a id="btn_del" class="mui-btn mui-btn-link mui-pull-right" style="display: none;">删除</a>
+        <a id="btn_edit" class="mui-btn mui-btn-link mui-pull-right" style="display: none;">编辑</a>
+        <a id="btn_upload" class="mui-btn mui-btn-link mui-pull-right" style="display: none;">上传</a>
+        <a id="btn_cancel_upload" class="mui-btn mui-btn-link mui-pull-right" style="display: none;">取消上传</a>
+        <h1 class="mui-title">取证详情</h1>
+    </header>
+    <div class="mui-content">
+        <ul id="list-option" class="mui-table-view">
+           <!-- <li class="mui-table-view-cell">
+                <i class="iconfont icon-list4f"></i> 状态
+                <span id="idState" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li> -->
+			
+			<!-- 经度 -->
+			<li class="mui-table-view-cell">
+			    <i class="iconfont icon-weizhibiaoji"></i> 经度
+			    <span id="lon" class="mui-pull-right "></span>
+			</li>
+			<!-- 纬度 -->
+			<li class="mui-table-view-cell">
+			    <i class="iconfont icon-weizhibiaoji"></i> 纬度
+			    <span id="lat" class="mui-pull-right "></span>
+			</li>
+			<!-- 发现时间 -->
+			<li class="mui-table-view-cell">
+			    <i class="iconfont icon-time"></i> 发现时间
+			    <span id="txtFoundtime"class="mui-pull-right "></span>
+			</li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-list4f"></i> 描述(备注)
+                <span id="describe" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-heliu"></i> 所属河道
+                <span id="txtRiver" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+      
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-kaishixuncha"></i> 作业类型
+                <span id="workType" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+           <li class="mui-table-view-cell">
+               <i class="iconfont icon-leibieguanli"></i> 问题类别
+               <span id="riverProblemType" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+           </li>
+   
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-hedaoshuiwenzhan"></i> 岸别
+                <span id="bank" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+          <li class="mui-table-view-cell">
+              <i class="iconfont bianhaonumbered5"></i> 位置描述
+              <span id="locationDescribe" class="mui-pull-right "></span>
+          </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-image"></i> 照片
+                <br>
+                <div id="list_imgs">
+				<!-- 	<img   src="http://192.168.2.145:8888/group1/M00/00/01/wKgCo19gc_2AGyMnAAAjt1NM6WI245.png"/>
+					<img   src="http://192.168.2.145:8888/group1/M00/00/01/wKgCo19gc_2AGyMnAAAjt1NM6WI245.png"/> -->
+                </div>
+            </li>
+        </ul>
+		<div id="page_loading" class="page_loader">
+		    <img src="./images/loading.gif"> 加载中...
+		</div>
+		<div id="page_ended" class="page_loader">
+		    列表已到最后
+		</div>
+  </div>
+   
+   
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/mui.min.js"></script>
+<script src="js/mui.zoom.js"></script>
+<script src="js/mui.previewimage.js"></script>
+<script src="js/app.js"></script>
+<script type="text/javascript" charset="utf-8">
+var locationDescribe=document.getElementById('locationDescribe')
+var lon=document.getElementById('lon')
+var lat=document.getElementById('lat')
+var txtFoundtime=document.getElementById('txtFoundtime')
+var txtRiver=document.getElementById('txtRiver')
+var describe=document.getElementById('describe')
+var workType=document.getElementById('workType')
+var riverProblemType=document.getElementById('riverProblemType')
+var bank=document.getElementById('bank')
+var list_imgs=document.getElementById('list_imgs')
+
+
+  mui('#offCanvasSideScroll').scroll();
+  mui('#offCanvasContentScroll').scroll();
+  $(document).ready(function() {
+  	mui.init();
+  	mui.plusReady(function() {
+  		detail()
+		
+  	})
+  });
+  function   getDictDataObj(data, type) {
+        var  arr = []
+        data && data.forEach(function(item){
+            if (item.category == type) {
+                arr.push({
+                    text: item.typeName,
+                    value: item.typeCode
+                }
+                )
+            }
+        })
+        return arr;
+    }
+	function every_dict(data,index){
+		var ab=null;
+		data&&data.forEach(function(item){
+			if(item.value==index){
+				ab= item.text
+			}
+		})
+		return ab
+		
+	}
+	function addElementImg(obj) {
+	　　　　//添加 img
+	　　　　var img = document.createElement("img");
+	　　　　//设置 img 图片地址
+	　　　　img.src = "http://221.181.88.134:8081/mhswapi/"+obj;
+	// 　img.src = "http://192.168.2.145:8888/group1/M00/00/01/wKgCo19gc_2AGyMnAAAjt1NM6WI245.png";
+	     
+	　　　　list_imgs.appendChild(img);
+	　　}
+	function addImg(strSrc) {
+	var new_img=JSON.parse(strSrc)
+	for(var i=0;i<new_img.length;i++){
+		addElementImg(new_img[i].mediaUrl)
+	}
+	}
+	
+  function detail(){ 
+	  $('#page_loading').show();
+	  $('#page_ended').hide();
+	  $('#list-option').hide()
+	  var param={
+	  	// reportSerial:   "cceafedc-9d41-4631-9011-fe960f4daa78"
+		 reportSerial:app.getUrlParam('reportSerial')
+	  }
+	  var  dic_selectDic= JSON.parse(app.getSetting("dic_selectDic"));
+	  var  work_type_new=getDictDataObj(dic_selectDic,'work_type') //作业类型
+	  var  problem_type_new=getDictDataObj(dic_selectDic,'river_problem_type') //问题类型
+	  var  bank_type_new=getDictDataObj(dic_selectDic,'bank') //岸别
+	  // var strImg='http://192.168.2.145:8888/group1/M00/00/01/wKgCo19gc_2AGyMnAAAjt1NM6WI245.png'
+	   console.log('字典'+JSON.stringify(every_dict(work_type_new,'310502')))
+	  // console.log('参数'+JSON.stringify(getDictDataObj(dic_selectDic,'work_type')))
+	  app.ajax2(app.url('report/river/selectReportDetail'), param,function(ret) {
+		  console.log('详情'+JSON.stringify(ret.data)+'参数'+JSON.stringify(param))
+		if(ret.code==200){
+			$('#page_loading').hide();
+			$('#list-option').show()
+				
+			var data=ret.data;
+			// $('#page_ended').show();
+			locationDescribe.innerHTML=data.locationDescribe
+			lon.innerHTML=data.lon
+			lat.innerHTML=data.lat
+			txtFoundtime.innerHTML=data.foundTime
+			txtRiver.innerHTML=data.riverName
+			describe.innerHTML=data.describe
+			workType.innerHTML=every_dict(work_type_new,data.workType)
+			riverProblemType.innerHTML=every_dict(problem_type_new, data.riverProblemType)          
+			bank.innerHTML=every_dict(bank_type_new, data.bank)    
+			// list_imgs.innerHTML=addImg(strImg)  
+			  addImg(data.quzheng_uploadFiles)
+			// console.log('图片地址'+addImg(data.quzheng_uploadFiles))
+		}
+	  })
+  }
+
+</script>
+</html>

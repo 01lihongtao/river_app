@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit;
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.img-selected {
+				width: 80px;
+				height: 80px;
+				margin-top: 10px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a class="mui-btn mui-btn-link mui-pull-right btn_cancel">取消</a>
+			<a class="mui-btn mui-btn-link mui-pull-right btn_submit">上传</a>
+			<a class="mui-btn mui-btn-link mui-pull-right save_btn">保存</a>
+			<h1 class="mui-title">整改报告单</h1>
+		</header>
+		<div class="mui-content">
+			<ul id="list-option" class="mui-table-view">
+
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-date1"></i> 报告时间
+					<span id="selectDate" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				</li>
+
+				<li class="mui-table-view-cell">
+					<p>整改情况说明：</p><br>
+					<textarea id="textarea_info" rows="3" placeholder="请输入描述信息"></textarea>
+				</li>
+				<li class="mui-table-view-cell">
+					<p>备注：</p><br>
+					<textarea id="textarea" rows="2" placeholder=""></textarea>
+				</li>
+				<li class="mui-table-view-cell">
+					<p>整改完成照片(长按删除)
+						<button onclick="add_img()" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-right">
+                    <i class="iconfont icon-add"></i>
+                </button>
+					</p>
+					<br>
+					<div id="img_list">
+						<!--
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                -->
+					</div>
+				</li>
+				<li class="mui-table-view-cell" style="display: none;">
+					<i class="iconfont icon-zijin"></i> 所需资金
+					<span class="mui-pull-right">(元)</span>
+					<input type="number" class="mui-pull-right" style="margin-right:5px;width: 30vw;height: 24px;" />
+				</li>
+			</ul>
+
+		</div>
+
+		<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a onclick="getImage()">拍照</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a onclick="galleryImgsMaximum()">选取现有的</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#picture"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+
+		<div id="img_action_list" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a onclick="del_img()">删除</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#img_action_list"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var user_data = app.getUserInfo();
+		var user_id = user_data.id
+		var uuid = app.getUrlParam('uuid');
+		var is_inner = app.getUrlParam('is_inner');
+		var inspectionType = app.getUrlParam('inspectionType');
+		console.log(inspectionType)
+		var save_time = ""
+		var problem_report_draft = [];
+		var save_draft_flag = false;
+		var rectificationSerial = decodeURIComponent(app.getUrlParam('rectificationSerial'));
+		console.log(app.getSetting("problem_report_draft" + user_data.id) )
+		try {
+			problem_report_draft = JSON.parse(app.getSetting("problem_report_draft"+rectificationSerial + user_data.id) || "[]") 
+
+	 	 } catch(err) {
+	 	 	
+	 	 }
+		console.log("uuid:" + uuid)
+		console.log("rectificationSerial" + rectificationSerial)
+
+		var level1_name = app.getUrlParam('level1_name');
+		if(uuid || problem_report_draft[0]) {
+			var problem_report_data 
+			if(uuid){
+				$(".btn_submit").show()
+				$(".save_btn").hide()
+				problem_report_data = JSON.parse(app.getSetting("problem_report"+user_id) || "[]");
+			}else{
+				$(".btn_submit").hide()
+				$(".save_btn").show()
+				problem_report_data = problem_report_draft
+	 			uuid = problem_report_draft[0]["list_info"]["uuid"]
+			}
+			console.log("uuid:" + uuid)
+			  
+			console.log(app.getSetting("problem_report"+user_id))
+			for(var i = 0; i < problem_report_data.length; i++) {
+				if(uuid == problem_report_data[i]["list_info"]["uuid"]) {
+					rectificationSerial = problem_report_data[i]["post_json"]["rectificationSerial"]
+					$(".mui-content").html(problem_report_data[i]["data"]["html"])
+					save_time = problem_report_data[i]["post_json"]["reportTime"]
+
+					$("#textarea_info").val(problem_report_data[i]["post_json"]["content"])
+
+					$("#textarea").val(problem_report_data[i]["post_json"]["remark"])
+
+					var selectDate = document.getElementById('selectDate');
+					is_inner = problem_report_data[i]["is_inner"]
+					selectDate.innerHTML = problem_report_data[i]["post_json"]["reportTime"]
+
+				}
+			}
+			
+		} else {
+			var select_facility = document.getElementById('select_facility');
+			var select_problem_point = document.getElementById('select_problem_point');
+			var select_problem_content = document.getElementById('select_problem_content');
+			var selectDate = document.getElementById('selectDate');
+			selectDate.innerHTML = new Date().format("yyyy-MM-dd hh:mm:ss")
+			$(".btn_submit").hide()
+			$(".save_btn").show()
+
+		}
+
+		
+		var cp_id = user_data.company_id
+
+		var addImage = document.getElementById('addImage');
+
+		mui.ready(function() {
+
+			mui.init({
+				gestureConfig: {
+					longtap: true
+				},
+				beforeback: function() {
+					app.setSetting("problem_report_draft"+rectificationSerial + user_data.id, "[]");
+					if(save_draft_flag) {
+
+					} else {
+						console.log("beforeback")
+ 
+						var arr = back_save_data( [])
+						console.log("arr:" + JSON.stringify(arr))
+						app.setSetting("problem_report_draft" +rectificationSerial+ user_data.id, JSON.stringify(arr));
+						console.log(app.getSetting("problem_report_draft"+rectificationSerial + user_data.id) )
+					}
+				}
+			});
+			$(".btn_cancel").click(function() {
+
+				mui.confirm('确定还原初始界面吗？', '整改报告单', ['否', '是'], function(e) {
+					console.log(e.index)
+					if(e.index == 1) {
+						app.setSetting("problem_report_draft" +rectificationSerial + user_data.id, "[]");
+						window.location.reload()
+
+						//					mui.toast("还原成功")
+					} else {
+
+					}
+				})
+
+			}) 
+			
+			var selectDate = document.getElementById('selectDate');
+			selectDate.addEventListener('tap', function() {
+				app.pickDate(this, true);
+			}, false);
+
+			addEventLongTap();
+
+			$(".btn_submit").click(function() {
+				saveData();
+			})
+		})
+
+		$(".save_btn").click(function() {
+
+			if($("#selectDate").html() == "请选择...") {
+				mui.toast('报告时间不为空');
+				return false;
+			}
+			if(!$("#textarea_info").val()) {
+				mui.toast('情况说明不为空');
+				return false;
+			}
+			if($(".img-selected").length == 0) {
+				mui.toast('照片不为空');
+				return false;
+			}
+
+			var arr;
+
+			//			app.setSetting("problem_report"+user_id, JSON.stringify([]));
+
+			if(app.getSetting("problem_report"+user_id) == "") {
+				arr = [];
+			} else {
+				arr = JSON.parse(app.getSetting("problem_report"+user_id) || "[]")
+			}
+
+			back_save_data(arr)
+	
+			console.log(JSON.stringify(arr))
+			save_draft_flag = true
+			app.setSetting("problem_report"+user_id, JSON.stringify(arr));
+			var parentViewer = mui.currentWebview.opener();
+			mui.fire(parentViewer, 'wga_refresh_refresh');
+			mui.fire(parentViewer, 'wga_refresh_refresh_refresh');
+			mui.fire(parentViewer, 'problem_refresh');
+			mui.fire(parentViewer, 'problem_back');
+			mui.toast('水利整改已保存，请至"信息流转/水利整改信息流转"中查看，请手动提交服务器');
+			app.ajaxBack();
+		}) 
+		function back_save_data(arr){
+			var var_uuid = uuid ? uuid : new Date().format("yyyyMMddhhmmssS")
+			for(var i = 0; i < arr.length; i++) {
+				if(arr[i]["list_info"]["uuid"] == var_uuid) {
+					arr.remove(arr[i])
+				}
+			}
+			var arr_imgs = new Array();
+			$(".img-selected").each(function(key, value) {
+				arr_imgs.push($(value).attr('src'))
+			})
+			var arr_data = {
+				list_info: {
+					//					id: level1_id,
+					name: level1_name,
+					uuid: var_uuid,
+					time: new Date().format("yyyy-MM-dd hh:mm:ss"),
+					user_name: user_data.user_name
+				},
+				post_json: {
+					rectificationSerial: rectificationSerial,
+					content: $("#textarea_info").val(),
+					remark: $("#textarea").val(),
+					reportTime: $("#selectDate").html()
+				},
+				data: {
+					html: $(".mui-content").html(),
+
+				},
+				arr_imgs: arr_imgs,
+				type: "problem_feedback",
+				inspectionType:inspectionType
+			};
+			if(is_inner == "no") {
+				arr_data["is_inner"] = "no"
+			} else {
+				arr_data["is_inner"] = "yes"
+			}
+
+			arr.push(arr_data)
+			return arr
+		}
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+
+		function addEventLongTap() {
+
+			var arrItems = document.querySelectorAll('.img-selected');
+
+			[].forEach.call(arrItems, function(item) {
+				item.addEventListener('longtap', function() {
+					currentImgItem = this;
+					mui('#img_action_list').popover('toggle');
+				})
+			});
+		}
+
+		function add_img() {
+			if(document.querySelectorAll('.img-selected').length >= app.max_count_photos) {
+				mui.toast('取证照片已至最大数量');
+				return;
+			}
+
+			mui('#picture').popover('toggle');
+		}
+
+		function del_img() {
+			if(currentImgItem) {
+				currentImgItem.parentNode.removeChild(currentImgItem);
+				currentImgItem = null;
+			}
+
+			mui('#img_action_list').popover('toggle');
+		}
+
+		function getImage() {
+			var cmr = plus.camera.getCamera();
+			cmr.captureImage(function(path) {
+				//				console.log('get image ' + path);
+				//				addImg(path);
+
+				plus.gallery.save(path, function(event) {
+					plus.io.resolveLocalFileSystemURL(path, function(entry) {
+						addImg("file://" + entry.fullPath);
+					}, function(e) {
+						console.log('路径解析失败: ' + JSON.stringify(e));
+					});
+				}, function(e) {
+					console.log('保存失败: ' + JSON.stringify(e));
+				});
+			}, function(e) {
+				//			console.log(JSON.stringify(e));
+			}, {
+				filename: '_doc/gallery/',
+				index: 1
+			});
+
+			mui('#picture').popover('toggle');
+		}
+
+		function addImg(strSrc) {
+			console.log(strSrc);
+
+			plus.io.resolveLocalFileSystemURL(strSrc, function(entry) {
+				//			console.log(entry);
+				entry.getMetadata(function(metadata) {
+					if(metadata.size > 1024 * 1024) // 1M
+					{
+						// comparess image
+						var nPtPos = strSrc.lastIndexOf('.');
+						var strDst = '';
+						if(nPtPos > 0) {
+							strDst = strSrc.substr(0, nPtPos) + '_s50' + strSrc.substr(nPtPos);
+						} else {
+							strDst = strSrc + '_s50';
+						}
+						//					console.log('dist ' + strDst);
+
+						// compress image
+						var wUI = plus.nativeUI.showWaiting('压缩中...');
+						plus.zip.compressImage({
+								src: strSrc,
+								dst: strDst,
+								overwrite: true,
+								width: '100%',
+								height: '100%',
+								quality: 80
+							},
+							function(e) {
+								wUI.close();
+
+								// add image
+								//							console.log('compress size: ' + e.size);
+
+								//							console.log(e.target);
+								var newImg = document.createElement('img');
+								newImg.src = e.target;
+								newImg.classList.add("img-selected");
+
+								newImg.addEventListener('longtap', function() {
+									currentImgItem = this;
+									mui('#img_action_list').popover('toggle');
+								})
+
+								img_list.appendChild(newImg);
+							},
+							function(e) {
+								wUI.close();
+								mui.toast('压缩文件失败：' + e.message);
+							})
+					} else {
+						var newImg = document.createElement('img');
+						newImg.src = strSrc;
+						newImg.classList.add("img-selected");
+
+						newImg.addEventListener('longtap', function() {
+							currentImgItem = this;
+							mui('#img_action_list').popover('toggle');
+						})
+
+						img_list.appendChild(newImg);
+					}
+				}, function(err) {
+					mui.toast('打开文件错误');
+				})
+			});
+		}
+
+		function galleryImgsMaximum() {
+			var maxValue = app.max_count_photos - document.querySelectorAll('.img-selected').length;
+			if(maxValue < 0)
+				maxValue = 0;
+
+			if(maxValue == 0) {
+				alert('取证图片已选至最大数量');
+				mui('#picture').popover('toggle');
+				return;
+			}
+
+			// 从相册中选择图片
+			plus.gallery.pick(function(e) {
+				for(var i in e.files) {
+					addImg(e.files[i]);
+				}
+			}, function(e) {
+				//	outSet('取消选择图片');
+			}, {
+				filter: 'image',
+				multiple: true,
+				maximum: maxValue,
+				system: false,
+				onmaxed: function() {
+					plus.nativeUI.alert('最多只能选择' + maxValue + '张图片');
+				}
+			}); // 最多选择3张图片
+
+			mui('#picture').popover('toggle');
+		}
+
+		var upload;
+
+		function saveData() {
+
+			if($("#selectDate").html() == "请选择...") {
+				mui.toast('报告时间不为空');
+				return false;
+			}
+			if(!$("#textarea_info").val()) {
+				mui.toast('检查情况说明不为空');
+				return false;
+			}
+			if($(".img-selected").length == 0) {
+				mui.toast('检查问题照片不为空');
+				return false;
+			}
+
+			var arrImgs = new Array();
+			$(".img-selected").each(function(key, value) {
+				arrImgs.push($(value).attr('src'))
+			})
+
+			upload = plus.nativeUI.showWaiting('上传中...');
+			if(fg) {
+				getImgToBase64(arrImgs)
+
+				fg = false;
+			}
+
+			// app.setSetting('event_list',JSON.stringify(_event_list));
+			//
+			// var parentViewer = mui.currentWebview.opener();
+			// mui.fire(parentViewer,'qpsw_refresh');
+			//
+			// app.ajaxBack();
+			//
+			// mui.toast('取证已保存，请至"信息流转/待上传"中查看，请手动提交服务器');
+		}
+
+		var count = 0;
+		var file_data_arr = [];
+		var fg = true;
+
+		function uploadImg() {
+			console.log("uploadImg")
+			var xhr = new XMLHttpRequest();
+			xhr.timeout = 120000;
+			xhr.ontimeout = function(e) {
+				mui.toast('请求超时，请再网络状态良好的地方重试');
+				upload.close()
+			};
+			var formData = new FormData();
+
+			for(var i = 0; i < file_data_arr.length; i++) {
+
+				formData.append('files', file_data_arr[i]);
+
+			}
+			console.log(rectificationSerial)
+			formData.append("rectificationSerial", rectificationSerial);
+			formData.append("content", $("#textarea_info").val());
+			formData.append("remark", $("#textarea").val());
+			formData.append("reportTime", $("#selectDate").html());
+
+			xhr.onreadystatechange = function(e) {
+
+				if(xhr.readyState == 4) {
+					console.log(xhr.responseText)
+					file_data_arr = [];
+					count = 0;
+					fg = true;
+					if(xhr.status == 200) {
+						var ret = JSON.parse(xhr.responseText);
+						if(ret.code == 200) {
+							mui.toast('上传成功');
+
+							console.log(ret.data)
+
+							var arr = JSON.parse(app.getSetting("problem_report"+user_id) || "[]")
+							var var_uuid = uuid ? uuid : new Date().format("yyyyMMddhhmmssS")
+							for(var i = 0; i < arr.length; i++) {
+								if(arr[i]["list_info"]["uuid"] == var_uuid) {
+									arr.remove(arr[i])
+								}
+
+							}
+							app.setSetting("problem_report"+user_id, JSON.stringify(arr));
+							var parentViewer = mui.currentWebview.opener();
+
+							mui.fire(parentViewer, 'wga_refresh');
+
+							mui.fire(parentViewer, 'wga_refresh_refresh');
+							mui.fire(parentViewer, 'wga_refresh_refresh_refresh');
+
+							app.ajaxBack();
+						} else {
+							mui.toast(get_error_msg(ret, '保存失败，请重新保存'));
+						}
+
+					} else {
+
+						mui.toast('保存失败，请重新保存');
+
+					}
+					upload.close()
+					return;
+				}
+			}
+			if(is_inner == "yes") {
+				console.log('inspect/commit/rectification/inner')
+				xhr.open('POST', app.url1('inspect/commit/rectification/inner'), true);
+			} else {
+				console.log("inspect/commit/rectification")
+				xhr.open('POST', app.url1('inspect/commit/rectification'), true);
+			}
+			xhr.send(formData);
+		}
+
+		//将图片转换为Base64
+		function getImgToBase64(arr) {
+//			console.log("getImgToBase64")
+			var canvas = document.createElement('canvas'),
+				ctx = canvas.getContext('2d'),
+				img = new Image;
+			img.crossOrigin = 'Anonymous';
+
+			img.onload = function() {
+				var originWidth = img.width;
+		        var originHeight = img.height;
+		        // 最大尺寸限制
+		        var maxWidth = app.maxWidth(), maxHeight = app.maxWidth();
+		        // 目标尺寸
+		        var targetWidth = originWidth, targetHeight = originHeight;
+		        // 图片尺寸超过1000x1000的限制
+		        if (originWidth > maxWidth || originHeight > maxHeight) {
+		            if (originWidth / originHeight > maxWidth / maxHeight) {
+		                targetWidth = maxWidth;
+		                targetHeight = Math.round(maxWidth * (originHeight / originWidth));
+		            } else {
+		                targetHeight = maxHeight;
+		                targetWidth = Math.round(maxHeight * (originWidth / originHeight));
+		            }
+		        }
+				
+				// canvas对图片进行缩放
+		        canvas.width = targetWidth;
+		        canvas.height = targetHeight;
+		    
+		        // 清除画布
+		        ctx.clearRect(0, 0, targetWidth, targetHeight);
+		        // 图片压缩
+		        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+			
+				ctx.font = targetWidth / 20 + "px microsoft yahei";
+				ctx.fillStyle = "rgba(255,128,0,1)";
+				var txt = save_time ? save_time : new Date().format("yyyy-MM-dd hh:mm:ss")
+				var pos_x = targetWidth - ctx.measureText(txt).width
+				var pos_y = targetHeight - targetWidth / 20
+			 
+				ctx.fillText(txt, pos_x, pos_y);
+				console.log(targetWidth,targetHeight)
+				var dataURL = canvas.toDataURL('image/jpeg');
+
+				file_data_arr.push(dataURLtoFile(dataURL, 'img' + count + '.jpg'))
+				//						console.log("====")
+				count++;
+				getImgToBase64(arr)
+
+				canvas = null;
+			};
+			img.src = arr[count];
+			if(file_data_arr.length == arr.length) {
+				uploadImg()
+			}
+		}
+		//将base64转换为文件
+		function dataURLtoFile(dataurl, filename) {
+			var arr = dataurl.split(','),
+				mime = arr[0].match(/:(.*?);/)[1],
+
+				bstr = atob(arr[1]),
+				n = bstr.length,
+				u8arr = new Uint8Array(n);
+			//					console.log(mime)
+			while(n--) {
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+			return new File([u8arr], filename, {
+				type: mime
+			});
+		}
+	</script>
+
+</html>

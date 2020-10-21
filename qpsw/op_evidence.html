@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/iconfont.css" rel="stylesheet" />
+		<link href="./css/mui.picker.min.css" rel="stylesheet" />
+		<link href="./css/mui.poppicker.css" rel="stylesheet" />
+
+		<link href="css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button{ 
+            position: relative;
+            right: inherit;
+            -webkit-transform: inherit;
+            transform: inherit;
+        }
+        
+        .mui-table-view span.mui-pull-right {
+            color: #999;
+        }
+        
+        .img-selected {
+            width:80px;
+            height:80px;
+            margin-top: 10px;
+        }
+    </style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a class="mui-btn mui-btn-link mui-pull-right btn_submit">保存</a>
+			<h1 class="mui-title">取证</h1>
+		</header>
+		<div class="mui-content">
+			<ul id="list-option" class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-time"></i> 发现时间
+					<!-- <span style="color:red">*</span> -->
+					<span id='selectDate' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-dingwei"></i> 经度
+					<!-- <span style="color:red">*</span> -->
+					<span id="lon" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-dingwei"></i> 纬度
+					<!-- <span style="color:red">*</span> -->
+					<span id="lat" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-dituleiwanggequ"></i> 作业类型
+					<!-- <span style="color:red">*</span> -->
+					<span id="workType" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-leibieguanli"></i> 问题级别
+					<!-- <span style="color:red">*</span> -->
+					<span id="selectType" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				</li>
+
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-leibieguanli"></i> 问题子类
+					<!-- <span style="color:red">*</span> -->
+					<span id="selectType_son" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-dituleiwanggequ"></i> 所在街道
+					<!-- <span style="color:red">*</span> -->
+					<span id="selectStreet" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-heliu"></i> 所在河道
+					<!-- <span style="color:red">*</span> -->
+					<span id="selectRiver" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				</li>
+
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-hedaoshuiwenzhan"></i> 岸别
+					<!-- <span style="color:red">*</span> -->
+					<span id="selectBankType" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				</li>
+
+
+				<li class="mui-table-view-cell">
+					<p>位置描述
+						<!-- <button id="selectAddress" style="margin-top: -5px;    margin-bottom: 5px;" 
+					class="mui-btn mui-btn-primary mui-pull-right mui-ellipsis">请选择...</button> -->
+					</p>
+					<textarea id="textPosDesc" rows="3" placeholder="请输入位置的精确描述信息"></textarea>
+				</li>
+				<li class="mui-table-view-cell">
+					<p>图片 (最多<span id="max_photos">3</span>张) (长按显示操作菜单)
+						<button onclick="add_img()" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-right">
+							<i class="iconfont icon-add"></i>
+						</button>
+					</p>
+					<div id="img_list">
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<p>描述</p>
+					<textarea id="textDesc" rows="3" placeholder="请输入描述信息"></textarea>
+				</li>
+
+			</ul>
+			<div class="mui-content-padded mui-hidden">
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-block btn_submit">提交</button>
+			</div>
+		</div>
+
+		<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a onclick="getImage()">拍照</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a onclick="galleryImgsMaximum()">选取现有的</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#picture"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+
+		<div id="img_action_list" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a onclick="del_img()">删除</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#img_action_list"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=3ed8362c31892daae272a71aa5e36d1e&plugin=AMap.Geocoder"></script>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/mui.min.js"></script>
+	<script src="./js/mui.picker.min.js"></script>
+	<script src="./js/mui.poppicker.js"></script>
+	<script src="js/app.min.js"></script>
+	<script src="js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var workType = ''
+		var bank = ''
+		var Street_text = ''
+		var selectType_detail = ''
+		var workType_detail = ''
+		var bankType_detail = ''
+		var riverCode = ''
+		var selectStreet_text = ''
+		var selectType_id = ''
+		var selectType_son_sub=''
+		var item_id = app.getUrlParam('item_id');
+
+		var workType = document.getElementById('workType'); //作业类型
+		var selectRiver = document.getElementById('selectRiver'); //河道
+		var selectStreet = document.getElementById('selectStreet'); //所在街道
+		var selectBankType = document.getElementById('selectBankType'); //岸别
+
+		var selectType = document.getElementById('selectType'); //问题类别
+		var selectType_son = document.getElementById('selectType_son') //问题子类
+		var selectDate = document.getElementById('selectDate'); //发现时间
+
+		var selectAddress = document.getElementById('selectAddress');
+
+		var img_list = document.getElementById('img_list');
+		var textPosDesc = document.getElementById('textPosDesc'); //位置描述
+		var lon = document.getElementById('lon') //经度
+		var lat = document.getElementById('lat') //纬度 
+
+		var textDesc = document.getElementById('textDesc');
+
+		var currentImgItem = null;
+		var bIsSaving = false;
+
+		// var cunPicker = new mui.PopPicker();
+		document.getElementById('max_photos').innerText = app.max_count_photos;
+
+		mui.init({
+			gestureConfig: {
+				longtap: true
+			}
+		});
+
+		function getDictDataObj(data, type) {
+		  var  arr = []
+		  // forEach(function(val,index,arr)
+			data && data.forEach(function(item){
+
+				if (item.category == type) {
+					// console.log('item'+JSON.stringify(item))
+					arr.push({
+						text: item.typeName,
+						value: item.typeCode,
+						id: item.id,
+					})
+				}
+			})
+			return arr;
+		}
+
+
+		function getDictDataObj2(data, type) {
+		  var arr = []
+			data && data.forEach(function(item){
+
+				if (item.category == type) {
+					// console.log('item'+JSON.stringify(item))
+					arr.push(item
+						//             text: item.typeName,
+						//             value: item.typeCode,
+						// id:item.id,
+
+					)
+				}
+			})
+			return arr;
+		}
+		mui.ready(function() {
+			var move_location = JSON.parse(app.getSetting("move_location") || "[]")
+
+			console.log('获取到的经纬度'+JSON.stringify(move_location))
+			// if(move_location.length>0){
+			// 	lon.innerHTML = move_location.lon.toFixed(5)
+			// 	lat.innerHTML = move_location.lat.toFixed(5)
+			// 	textPosDesc.innerHTML=move_location.address
+			// }
+
+
+
+			// date
+			selectDate.addEventListener('tap', function() {
+				app.pickDate(this, true);
+			}, false);
+
+			// 作业类型
+			var areaPicker = new mui.PopPicker()
+			var arrArea = [{
+					text: '巡查作业',
+					value: '310501',
+				},
+				{
+					text: '养护作业',
+					value: '310512',
+				},
+				{
+					text: '监理作业',
+					value: '310513',
+				}
+			]
+			if (arrArea.length > 0) {
+				areaPicker.setData(arrArea);
+				workType.addEventListener('tap', function() {
+					areaPicker.show(function(items) {
+						workType.innerText = items[0].text;
+						// $('#workType').attr('item_id', items[0].value);
+						// 作业类型
+						workType_detail = items[0].value
+					});
+				})
+			}
+
+			// 岸别 selectBankType
+			var bankTypePick = new mui.PopPicker()
+			arrBank = [{
+					text: '东',
+					value: '121203',
+				},
+				{
+					text: '南',
+					value: '121204',
+				},
+				{
+					text: '西',
+					value: '121205',
+				},
+				{
+					text: '北',
+					value: '121206',
+				},
+			]
+			if (arrBank.length > 0) {
+				bankTypePick.setData(arrBank);
+				selectBankType.addEventListener('tap', function() {
+					bankTypePick.show(function(items) {
+						selectBankType.innerText = items[0].text;
+						bankType_detail = items[0].value
+						// $('#selectBankType').attr('item_id', items[0].value);
+					});
+				})
+			}
+			var typePicker = new mui.PopPicker(
+			{layer: 2}
+			);
+			var arrTypeData = [{
+					text: '轻微问题',
+					value: '123201',
+					id: 371,
+					children: [
+						{text:"水域保洁",value:123304,},
+						{text:"设施养护",value:123302,},
+						{text:"陆域保洁",value:123303,},
+						{text:"水生植物泛滥",value:123305,},
+						{text:"泵闸设施养护",value:123306,},
+						{text:"蓝藻",value:123307,},
+						{text:"绿萍",value:123308,},
+						{text:"水葫芦",value:123309,},
+						{text:"水草",value:123310,},
+						{text:"绿化养护",value:123301,}]
+					
+				
+				},
+				{
+					text: '一般问题',
+					value: '123202',
+					id: 372,
+					children: [
+					{text:"乱搭乱建",value:123401,},
+					{text:"乱堆杂物",value:123402,},
+					{text:"乱设网簖",value:123403,},
+					{text:"乱弃垃圾",value:123404,},
+					{text:"乱垦乱种",value:123405,},
+					{text:"河道干涸",value:123406,},
+					{tex:"阻水物",value:123407,},
+					]
+
+				},
+				{
+					text: '重大问题',
+					value: '123203',
+					id: 373,
+					children:[{text:"违章停靠",value:123501,"id":471},
+					{text:"违规养殖",value:123502,"id":472},
+					{text:"违法倾倒垃圾",value:123503,"id":473},
+					{text:"违法侵占水域",value:123504,"id":474},
+					{text:"违法排污",value:123505,"id":475},
+					{text:"违法捕捞",value:123506,"id":476},
+					{text:"损坏水工设施",value:123507,"id":477},
+					{text:"坝基",value:123508,"id":478},
+					{text:"突发水质恶化",value:123509,"id":479},
+					{text:"违章搭建",value:123510,"id":480},
+					{text:"违法施工",value:123511,"id":481},
+					{text:"违规堆载",value:123512,"id":482}]
+
+
+				}
+			]
+			// var dic_selectDic = JSON.parse(app.getSetting("dic_selectDic") || "[]");
+			// var street_new2 = getDictDataObj2(dic_selectDic, 'river_problem_sub_type') //城镇
+
+			if (arrTypeData.length)
+				typePicker.setData(arrTypeData);
+			selectType.addEventListener('tap', function() {
+				
+				typePicker.show(function(items) {
+					selectType.innerText = items[0].text
+					selectType_detail = items[0].value
+					selectType_son.innerText = items[1].text
+					selectType_son_sub = items[1].value
+				});
+
+			})
+			// long tap of image
+			addEventLongTap();
+			$(".btn_submit").click(function() {
+				// if (bIsSaving)
+				// 	return;
+				saveData();
+				return false;
+			})
+		})
+		mui.plusReady(function() {
+
+			window.addEventListener('lonLatIndexListener', function(e) {
+				console.log("--->lonLatIndexListener");
+				console.log(e.detail);
+				console.log(JSON.stringify(e.detail))
+
+				initCtrl();
+			});
+
+			plus.screen.lockOrientation("portrait-primary");
+			initCtrl();
+			// loadData();
+			init_map_info();
+			selectStreet_fun()
+		});
+
+		function addEventLongTap() {
+			var arrItems = document.querySelectorAll('.img-selected');
+
+			[].forEach.call(arrItems, function(item) {
+				item.addEventListener('longtap', function() {
+					currentImgItem = this;
+					mui('#img_action_list').popover('toggle');
+				})
+			});
+		}
+
+		function add_img() {
+			if (document.querySelectorAll('.img-selected').length >= app.max_count_photos) {
+				mui.toast('取证照片已至最大数量');
+				return;
+			}
+			mui('#picture').popover('toggle');
+		}
+
+		function del_img() {
+			if (currentImgItem) {
+				currentImgItem.parentNode.removeChild(currentImgItem);
+				currentImgItem = null;
+			}
+			mui('#img_action_list').popover('toggle');
+		}
+
+		function getImage() {
+			var cmr = plus.camera.getCamera();
+			cmr.captureImage(function(path) {
+				addImg(path);
+				console.log('路径' + path)
+				plus.gallery.save(path, function(event) {}, function(e) {});
+			}, function(e) {}, {
+				filename: '_doc/gallery/',
+				index: 1
+			});
+			mui('#picture').popover('toggle');
+		}
+
+		function addImg(strSrc) {
+			plus.io.resolveLocalFileSystemURL(strSrc, function(entry) {
+				strSrc = entry.fullPath;
+				entry.getMetadata(function(metadata) {
+					if (metadata.size > 1024 * 1024) // 1M
+					{
+						// comparess image
+						var nPtPos = strSrc.lastIndexOf('.');
+						var strDst = '';
+						if (nPtPos > 0) {
+							strDst = strSrc.substr(0, nPtPos) + '_s50' + strSrc.substr(nPtPos);
+						} else {
+							strDst = strSrc + '_s50';
+						}
+						// console.log('dist ' + strDst);
+
+						// compress image
+						var wUI = plus.nativeUI.showWaiting('压缩中...');
+						plus.zip.compressImage({
+								src: strSrc,
+								dst: strDst,
+								overwrite: true,
+								width: '100%',
+								height: '100%',
+								quality: 80
+							},
+							function(e) {
+								wUI.close();
+								// add image
+								var newImg = document.createElement('img');
+								newImg.src = e.target;
+								newImg.classList.add("img-selected");
+
+								newImg.addEventListener('longtap', function() {
+									currentImgItem = this;
+									mui('#img_action_list').popover('toggle');
+								})
+								img_list.appendChild(newImg);
+							},
+							function(e) {
+								wUI.close();
+								mui.toast('压缩文件失败：' + e.message);
+							})
+					} else {
+						var newImg = document.createElement('img');
+						newImg.src = strSrc;
+						newImg.classList.add("img-selected");
+
+						newImg.addEventListener('longtap', function() {
+							currentImgItem = this;
+							mui('#img_action_list').popover('toggle');
+						})
+						img_list.appendChild(newImg);
+					}
+				}, function(err) {
+					mui.toast('打开文件错误');
+				})
+			});
+		}
+
+		function galleryImgsMaximum() {
+			var maxValue = app.max_count_photos - document.querySelectorAll('.img-selected').length;
+			if (maxValue < 0)
+				maxValue = 0;
+
+			if (maxValue == 0) {
+				alert('取证图片已选至最大数量');
+				mui('#picture').popover('toggle');
+				return;
+			}
+			// 从相册中选择图片
+			plus.gallery.pick(function(e) {
+				for (var i in e.files) {
+					addImg(e.files[i]);
+				}
+			}, function(e) {
+				//    outSet('取消选择图片');
+			}, {
+				filter: 'image',
+				multiple: true,
+				maximum: maxValue,
+				system: false,
+				onmaxed: function() {
+					plus.nativeUI.alert('最多只能选择' + maxValue + '张图片');
+				}
+			}); // 最多选择3张图片
+
+			mui('#picture').popover('toggle');
+		}
+
+		function initCtrl() {
+			selectDate.innerText = app.formatUnixtime2(false, true);
+			var arrGps = app.getSetting('current_gps').split(',');
+
+			var move_location = JSON.parse(app.getSetting("move_location") || "[]")
+			console.log('地址信息' + arrGps)
+			console.log('选取后的位置信息'+JSON.stringify(move_location))
+			if (move_location.length > 0) {
+				lon.innerHTML = move_location[0].lon.toFixed(5)
+				lat.innerHTML = move_location[0].lat.toFixed(5)
+				textPosDesc.innerHTML = move_location[0].address
+				init_cun(move_location[0].lon.toFixed(5), move_location[0].lat.toFixed(5))
+			} else {
+				if (arrGps.length > 1) {
+					console.log('地址信息arrGps' + arrGps)
+					app.getGeoAddress(arrGps[0], arrGps[1], textPosDesc);
+					lon.innerHTML = arrGps[0]
+					lat.innerHTML = arrGps[1]
+					init_cun(arrGps[0], arrGps[1])
+				}
+			}
+		}
+		// 这是点击选择经纬度的时候在地图上选择
+		// lon
+		lon.addEventListener('tap', function() {
+			console.log('经纬度')
+			app.open('./lon_lat_index.html')
+		})
+		// lat
+		lat.addEventListener('tap', function() {
+			console.log('经纬度')
+			app.open('./lon_lat_index.html')
+		})
+		var addressPicker = new mui.PopPicker();
+		// 获取当前地图信息
+		function init_map_info() {
+			AMap.service(["AMap.PlaceSearch"], function() {
+				var placeSearch = new AMap.PlaceSearch({ //构造地点查询类
+					pageSize: 10,
+					//type: '餐饮服务|公司企业',
+					pageIndex: 1,
+				});
+				var arrGps = app.getSetting('current_gps').split(',');
+				//console.log(arrGps.length);
+				var cpoint = [parseFloat(parseFloat(arrGps[0]).toFixed(6)), parseFloat(parseFloat(arrGps[1]).toFixed(6))]; //中心点坐标 
+				//      console.log(JSON.stringify(cpoint))
+				placeSearch.searchNearBy('', cpoint, 200, function(status, result) {
+					// console.log('结果'+JSON.stringify(result))
+					var arrAddress = [];
+					var var_arr = [];
+					if (result.poiList) {
+						for (var i = 0; i < result.poiList.pois.length; i++) {
+							var fg = true;
+							var address = result.poiList.pois[i]["address"];
+							for (var j = 0; j < var_arr.length; j++) {
+								if (var_arr[j] == address || address == "") {
+									fg = false;
+								}
+							}
+							if (fg) {
+								var_arr.push(address)
+								arrAddress.push({
+									"value": address,
+									"text": address,
+								})
+							}
+						}
+					}
+				});
+			});
+		}
+		//保存事件
+		function saveData() {
+			// move_location
+			// var move_location =JSON.parse(app.getSetting("move_location") || "[]")
+
+			// console.log('获取到的经纬度'+JSON.stringify(move_location))
+
+
+			var uploadData = new Object()
+			// bIsSaving = true;
+			var arrImgs = new Array();
+			$(".img-selected").each(function(key, value) {
+				arrImgs.push({
+					path: $(value).attr('src'),
+					result: 0,
+				})
+				console.log($(value).attr('src') + 'path')
+			})
+			console.log(JSON.stringify(arrImgs) + 'arrImgs')
+			// 时间
+			uploadData.foundTime = selectDate.innerText,
+				// 位置描述 
+				uploadData.locationDescribe = $('#textPosDesc').val()
+			uploadData.describe = $('#textDesc').val();;
+			// 经度
+			uploadData.lon = $('#lon').text()
+			// 纬度
+			uploadData.lat = $('#lat').text()
+			// 问题类型
+			   uploadData.workType = workType_detail,
+				uploadData.bank = bankType_detail,
+				uploadData.riverCode = riverCode,
+				uploadData.riverProblemType = selectType_detail,
+				uploadData.Street_text = selectStreet_text,
+				uploadData.riverProblemSubType=selectType_son_sub
+
+			uploadData.images = arrImgs
+			// 保存本地
+			console.log('uploadData' + JSON.stringify(uploadData))
+
+			var uploadDatas = JSON.parse(app.getSetting("uploadDatas") || '{}')
+			console.log('每次添加前的' + uploadDatas)
+			if (uploadDatas.data == null) {
+				uploadDatas.data = [];
+			}
+
+			uploadDatas.data.push(uploadData);
+			
+			if (!app.checkLegality(uploadData.images)) {
+				mui.toast("取证照片不能为空！");
+				return;
+			}
+			if (!app.checkLegality(uploadData.riverCode)) {
+				mui.toast("河流信息不能为空！");
+				return;
+			}
+			// if(arrImgs.length<0){
+			// 	mui.toast('取证照片不能为空');
+			// }else{
+				app.setSetting("uploadDatas", JSON.stringify(uploadDatas));
+				console.log('要传的图片url' + JSON.stringify(uploadDatas))
+				mui.back();
+				// console.log('多个上传'+JSON.stringify(uploadDatas))
+				var parentViewer = mui.currentWebview.opener();
+				mui.fire(parentViewer, 'qpsw_refresh');
+				
+				
+				mui.toast('取证已保存，请至"信息流转/待上传"中查看，请手动提交服务器');
+			// }
+			
+		}
+		var riverName = ""
+		var TownName = ""
+
+		function init_cun(lon, lat) {
+
+			var post_data = {
+				lon: lon,
+				lat: lat,
+			}
+			app.ajax2(app.url('gcs/queryRiverInfoByPoint'), post_data, function(ret) {
+				if (ret.code == 200) {
+					var arr = []
+					var var_arr = []
+					for (var i = 0; i < ret.data.length; i++) {
+						arr.push({
+							text: ret.data[i]['riverName'],
+							value: ret.data[i],
+						});
+					}
+					if(arr.length>0){
+						var riverPicker = new mui.PopPicker();
+						riverPicker.setData(arr);
+						selectRiver.addEventListener('tap', function(e) {
+							riverPicker.show(function(items) {
+								// riverName = items[0].text;
+								selectRiver.innerText = items[0].text;
+								console.log('河流的具体值' + JSON.stringify(items[0]))
+								riverCode = items[0]
+							});
+						})
+					}
+				} else {
+					mui.toast('获取河道失败：' + JSON.stringify(ret))
+				}
+			})
+		}
+		// 获取城镇
+		function selectStreet_fun() {
+			// 城镇   selectStreet
+			var dic_selectDic = JSON.parse(app.getSetting("dic_selectDic") || "[]");
+			var street_new = getDictDataObj(dic_selectDic, 'through') //城镇
+			console.log('城镇' + JSON.stringify(street_new))
+			var streetPicker = new mui.PopPicker();
+			streetPicker.setData(street_new);
+			selectStreet.addEventListener('tap', function(e) {
+				streetPicker.show(function(items) {
+					selectStreet.innerText = items[0].text;
+					selectStreet_text = items[0].text
+
+				});
+			})
+		}
+	</script>
+</html>

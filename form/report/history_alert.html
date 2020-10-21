@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			body,
+			.mui-content {
+				background: #fff;
+			}
+			
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit;
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.mui-bar {
+				height: auto;
+			}
+			
+			.mui-search:before {
+				top: 24px;
+			}
+			
+			.rbtn {
+				width: 33px;
+				overflow: hidden;
+				letter-spacing: 800px;
+				margin: 11px 4%;
+				border-radius: 24px;
+				text-indent: -3.5px;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 145px
+			}
+			
+			.mui-content>.mui-table-view:first-child {
+				margin-top: 0;
+			}
+			
+			#construction_detail_warp h4,
+			.mui-table-view-cell {
+				font-size: 16px !important;
+			}
+			
+			.detail_btn {
+				background-color: #007aff;
+				color: #fff;
+				font-size: 12px;
+				line-height: 14px;
+				padding: 3px 6px;
+				display: inline-block;
+				border-radius: 5px;
+				margin-left: 10px;
+			}
+			
+			.sluice_open {
+				color: dodgerblue !important;
+			}
+			
+			.sluice_close {
+				color: red !important;
+			}
+			
+			#filter_warp {
+				display: none;
+			}
+			
+			.div_warp {
+				margin: 0;
+				font-size: 14px;
+				/*border-bottom: 1px solid #ccc;*/
+			}
+			
+			.left_warp {
+				width: 50%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+				padding: 8px 0;
+			}
+			
+			.middle_warp {
+				width: 25%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+				padding: 8px 0;
+			}
+			
+			.l_warp {
+				width: 50%;
+				float: left;
+				text-align: center;
+				padding: 8px 0;
+			}
+			
+			.m_warp {
+				width: 25%;
+				float: left;
+				text-align: center;
+				padding: 8px 0;
+			}
+			.mui-bar .mui-segmented-control{
+				width: 100%;
+				position:static;
+				border-radius: 0;
+			}
+			@media screen and (max-width: 321px) {
+				#construction_detail_warp {
+					font-size: 16px !important;
+				}
+				.rbtn {
+					margin: 11px 3%;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!--菜单部分-->
+			<aside id="offCanvasSide" class="mui-off-canvas-right">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<h6 style="padding:5px;">过滤</h6>
+						<ul id="list-option" class="mui-table-view">
+
+							<li class="mui-table-view-cell">
+								<i class="iconfont icon-dituleiwanggequ"></i> 报警类型
+								<span id="select_alert_type" style="max-width: 100px;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell mui-hidden">
+								<i class="iconfont icon-gongsi"></i> 所属单位
+								<span id="select_company" style="max-width: 100px;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell mui-hidden ">
+								<i class="iconfont icon-zhuangtai"></i> 维护状态
+								<span id="select_state" style="max-width: 100px;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<!-- <li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 开始时间</span>
+								<span id='selectDateStart' data-options='{"type":"datetime"}' style="max-width: 100px;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 结束时间</span>
+								<span id='selectDateEnd' data-options='{"type":"datetime"}' style="max-width: 100px;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li> -->
+
+						</ul>
+						<div class="mui-content-padded" style="text-align: right;">
+							<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+								重置
+							</button>
+							<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+								确认
+							</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<div class="mui-inner-wrap">
+
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right selecting_hide">过滤</a>
+					<h1 class="mui-title">历史报警记录</h1>
+					<nav id="monitor_data" class="mui-segmented-control">
+						<a id="tongji" class="mui-control-item mui-active" href="#">统计</a>
+						<a id="liebiao" class="mui-control-item" href="#">列表</a>
+
+					</nav>
+					<div class="mui-bar-tab">
+						<button class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
+						<div class="" style="text-align: right">
+							<span class=" mui-icon mui-icon-search" id="search"></span>
+							<span id='selectDateStart' style="color: grey">开始时间</span> -
+							<span id='selectDateEnd' style="color: grey">结束时间</span>
+
+						</div>
+					</div>
+				</header>
+				<div id="offCanvasContentScroll" class="mui-content mui-slider-group mui-scroll-wrapper">
+
+					<div class="mui-scroll">
+						<div id="monitor" class="mui-content ">
+							<ul id="alert_list" class="mui-table-view ">
+
+							</ul>
+						</div>
+
+						<div id="construction_detail" class="mui-content">
+							<div class="mui-input-row mui-search" style="margin: 5px 15px;clear:none">
+								<input type="search" id="query_search" class="mui-input-clear" placeholder="输入水利设施名称" style="    margin-bottom: 0;">
+							</div>
+							<div id="filter_warp " class="mui-hidden" style="text-align: center;">
+								<button id='all_facility' class="mui-btn mui-btn-primary rbtn" type='button'>全</button>
+								<button id='showUserPicker' class="mui-btn mui-btn-primary rbtn" type='button'>圩</button>
+								<button id='town_picker' class="mui-btn mui-btn-primary rbtn" type='button'>镇</button>
+								<button id='village_picker' class="mui-btn mui-btn-primary rbtn" type='button'>村</button>
+								<button id='river_picker' class="mui-btn mui-btn-primary rbtn" type='button'>河</button>
+							</div>
+
+							<ul id="real_time_list" class="mui-table-view ">
+				
+							</ul>
+							<div id="page_loading" class="page_loader">
+								<img src="../../asset/images/loading.gif"> 加载中...
+							</div>
+							<div id="page_ended" class="page_loader">
+								列表已到最后
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="mui-off-canvas-backdrop"></div>
+
+			</div>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=9f4e8708dc930f1ac309d418fc485070&callback=init&plugin=AMap.Geocoder"></script>
+	<script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+	<script type="text/javascript" charset="utf-8">
+		var timer;
+		var lon;
+		var lat;
+		var swipeup_flag = true
+		var detail_obj = {}
+		var selectDateStart = document.getElementById('selectDateStart');
+		var selectDateEnd = document.getElementById('selectDateEnd');
+
+		var select_alert_type = document.getElementById('select_alert_type');
+		var select_company = document.getElementById('select_company');
+		var select_state = document.getElementById('select_state');
+		var post_data = {};
+
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+
+		var type_dict_obj = JSON.parse(app.getSetting('type_dict_obj') || "{}")
+		//		console.log(JSON.stringify(type_dict_obj))
+		var type_dict = JSON.parse(app.getSetting('type_dict') || "[]")
+		//		console.log(JSON.stringify(type_dict))
+		$(function() {
+
+
+			$('#page_loading').show();
+			$('#page_ended').hide();
+
+		})
+		// 时间范围
+		var arrDateRanges = [{
+				text: '本日',
+				value: '本日'
+			},
+			{
+				text: '本周',
+				value: '本周'
+			},
+			{
+				text: '本月',
+				value: '本月'
+			},
+			{
+				text: '本季度',
+				value: '本季度'
+			},
+			{
+				text: '本年',
+				value: '本年'
+			}
+		];
+
+		var pickerDateRanges = new mui.PopPicker();
+		pickerDateRanges.setData(arrDateRanges);
+		btn_date_range.addEventListener('tap', function() {
+			pickerDateRanges.show(function(items) {
+				btn_date_range.innerHTML = items[0].text;
+				initDateRange();
+				init_alert_record();
+				init_alert_list();
+				//返回 false 可以阻止选择框的关闭
+				//return false;
+			});
+		})
+
+
+		selectDateStart.addEventListener('tap', function() {
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateStart.innerHTML = items.value;
+				init_alert_record();
+				init_alert_list();
+			})
+		})
+
+
+		selectDateEnd.addEventListener('tap', function() {
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateEnd.innerHTML = items.value;
+				init_alert_record();
+				init_alert_list();
+			})
+		})
+
+		function clickReset() {
+			select_alert_type.innerHTML = '全部';
+			$(select_alert_type).attr('item_id', "");
+			select_company.innerHTML = '全部';
+			$(select_company).attr('item_id', "");
+			select_state.innerHTML = '全部';
+			$(select_state).attr('item_id', "");
+
+			selectDateStart.innerHTML = '请选择...';
+			selectDateEnd.innerHTML = '请选择...';
+		}
+
+
+		function clickOk() {
+			post_data = {}
+			offCanvasWrapper.offCanvas('close');
+			init_alert_record()
+			init_alert_list();
+		}
+		mui.ready(function() {
+
+			mui.init();
+			$('#page_loading').show();
+			$('#page_ended').hide();
+			document.getElementById("query_search").addEventListener('input', function() {
+				var this_value = this.value
+				//				mui('#construction_detail_warp').scroll().scrollTo(0, 0);
+				input_search_facilty(this_value);
+				console.log("input")
+			});
+			//			document.getElementById("query_search").addEventListener('focus', function() {
+			//				console.log("focus")
+			//				$("#filter_warp").slideDown()
+			//				$("#offCanvasContentScroll").css("padding-top", "186px")
+			//			});
+			document.getElementById("query_search").addEventListener('blur', function() {
+				console.log("blur")
+
+			});
+			mui('#monitor_data').on('tap', '.mui-control-item', function() {
+				current_tree_type = this.innerHTML;
+				console.log(current_tree_type)
+				if (current_tree_type == '统计') {
+					$(".alert_list").show()
+					$('#monitor').show();
+					$('#construction_detail').hide();
+					mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+
+				} else if (current_tree_type == '列表') {
+					$('#monitor').hide();
+					$('#construction_detail').show();
+					$(".search_list").show()
+					mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+				}
+
+			})
+			//alert poppicker
+			var alertTypePicker = new mui.PopPicker();
+			var alert_type_data = [];
+			alert_type_data.push({
+				value: "",
+				text: "全部"
+			})
+
+
+			for (var i = 0; i < type_dict.length; i++) {
+				if (type_dict[i]["category"] == "alarm_type") {
+					alert_type_data.push({
+						value: type_dict[i]["typeCode"],
+						text: type_dict[i]["typeName"]
+					})
+				}
+			}
+
+			alertTypePicker.setData(alert_type_data);
+			select_alert_type.addEventListener('tap', function(event) {
+				alertTypePicker.show(function(items) {
+					select_alert_type.innerText = items[0]["text"];
+					$(select_alert_type).attr('item_id', items[0]["value"]);
+				});
+			}, false);
+
+			//state poppicker
+			var selectStatePicker = new mui.PopPicker();
+			var select_state_data = [];
+			select_state_data.push({
+				value: "",
+				text: "全部"
+			})
+
+
+			for (var i = 0; i < type_dict.length; i++) {
+				if (type_dict[i]["category"] == "process_state") {
+					select_state_data.push({
+						value: type_dict[i]["typeCode"],
+						text: type_dict[i]["typeName"]
+					})
+				}
+			}
+
+			selectStatePicker.setData(select_state_data);
+			select_state.addEventListener('tap', function(event) {
+				selectStatePicker.show(function(items) {
+					select_state.innerText = items[0]["text"];
+					$(select_state).attr('item_id', items[0]["value"]);
+				});
+			}, false);
+
+			function input_search_facilty(this_value) {
+				clearTimeout(timer)
+				timer = setTimeout(function() {
+
+					$(".search_list").each(function() {
+						var that = $(this)
+
+						//			 			console.log(that.attr("facility_name"));
+						if (that.attr("facility_name").indexOf(this_value) == -1) {
+
+							that.hide()
+						} else {
+							//							console.log($(this).attr("facility_name").indexOf(this_value) == -1)
+							that.show()
+						}
+					})
+				}, 500)
+			}
+
+			mui('body').on('tap', '.map_navigate', function() {
+
+				facility_id = this.getAttribute("facility_id")
+				app.open("../../map.html?facility_id=" + facility_id)
+
+			})
+			//			$('#monitor').hide();
+			//			$('#construction_detail').show();
+			$('#monitor').show();
+			$('#construction_detail').hide();
+
+		})
+
+		function uniq(array) {
+			var temp = []; //一个新的临时数组
+			for (var i = 0; i < array.length; i++) {
+				if (temp.indexOf(array[i]) == -1) {
+					temp.push(array[i]);
+				}
+			}
+			return temp;
+		}
+
+		mui.plusReady(function() {
+			initDateRange();
+			init_alert_record();
+			init_alert_list();
+			plus.screen.lockOrientation("portrait-primary");
+		});
+
+		function initDateRange() {
+			if (btn_date_range.innerText == '本日') {
+				selectDateStart.innerText = app.getDay();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本周') {
+				selectDateStart.innerText = app.getWeekBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本月') {
+				selectDateStart.innerText = app.getMonthBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本季度') {
+				selectDateStart.innerText = app.getSeasonBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本年') {
+				selectDateStart.innerText = app.getYearBegin();
+				selectDateEnd.innerText = app.getDay();
+			}
+		}
+
+		function init_alert_record() {
+			if (select_alert_type.innerHTML != '全部') {
+				post_data["alarmType"] = $(select_alert_type).attr('item_id');
+			}
+
+			if (selectDateStart.innerHTML != '请选择...') {
+				post_data["startTime"] = selectDateStart.innerHTML + ' 00:00:00';
+			}
+			if (selectDateEnd.innerHTML != '请选择...') {
+				post_data["endTime"] = selectDateEnd.innerHTML + ' 23:59:59';
+			}
+			console.log(JSON.stringify(post_data))
+			var wDlg = plus.nativeUI.showWaiting("加载中...");
+			app.ajax(app.url1('app/getAlarmHistory'), post_data, function(ret) {
+				console.log('app/getAlarmHistory'+JSON.stringify(ret))
+				wDlg.close();
+				// ret = JSON.parse(
+				// 	'{"code":200,"data":[{"alarmType":null,"alarmTypeName":"报警总次数","alarmCount":16},{"alarmType":4101,"alarmTypeName":"设备故障类","alarmCount":7},{"alarmType":4103,"alarmTypeName":"设施运行类","alarmCount":0},{"alarmType":4104,"alarmTypeName":"人员报警类","alarmCount":0},{"alarmType":4105,"alarmTypeName":"数据异常类","alarmCount":9}],"desc":"","error":"查询成功！"}'
+				// )
+				if (ret.code == 200) {
+					var data = ret.data
+					var html = ""
+					for (var i = 0; i < data.length; i++) {
+						html += '<li class="mui-table-view-cell">'
+						html += '	' + data[i]['alarmTypeName'] + '：<span class="sluice_close" >' + data[i][
+							'alarmCount'
+						] + '</span>'
+						if(data[i]['alarmTypeName']!='报警总次数' && data[i]["alarmType"])
+						html += '<span class="mui-pull-right sluice_open alarmType" alarmType="'+data[i]["alarmType"]+'" >查看</span>'
+						html += '</li>'
+					}
+
+					$("#alert_list").html(html)
+					mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+
+				} else {
+					mui.toast(ret.error);
+				}
+			})
+		}
+		$("#alert_list").on('tap', '.alarmType', function() {
+			var alarmType = $(this).attr("alarmType")
+			$(".search_list").each(function() {
+				var that = $(this)
+				if (that.attr("alarmType").indexOf(alarmType) == -1) {
+					that.hide()
+				} else {
+					that.show()
+				}
+			})
+			
+			$('#liebiao').addClass('mui-active');
+			$('#tongji').removeClass('mui-active');
+			$('#monitor').hide();
+			$('#construction_detail').show();
+			mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+		})
+
+		function init_alert_list(){
+			if (select_alert_type.innerHTML != '全部') {
+				post_data["alarmType"] = $(select_alert_type).attr('item_id');
+			}
+			
+			if (selectDateStart.innerHTML != '请选择...') {
+				post_data["startTime"] = selectDateStart.innerHTML + ' 00:00:00';
+			}
+			if (selectDateEnd.innerHTML != '请选择...') {
+				post_data["endTime"] = selectDateEnd.innerHTML + ' 23:59:59';
+			}
+			console.log(JSON.stringify(post_data))  
+			app.ajax(app.url1('facilityUnite/alarm/getAllAlarm'), post_data, function(ret) {
+				// console.log('facilityUnite/alarm/getAllAlarm'+JSON.stringify(ret))
+				// ret = JSON.parse(
+				// 	'{"code":200,"data":[{"alarmType":null,"alarmTypeName":"报警总次数","alarmCount":16},{"alarmType":4101,"alarmTypeName":"设备故障类","alarmCount":7},{"alarmType":4103,"alarmTypeName":"设施运行类","alarmCount":0},{"alarmType":4104,"alarmTypeName":"人员报警类","alarmCount":0},{"alarmType":4105,"alarmTypeName":"数据异常类","alarmCount":9}],"desc":"","error":"查询成功！"}'
+				// )
+				if (ret.code == 200) {
+					var data = ret.data
+					var html = ""
+					for (var item in data) {
+						for (var i = 0; i < data[item]['alarmList'].length; i++) {
+							var alert_item = data[item]['alarmList'][i]
+							html += '<li class="mui-table-view-cell mui-media search_list" facility_name="'+alert_item["facilityName"]+'" alarmType="'+alert_item["alarmType"]+'">'
+							// html += '	<a class="  link_open mui-navigate-right" href="equipment_maintenance_details.html">'
+							html += '		<div class="mui-media-body">'
+							html += '			<span class="clr_red" style="line-height: 28px;">【报警】</span> '+alert_item["facilityName"]
+							html += '			<p class="mui-ellipsis">报警类型：<span class="clr_red">'+alert_item["alarmTypeName"]+'</span></p>'
+							html += '			<p class="mui-ellipsis">报警设备：<span style="color: dodgerblue;">'+alert_item['deviceTypeName']+'</span></p>'
+							html += '			<p class="mui-ellipsis">报警时间：'+alert_item['gmtCreate']+'</p>'
+							html += '			<p class="mui-ellipsis">解除时间：'+alert_item['gmtModified']+'</p>'
+							html += '			<p>报警内容：'
+							html += '			</p><p style="color: dodgerblue;    white-space: normal;">'
+							html += alert_item['alarmContent']
+							html += '			</p>'
+							html += '		</div>'
+							// html += '	</a>'
+							html += '</li>'
+						}
+					}
+			
+					$("#real_time_list").html(html)
+					$("#page_loading").hide()
+					$("#page_ended").show()
+					mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+			
+				} else {
+					mui.toast(ret.error);
+				}
+			})
+		}
+	</script>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/iconfont.css" rel="stylesheet"/>
+    <link href="css/style.css" rel="stylesheet"/> 
+    <style>
+    	body {margin-left: 0px;margin-top: 0px;margin-right: 0px;margin-bottom: 0px;overflow: hidden;}
+            .wrapper { position: absolute;top: 0px;left: 250px;right: 10px;bottom: 20px;padding-top:50px;}  
+            .dd2 { height: 100%; background:red;}  
+            iframe { height: 100%; width: 100%;}  
+    </style>
+</head>
+<body onload="app.route()">
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">保洁报告详情</h1>
+	</header>
+    <div class="mui-content"></div>  
+</body>
+<script src="js/mui.min.js"></script>
+<script src="js/app.js"></script>
+<script type="text/javascript" charset="utf-8">
+	mui.ready(function(){
+		mui.init({
+			subpages:[{
+				url:'http://news.baidu.com/',
+				id:'sub_page',
+				styles:{
+					top: '45px',
+					bottom: '0px',
+				}
+			}]
+		});
+	})
+	
+	mui.plusReady(function() {
+		plus.screen.lockOrientation("portrait-primary");
+	});
+
+
+</script>
+</html>

@@ -1,0 +1,917 @@
+<!doctype html>
+<html>
+ 
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <link href="../../asset/css/mui.min.css" rel="stylesheet" />
+        <link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+        <link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+        <link href="../../asset/css/style.css" rel="stylesheet" />
+        <style type="text/css">
+            .mui-bar { 
+                height: 230px;
+                border-bottom: 1px solid #ddd;
+            }
+ 
+            .mui-bar-nav~.mui-content {
+                padding-top: 230px;
+            }
+ 
+            .page_loader {
+                text-align: center;
+                color: gray;
+                border-top: 1px solid #ccc;
+                padding-top: 5px;
+                clear: both;
+            }
+  
+            .init-html-h3 {
+                text-align: left;
+                font-size: 18px;
+                font-weight: 100;
+                margin-left: 13px;
+                line-height: 40px;
+            }
+ 
+            .mui-control-content {
+                background-color: white;
+                /*min-height: 215px;*/
+            }
+ 
+            .mui-control-content .mui-loading {
+                margin-top: 50px;
+            }
+ 
+            .div_warp {
+                margin: 0;
+                font-size: 14px;
+                /*border-bottom: 1px solid #ccc;*/
+            }
+ 
+            .left_warp {
+                width: 50%;
+                float: left;
+                text-align: center;
+                background: #000;
+                color: #fff;
+                padding: 8px 0;
+            }
+ 
+            .middle_warp {
+                width: 25%;
+                float: left;
+                text-align: center;
+                background: #000;
+                color: #fff;
+                padding: 8px 0;
+            }
+ 
+            .l_warp {
+                width: 50%;
+                float: left;
+                text-align: center;
+                padding: 8px 0;
+            }
+ 
+            .m_warp {
+                width: 25%;
+                float: left;
+                text-align: center;
+                padding: 8px 0;
+            }
+ 
+            .sluice_open {
+                color: dodgerblue !important;
+            }
+ 
+            .sluice_close {
+                color: red !important;
+            }
+ 
+            #btn_rectification_to_rectification {
+                background: #993300;
+                border: 0;
+                padding: 3px 5px;
+                border-radius: 5px;
+                font-size: 12px;
+                color: #fff;
+                margin-top: 6px;
+            }
+ 
+            #sliderSegmentedControl {
+                margin-bottom: 10px;
+            }
+ 
+            .rbtn {
+                width: 33px;
+                overflow: hidden;
+                letter-spacing: 800px;
+                margin: 11px 2%;
+                border-radius: 24px;
+                text-indent: -3.5px;
+            }
+ 
+            #facility_name {
+                max-width: 150px;
+                display: inline-block;
+            }
+ 
+            @media screen and (max-width: 321px) {
+                #facility_name {
+                    max-width: 120px;
+                }
+ 
+                #construction_detail_warp {
+                    font-size: 16px !important;
+                }
+ 
+                .rbtn {
+                    margin: 11px 1%;
+                }
+            }
+ 
+            @media screen and (orientation: portrait) {
+                /* 竖屏 */
+            }
+ 
+            @media screen and (orientation: landscape) {
+                /* 横屏 */
+            }
+ 
+            #popover {
+                width: 100vw;
+                height: 50vh;
+                position: fixed;
+                top: 20vh;
+                z-index: 999999;
+                background: #FFFFFF !important;
+                border-radius: 0;
+            }
+ 
+            #container {
+                width: 100vw;
+                height: 50vh;
+            }
+        </style>
+    </head>
+ 
+    <body onload="app.route()">
+        <div id="popover" class="mui-popover">
+            <div id="container">
+ 
+            </div>
+        </div>
+        <!-- 主页面容器 -->
+        <div class="mui-inner-wrap">
+            <!-- 主页面标题 -->
+            <header class="mui-bar mui-bar-nav">
+                <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+                <!--<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right">过滤</a>-->
+                <h1 class="mui-title">工况详情</h1>
+                <div class="mui-bar-tab">
+                    <button class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
+                    <div class="" style="text-align: right">
+                        <span class=" mui-icon mui-icon-search" id="search"></span>
+                        <span id='selectDateStart' style="color: grey">开始时间</span> -
+                        <span id='selectDateEnd' style="color: grey">结束时间</span>
+                    </div>
+                </div>
+                <h4 style="height:50px;line-height: 50px;">
+                    <span id="facility_name" class="mui-ellipsis" style=""></span>
+                    <a id="btn_rectification_to_rectification" class="mui-btn">关注</a>
+ 
+                    <button id='beng' class="mui-btn mui-btn-royal rbtn mui-pull-right mui-hidden" type='button'>泵</button>
+                    <button id='zha' class="mui-btn mui-btn-primary rbtn mui-pull-right mui-hidden" style="background: #4198c7;border: #3399FF;"
+                     type='button'>闸</button>
+                    <button id='shui' class="mui-btn mui-btn-primary rbtn mui-pull-right mui-hidden" type='button'>水</button>
+                </h4>
+ 
+                <div style="font-size:14px;color:gray"><span id="controlAreaName"></span>/<span id="townName"></span>/<span id="villageName">庆心社区居委</span>
+                    <span id="riverName" class="mui-pull-right">陈桥浜</span></div>
+                <div id="sliderSegmentedControl" style="border-bottom: 1px solid #eee;" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+                    <a class="mui-control-item mui-active" href="#item1mobile">水位</a>
+                    <a class="mui-control-item" href="#item2mobile">闸位</a>
+                    <a class="mui-control-item" href="#item3mobile">水泵</a>
+                </div>
+            </header>
+ 
+            <div class="mui-content" style="background: #fff;">
+                <div id="slider" class="mui-slider">
+                    <a class="mui-btn mui-btn-primary" id="echarts_btn" style="margin: 10px;">曲线图</a>
+                    <div id="item1mobile" class="mui-slider-item mui-control-content mui-active" style="width: 100%;">
+                     
+ 
+                    </div>
+                    <div id="item2mobile" class="mui-slider-item mui-control-content" style="width: 100%;">
+                      
+                    </div>
+                    <div id="item3mobile" class="mui-slider-item mui-control-content" style="width: 100%;">
+                
+                    </div>
+ 
+                    <div id="page_ended" class="page_loader">
+                        列表已到最后
+                    </div>
+                </div>
+ 
+            </div>
+ 
+        </div>
+ 
+    </body>
+    <script src="../../asset/js/jquery-3.3.1.min.js"></script>
+    <script src="../../asset/js/mui.min.js "></script>
+    <script src="../../asset/js/mui.picker.min.js "></script>
+    <script src="../../asset/js/mui.poppicker.js"></script>
+    <script src="../../asset/js/echarts-all.js"></script>
+    <script src="../../asset/js/app.js"></script>
+    <script type="text/javascript ">
+        var g_nei_data = [];
+        var g_wai_data = [];
+        var g_nei_gate = [];
+        var g_wai_gate = [];
+        var g_date_data = [];
+        var id = app.getUrlParam('id_new');
+		var id_new=app.getUrlParam('id_new')
+		 app.setSetting("history_waterID", id_new)
+		console.log('id_new顶顶顶'+JSON.stringify(id_new))
+        var facility_name = app.getUrlParam('facility_name');
+		 app.setSetting("history_water_name", facility_name)
+        var limit_count = 3000; //数据量太大 html 渲染会崩溃
+        var riverName = app.getUrlParam('riverName');
+        var villageName = app.getUrlParam('villageName');
+        var townName = app.getUrlParam('townName');
+        var controlAreaName = app.getUrlParam('controlAreaName');
+ 
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+        $("#riverName").html(riverName)
+        $("#villageName").html(villageName)
+        $("#townName").html(townName)
+        $("#controlAreaName").html(controlAreaName)
+        //        console.log(riverName)
+        //        console.log(villageName)
+        //        console.log(townName)
+        //        console.log(controlAreaName)
+        $("#facility_name").html(facility_name)
+        console.log(id)
+        var selectDateStart = document.getElementById('selectDateStart');
+        var selectDateEnd = document.getElementById('selectDateEnd');
+        var btn_date_range = document.getElementById('btn_date_range');
+        var facility_id_arr = [];
+        var mql_timer;
+        var mql = window.matchMedia('(orientation: portrait)');
+        // console.log(mql);
+        function onMatchMediaChange(mql) {
+            if (mql.matches) {
+                //竖屏
+                clearTimeout(mql_timer)
+                mql_timer = setTimeout(function() {
+                    // toggle_mql("portrait")
+                }, 1000)
+            } else {
+                //横屏
+                // clearTimeout(mql_timer)
+                // mql_timer = setTimeout(function() {
+                //     toggle_mql("landscape")
+                // }, 1000)
+            }
+        }
+        // 输出当前屏幕模式
+        onMatchMediaChange(mql);
+        // 监听屏幕模式变化
+        mql.addListener(onMatchMediaChange);
+        // 屏幕变动触发 js执行
+        function toggle_mql(type) {
+            // console.log(type)
+            mui.plusReady(function() {
+                var max, min
+                var var_width = plus.display.resolutionWidth;
+                var var_height = plus.display.resolutionHeight;
+                if (var_width > var_height) {
+                    max = var_width
+                    min = var_height
+                } else {
+                    max = var_height
+                    min = var_width
+                }
+                // console.log("max:" + max)
+                // console.log("min:" + min)
+                if (type == "landscape") {
+                    //横屏
+ //                    $("#popover").width(max)
+ //                    $("#container").width(max)
+ 
+ //                    $("#popover").height(min)
+ //                    $("#container").height(min)
+ //                    $("#popover").css("top", "0vh")
+ //                    myChart.resize({
+ //                        width: max,
+ //                        height: min
+ //                    });
+                } else {
+                    $("#popover").width(min)
+                    $("#container").width(min)
+                    $("#popover").height(max / 2)
+                    $("#container").height(max / 2)
+                    $("#popover").css("top", "20vh")
+                    myChart.resize({
+                        width: min,
+                        height: (max / 2)
+                    });
+                }
+            })
+        }
+        mui.init({
+            beforeback: function() { //退出前当前面恢复横屏 
+                mui.plusReady(function() {
+                    plus.screen.lockOrientation("portrait-primary");
+                });
+                //返回true，继续页面关闭逻辑
+                //                 return true;
+                console.log("beforeback")
+            },
+            swipeBack: false //启用右滑关闭功能
+        });
+        //禁止左右滑动
+        mui('.mui-slider').slider().stopped = true;
+        initDateRange();
+        $(function() {
+		
+            $("#echarts_btn").click(function() {
+				var startTime = selectDateStart.innerHTML + ' 00:00:00';
+				var endTime = selectDateEnd.innerHTML + ' 23:59:59';
+				// app.open('history_water_detail_echarts.html?selectStart5=" + reportSerialId')
+				app.open("history_water_detail_echarts.html?selectStart5=" + startTime+"&selectEnd5="+endTime); 
+                // mui("#popover").popover("toggle");
+            })
+        })
+        mui.ready(function() {
+            mui('#sliderSegmentedControl').on('tap', '.mui-control-item', function() {
+                current_tree_type = this.innerText;
+                if (current_tree_type == '水位') {
+                    $("#echarts_btn").show();
+                } else if (current_tree_type == '闸位') {
+                    $("#echarts_btn").hide();
+                } else if (current_tree_type == '水泵') {
+                    $("#echarts_btn").hide();
+                }
+            })
+            app.ajax(app.url('query/info/my_concern'), {
+                user_id: app.getUserId(),
+            }, function(ret) {
+                if (ret.code == 0) {
+					
+                    for (var i = 0; i < ret.data.length; i++) {
+						console.log('看一看是什么ID'+JSON.stringify(ret.data[i]))
+                        facility_id_arr.push(ret.data[i]["facility_id"])
+                    }
+					console.log('88888'+JSON.stringify(facility_id_arr.indexOf(id)))
+                    if (facility_id_arr.indexOf(id) == -1) {
+                        $("#btn_rectification_to_rectification").html("关注")
+                    } else {
+                        $("#btn_rectification_to_rectification").html("取关")
+                    }
+                } else {
+                    mui.toast(ret.error);
+                }
+            })
+        })
+        var watchId;
+        mui.plusReady(function() {
+            plus.webview.currentWebview().setStyle({
+                'popGesture': 'none'
+            });
+            plus.screen.unlockOrientation()
+            loadData();
+            //            plus.orientation.clearWatch( watchId )
+            ////            plus.screen.lockOrientation("landscape-primary");
+            //            watchId = plus.orientation.watchOrientation( function ( o ) {
+            ////                console.log( "Orientation\nAlpha:" + o.alpha + "\nBeta:" + o.beta + "\nGamma:" + o.gamma );
+            //                console.log(o.beta)
+            //                if(o.beta> -45 && o.beta <45){
+            //                    console.log("横屏")
+            //                    $("#popover").height($(window).height())
+            //                    $("#container").height($(window).height())
+            //                    $("#popover").css("top","0")
+            //                } else{
+            //                    console.log("竖屏")
+            //                    $("#popover").height($(window).height()/2)
+            //                    $("#container").height($(window).height()/2)
+            //                    $("#popover").css("top",$(window).height()*0.2)
+            //                }
+            //            }, function ( e ) {
+            //                console.log( "Orientation error: " + e.message ); 
+            //            } ,{
+            //                frequency:1400
+            //            });
+        });
+ 
+        // 时间范围
+        var arrDateRanges = [{
+                text: '本日',
+                value: '本日'
+            },
+            {
+                text: '三日',
+                value: '三日'
+            },
+            {
+                text: '五日',
+                value: '五日'
+            }
+        ];
+ 
+        var pickerDateRanges = new mui.PopPicker();
+        pickerDateRanges.setData(arrDateRanges);
+        btn_date_range.addEventListener('tap', function() {
+            pickerDateRanges.show(function(items) {
+                btn_date_range.innerText = items[0].text;
+                initDateRange();
+                loadData()
+            });
+        })
+ 
+        //选择时间
+        var selectDateStart = document.getElementById('selectDateStart');
+        selectDateStart.addEventListener('tap', function() {
+            var dtpicker = new mui.DtPicker({
+                type: "date", //设置日历初始视图模式    
+            })
+            dtpicker.show(function(items) {
+                selectDateStart.innerHTML = items.value;
+				app.setSetting("selectStart5",selectDateStart.innerHTML )
+                loadData();
+            })
+        })
+        var selectDateEnd = document.getElementById('selectDateEnd');
+        var startTime = selectDateStart.innerHTML + '  00:00:00';
+        var endTime = selectDateEnd.innerHTML + ' 23:59:59';
+        selectDateEnd.addEventListener('tap', function() {
+            var dtpicker = new mui.DtPicker({
+                type: "date", //设置日历初始视图模式    
+            })
+            dtpicker.show(function(items) {
+                selectDateEnd.innerHTML = items.value;
+				app.setSetting("selectEnd5",selectDateEnd.innerHTML)
+                loadData();
+            })
+        })
+ 
+        //读取数据
+        function loadData() {
+            console.log("loadData")
+            var startTime = selectDateStart.innerHTML + ' 00:00:00';
+            var endTime = selectDateEnd.innerHTML + ' 23:59:59';
+            var wDlg1 = plus.nativeUI.showWaiting("加载中...");
+            var wDlg2 = plus.nativeUI.showWaiting("加载中...");
+            var wDlg3 = plus.nativeUI.showWaiting("加载中...");
+            var html = ''
+ 
+            html += '<div class="div_warp">'
+            html += '        <div class="left_warp" style="width: 46%;">时间</div>'
+            html += '        <div class="middle_warp" style="width: 18%;">内河(m)</div>'
+            html += '        <div class="middle_warp" style="width: 18%;">外河(m)</div>'
+            html += '        <div class="middle_warp" style="width: 18%;">差值(m)</div>'
+            html += '        <div class="clear"></div>'
+            html += '    </div>'
+          var params={
+                facility_id: id_new,
+                start_time: startTime,
+                end_time: endTime
+            }
+            app.ajax(app.url("query/history/facility_detail"), params, function(ret) {
+				console.log('参数'+JSON.stringify(params))
+                wDlg1.close();
+                // console.log("--->facility_detail:" + JSON.stringify(ret.data));
+                if (ret.code == 0) {
+                    g_nei_data = [];
+                    g_wai_data = [];
+                    g_nei_gate = [];
+                    g_wai_gate = [];
+                    g_date_data = [];
+                    var data = ret.data[0].detail
+                    // console.log("------------->data.length="+data.length);
+                    for (var i = 0; i < data.length; i++) {
+                        if (i < limit_count) {
+                            html += '    <div class="div_warp">'
+                            html += '        <div class="l_warp" style="width: 46%;">' + data[i]["gmtCreate"] + '</div>'
+                            var nei = 0;
+                            var wai = 0;
+                            // console.log("------------->data[i]['gate'].length="+JSON.stringify(data[i])); 
+                            if (data[i]['gate']) {
+                                for (var j = 0; j < data[i]["gate"].length; j++) {
+                                    if (j > 2) {
+                                        continue
+                                    }
+                                    if (data[i]["gate"][j]["gateName"].indexOf("内河闸位") != -1) {
+                                        // g_nei_data.push(data[i]["gate"][j]["gateOpenHight"])
+                                        nei = parseFloat(data[i]["gate"][j]["gateOpenHight"])
+ 
+                                        if (data[i]["gate"][j]["gateOpenClose"] == "3101")
+                                            // g_nei_gate.push(-2)
+											 g_nei_gate.push(1)
+                                    }
+                                    if (data[i]["gate"][j]["gateName"].indexOf("外河闸位") != -1) {
+                                        // g_wai_data.push(data[i]["gate"][j]["gateOpenHight"])
+                                        wai = parseFloat(data[i]["gate"][j]["gateOpenHight"])
+ 
+                                        if (data[i]["gate"][j]["gateOpenClose"] == "3101")
+                                            // g_wai_gate.push(-4)
+											  g_wai_gate.push(2)
+                                    }
+                                }
+                            }
+                            html += ('<div class="m_warp" style="width: 18%;">' + (data[i]["inLandLevelOrg"] ? data[i]["inLandLevelOrg"] : "0") +
+                                '</div>')
+                            html += ('<div class="m_warp" style="width: 18%;"><span class="sluice_close">' + (data[i]["outerLevelOrg"] ? data[
+                                i]["outerLevelOrg"] : "0") + '</span></div>')
+                            g_nei_data.push(data[i]["inLandLevelOrg"])
+                            g_wai_data.push(data[i]["outerLevelOrg"])
+                            g_date_data.push(data[i]["gmtCreate"])
+ 
+                            if (!nei) {
+                                g_nei_gate.push(null)
+                            }
+                            if (!wai) {
+                                g_wai_gate.push(null)
+                            }
+                            html += ('<div class="m_warp" style="width: 18%;"><span class="sluice_open">' + (data[i]["differenceOrg"] ? data[
+                                i]["differenceOrg"] : "0") + '</span></div>')
+                            html += '        <div class="clear"></div>'
+                            html += '    </div>'
+                        } else {
+                            break
+                        }
+                    }
+                    // console.log("----------------------------->"+html);
+                    // console.log("container width:" + $("#container").width())
+                    // console.log(JSON.stringify(g_date_data))
+                    option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            // formatter: '{a0}:{c0}<br>{a1}:{c1}<br>{a2}:开启<br>{a3}:开启<br>',
+                            formatter: function(a, b, c) {
+                                var string = ""
+                                for (var i = 0; i < a.length; i++) {
+                                    if (a[i].value == -2 || a[i].value == -4) {
+                                        string += a[i].seriesName + ":开启<br>"
+                                    } else if (a[i].value == null) {
+                                        string += a[i].seriesName + ":关闭<br>"
+                                    } else {
+                                        string += a[i].seriesName + ":" + a[i].value + "<br>"
+                                    }
+                                }
+                                return string;
+                            }
+                        },
+                        legend: {
+                            data: ['内河水位', '外河水位', '内河闸位', '外河闸位']
+                        },
+                        // toolbox: {
+                            // show: true,
+                            // feature: {
+                                // dataZoom: {
+                                //     yAxisIndex: 'none'
+                                // },
+                                // restore: {},
+                            // },
+                        // },
+                        // dataZoom: [{
+                        //     type: 'inside',
+                        //     start: 0,
+                        //     end: 10
+                        // }, {
+                        //     start: 0,
+                        //     end: 10,
+                        //     handleIcon: 'M10.7,11.9v-1.3H9.3v1.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4v1.3h1.3v-1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z M13.3,24.4H6.7V23h6.6V24.4z M13.3,19.6H6.7v-1.4h6.6V19.6z',
+                        //     handleSize: '80%',
+                        //     handleStyle: {
+                        //         color: '#fff',
+                        //         shadowBlur: 3,
+                        //         shadowColor: 'rgba(0, 0, 0, 0.6)',
+                        //         shadowOffsetX: 2,
+                        //         shadowOffsetY: 2
+                        //     }
+                        // }],
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: g_date_data,
+                            //                            axisLabel:{
+                            //                                interval: 0,
+                            //                                rotate: -90
+                            //                            }
+                        },
+                        yAxis: {
+                            type: 'value',
+                            axisLabel: {
+                                formatter: '{value} m'
+                            },
+                            min: 0
+                        },
+                        series: [{
+                            name: '内河水位',
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'none',
+                            sampling: 'average',
+ 
+                            data: g_nei_data
+                        }, {
+                            name: '外河水位',
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'none',
+                            sampling: 'average',
+                            data: g_wai_data
+                        }, {
+                            name: '内河闸位',
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'none',
+                            sampling: 'average',
+                            color: "#3a44ff",
+                            data: g_nei_gate
+                        }, {
+                            name: '外河闸位',
+                            type: 'line',
+                            smooth: true,
+                            symbol: 'none',
+                            sampling: 'average',
+                            color: "#038ed6",
+                            data: g_wai_gate
+                        }]
+                    };
+ 
+                    myChart.setOption(option, true);
+                    $("#item1mobile").html(html)
+                    if (data.length == 0) {
+                        $("#shui").hide()
+                        $("#echarts_btn").hide()
+                    } else {
+                        $("#shui").show()
+                        $("#echarts_btn").show()
+                    }
+                } else {
+                    mui.toast(ret.error)
+                }
+            })
+ 
+            var html2 = ""
+            html2 += '<div class="div_warp" style="clear: both;line-height: 60px;padding: 0;">'
+            html2 += '        <div class="left_warp" style="padding: 0;width: 46%;">时间</div>'
+            html2 += '        <div class="middle_warp" style="width: 18%;line-height: 30px;padding: 0;" >内闸</div>'
+            html2 += '        <div class="middle_warp" style="width: 18%;line-height: 30px;padding: 0;" >外闸</div>'
+            html2 += '        <div class="middle_warp" style="width: 18%;line-height: 30px;padding: 0;" >节制闸</div>'
+            html2 += '        <div class="middle_warp" style="width: 18%;line-height: 30px;padding: 0;" >闸位(m)</div>'
+            html2 += '        <div class="middle_warp" style="width: 18%;line-height: 30px;padding: 0;" >闸位(m)</div>'
+            html2 += '        <div class="middle_warp" style="width: 18%;line-height: 30px;padding: 0;" >闸位(m)</div>'
+            html2 += '        <div class="clear"></div>'
+            html2 += '    </div>'
+ 
+            app.ajax(app.url1("history/findGateHistory"), {
+                id: id_new,
+                startTime: startTime,
+                endTime: endTime
+            }, function(ret) {
+                wDlg2.close();
+                // console.log("history/findGateHistory")
+                // console.log(JSON.stringify(ret))
+                if (ret.code == 200) {
+                    // console.log("------------------>Gate:" + JSON.stringify(ret.data));
+                    if (ret.data.length == 0) {
+                        $("#zha").hide()
+                    } else {
+                        $("#zha").show()
+                    }
+                    for (var i = 0; i < ret.data.length; i++) {
+                        if (i > limit_count) {
+                            break;
+                        }
+                        var f1 = true
+                        var f2 = true
+                        var f3 = true
+                        var h1 = ""
+                        var h2 = ""
+                        var h3 = ""
+                        var s1 = ""
+                        var s2 = ""
+                        var s3 = ""
+                        html2 += '    <div class="div_warp"  style=" clear: both;line-height: 60px;padding: 0;">'
+                        html2 += '        <div class="l_warp" style="padding: 0;width: 46%;">' + ret.data[i]["time"] + '</div>'
+                        if (ret.data[i]["gateStateMonitorLogVOList"]) {
+                            for (var j = 0; j < ret.data[i]["gateStateMonitorLogVOList"].length; j++) {
+                                var item = ret.data[i]["gateStateMonitorLogVOList"][j];
+                                if (item["gateType"] == 2501 && f1) {
+                                    if (item["openCloseOperate"] == 3101) {
+                                        h1 =
+                                            '        <div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_open">开</span></div>'
+                                    }
+                                    if (item["openCloseOperate"] == 3102) {
+                                        h1 =
+                                            '        <div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">关</span></div>'
+                                    }
+                                    s1 = ('<div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">' +
+                                        parseFloat(item["openDistance"]).toFixed(2) + '</span></div>')
+                                    f1 = false
+                                }
+                                if (item["gateType"] == 2502 && f2) {
+                                    if (item["openCloseOperate"] == 3101) {
+                                        h2 =
+                                            '        <div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_open">开</span></div>'
+                                    }
+                                    if (item["openCloseOperate"] == 3102) {
+                                        h2 =
+                                            '        <div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">关</span></div>'
+                                    }
+                                    s2 = ('<div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">' +
+                                        parseFloat(item["openDistance"]).toFixed(2) + '</span></div>')
+                                    f2 = false
+                                }
+                                if (item["gateType"] == 2503 && f3) {
+                                    if (item["openCloseOperate"] == 3101) {
+                                        h3 =
+                                            '        <div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_open">开</span></div>'
+                                    }
+                                    if (item["openCloseOperate"] == 3102) {
+                                        h3 =
+                                            '        <div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">关</span></div>'
+                                    }
+                                    s3 = ('<div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">' +
+                                        parseFloat(item["openDistance"]).toFixed(2) + '</span></div>')
+                                    f3 = false
+                                }
+                            }
+                            if (!h1) {
+                                h1 =
+                                    '<div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">&nbsp;</span></div>'
+                            }
+                            if (!h2) {
+                                h2 =
+                                    '<div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">&nbsp;</span></div>'
+                            }
+                            if (!h3) {
+                                h3 =
+                                    '<div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">&nbsp;</span></div>'
+                            }
+                            if (!s1) {
+                                s1 =
+                                    '<div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">&nbsp;</span></div>'
+                            }
+                            if (!s2) {
+                                s2 =
+                                    '<div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">&nbsp;</span></div>'
+                            }
+                            if (!s3) {
+                                s3 =
+                                    '<div class="m_warp"  style="width: 18%;line-height: 30px;padding: 0;" ><span class="sluice_close">&nbsp;</span></div>'
+                            }
+                            html2 += h1
+                            html2 += h2
+                            html2 += h3
+                            html2 += s1
+                            html2 += s2
+                            html2 += s3
+                        }
+                        html2 += '        <div class="clear"></div>'
+                        html2 += '    </div>'
+                        html2 += '    <hr>'
+                    }
+                    //                    console.log(html2)
+                    $("#item2mobile").html(html2)
+                } else {
+                    mui.toast(ret.msg)
+                }
+            })
+            var html3 = ""
+            app.ajax(app.url1("history/findPumpHistory"), {
+                id: id_new,
+                startTime: startTime,
+                endTime: endTime
+            }, function(ret) {
+                wDlg3.close();
+                console.log("history/findPumpHistory")
+                //                console.log(JSON.stringify(ret))
+                if (ret.code == 200) {
+                    console.log("beng:" + ret.data.length)
+                    if (ret.data.length == 0) {
+                        $("#beng").hide()
+                    } else {
+                        $("#beng").show()
+                    }
+                    for (var i = 0; i < ret.data.length; i++) {
+                        if (i > limit_count) {
+                            break
+                        }
+                        html3 += '<div class="div_warp">'
+                        html3 += '    <div class="l_warp" style="width: 100%;">' + ret.data[i]["time"] + '</div>'
+                        html3 += '</div>'
+                        html3 += '<div class="div_warp"> '
+                        for (var j = 0; j < ret.data[i]["pumpStateMonitorLogsVOList"].length; j++) {
+                            html3 += '    <div class="middle_warp  pump' + i + '  ">泵' + ret.data[i]["pumpStateMonitorLogsVOList"][j][
+                                "pumpDisplayOrder"
+                            ] + '</div>'
+                        }
+                        html3 += '    <div class="clear"></div>'
+                        html3 += '</div>'
+                        html3 += '<div class="div_warp"> '
+                        for (var j = 0; j < ret.data[i]["pumpStateMonitorLogsVOList"].length; j++) {
+                            if (ret.data[i]["pumpStateMonitorLogsVOList"][j]["openCloseOperate"] == 3101) {
+                                html3 += '        <div class="m_warp   sluice' + i + ' "  ><span class="sluice_open">开</span></div>'
+                            }
+                            if (ret.data[i]["pumpStateMonitorLogsVOList"][j]["openCloseOperate"] == 3102) {
+                                html3 += '        <div class="m_warp    sluice' + i + ' " ><span class="sluice_close">关</span></div>'
+                            }
+                        }
+                        html3 += '    <div class="clear"></div>'
+                        html3 += '</div>'
+                    }
+                    $("#item3mobile").html(html3)
+                    var item3mobilewidth = $("#item3mobile").width()
+                    for (var i = 0; i < ret.data.length; i++) {
+                        var num = ret.data[i]["pumpStateMonitorLogsVOList"].length
+                        var piece = item3mobilewidth / num
+                        $(".pump" + i).width(piece)
+                        $(".sluice" + i).width(piece)
+                    }
+                } else {
+                    mui.toast(ret.msg)
+                }
+            })
+            //            console.log(JSON.stringify(mapData));
+            //            app.showProgressBar();
+        }
+ 
+        function initDateRange() {
+            if (btn_date_range.innerText == '本日') {
+                selectDateStart.innerText = app.getDay();
+                selectDateEnd.innerText = app.getDay();
+            } else if (btn_date_range.innerText == '三日') {
+ 
+                selectDateStart.innerText = new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000).format("yyyy-MM-dd")
+                selectDateEnd.innerText = app.getDay();
+            } else if (btn_date_range.innerText == '五日') {
+                selectDateStart.innerText = new Date(new Date().getTime() - 5 * 24 * 60 * 60 * 1000).format("yyyy-MM-dd")
+                selectDateEnd.innerText = app.getDay();
+            }
+        }
+ 
+        $("#btn_rectification_to_rectification").click(function() {
+            if ($("#btn_rectification_to_rectification").html() == "取关") {
+                facility_id_arr.remove(id)
+            }
+            if ($("#btn_rectification_to_rectification").html() == "关注") {
+                facility_id_arr.push(id)
+            }
+            var xhr = new XMLHttpRequest();
+            var formData = new FormData();
+            xhr.timeout = 120000;
+            var upload = plus.nativeUI.showWaiting('上传中...');
+            xhr.ontimeout = function(e) {
+                mui.toast('请求超时，请再网络状态良好的地方重试');
+                upload.close()
+            };
+			console.log('用户'+app.getUserId())
+			console.log('水利设施Id'+JSON.stringify(facility_id_arr))
+            formData.append("user_id", app.getUserId());
+            for (var i = 0; i < facility_id_arr.length; i++) {
+                formData.append("items", facility_id_arr[i]);
+            }
+			
+			// console.log(id_new)
+            xhr.onreadystatechange = function(e) {
+                if (xhr.readyState == 4) { 
+                    console.log('水闸详情'+xhr.responseText)
+                    if (xhr.status == 200) {
+                        var ret = JSON.parse(xhr.responseText);
+                        if (ret.code == 0) {
+                            if (facility_id_arr.indexOf(id) == -1) {
+                                $("#btn_rectification_to_rectification").html("关注")
+                                mui.toast('取消关注成功');
+                            } else {
+                                $("#btn_rectification_to_rectification").html("取关")
+                                mui.toast('关注成功');
+                            }
+                            var parentViewer = mui.currentWebview.opener();
+                            mui.fire(parentViewer, 'wga_refresh');
+                        } else {
+                            if (ret.error)
+                                mui.toast(ret.error);
+                            else
+                                mui.toast(ret.desc);
+                        }
+                    } else {
+                        mui.toast('关注失败');
+                    }
+                    upload.close()
+                    return;
+                }
+            }
+            xhr.open('POST', app.url('save/my_concern'), true);
+            xhr.send(formData);
+        })
+    </script>
+</html>

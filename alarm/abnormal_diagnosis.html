@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="../asset/css/mui.min.css" rel="stylesheet"/>
+    <link href="../asset/css/iconfont.css" rel="stylesheet"/>
+    <link href="../asset/css/style.css" rel="stylesheet"/> 
+    <style>
+		.mui-bar {
+			height:90px;
+		}
+		.mui-bar-nav~.mui-content {
+			padding-top: 90px;
+		}
+    </style>
+</head>
+<body onload="app.route()">
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">异常诊断</h1>
+		<nav class="mui-bar-tab">
+		    <a id="jx_type_ship" class="mui-tab-item mui-active" href="#">
+			实时报警
+		    </a>
+		    <a class="mui-tab-item" href="#">
+		         实时预警
+		    </a>
+		</nav>
+	</header>
+	<div class="mui-content">
+	    <ul id="list" class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+			<li class="mui-table-view-cell">
+				<div class="mui-slider-right mui-disabled">
+					<a class="mui-btn mui-btn-yellow mui-icon mui-icon-compose"></a>
+					<a class="mui-btn mui-btn-red mui-icon mui-icon-closeempty"></a>
+				</div>
+				<div class="mui-slider-handle mui-navigate-right">
+					<div class="mui-table-cell mui-media ">
+						<img class="mui-media-object mui-pull-left" src="../asset/images/image.png">
+						<div class="mui-media-body">
+							火星水闸
+							<p class='mui-ellipsis'>报警时间： 2018-07-27  12:00:00</p>
+							<p class='mui-ellipsis'>报警类型：设备断线</p>
+							<p class='mui-ellipsis'>设备诊断：内闸</p>
+							
+						</div>
+					</div>
+				</div>
+			</li>
+			
+
+			<li class="mui-table-view-cell">
+				<div class="mui-slider-right mui-disabled">
+					<a class="mui-btn mui-btn-yellow mui-icon mui-icon-compose"></a>
+					<a class="mui-btn mui-btn-red mui-icon mui-icon-closeempty"></a>
+				</div>
+				<div class="mui-slider-handle mui-navigate-right">
+					<div class="mui-table-cell mui-media ">
+						<img class="mui-media-object mui-pull-left" src="../asset/images/image.png">
+						<div class="mui-media-body">
+							火星水闸
+							<p class='mui-ellipsis'>报警时间： 2018-07-27  12:00:00</p>
+							<p class='mui-ellipsis'>报警类型：设备断线</p>
+							<p class='mui-ellipsis'>设备诊断：内闸</p>
+							
+						</div>
+					</div>
+				</div>
+			</li>
+			
+
+			<li class="mui-table-view-cell">
+				<div class="mui-slider-right mui-disabled">
+					<a class="mui-btn mui-btn-yellow mui-icon mui-icon-compose"></a>
+					<a class="mui-btn mui-btn-red mui-icon mui-icon-closeempty"></a>
+				</div>
+				<div class="mui-slider-handle mui-navigate-right">
+					<div class="mui-table-cell mui-media ">
+						<img class="mui-media-object mui-pull-left" src="../asset/images/image.png">
+						<div class="mui-media-body">
+							火星水闸
+							<p class='mui-ellipsis'>报警时间： 2018-07-27  12:00:00</p>
+							<p class='mui-ellipsis'>报警类型：设备断线</p>
+							<p class='mui-ellipsis'>设备诊断：内闸</p>
+							
+						</div>
+					</div>
+				</div>
+			</li>
+			
+			
+			
+	    </ul>
+	</div>
+</body>
+<script src="../asset/js/mui.min.js"></script>
+<script src="../asset/js/app.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+	mui.ready(function(){
+		mui.init();
+		
+		mui('#list').on('tap', '.mui-table-view-cell', function() {
+			app.open("index.html");
+		})
+	})
+	
+	mui.plusReady(function() {
+		plus.screen.lockOrientation("portrait-primary");
+	});
+
+</script>
+</html>

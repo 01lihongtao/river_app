@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="asset/css/mui.min.css" rel="stylesheet" />
+		<link href="asset/css/iconfont.css" rel="stylesheet" />
+		<link href="asset/css/style.css" rel="stylesheet" />
+
+		<style type="text/css">
+			body {
+				padding: 0;
+				margin: 0;
+			}
+			
+			#header_img {
+				text-align: center;
+				margin-top: 50px;
+			}
+			
+			#buttons {
+				width: 100%;
+				margin-top: 160px;
+			}
+			
+			.button {
+				margin: 10px 0;
+			}
+			
+			.button a {
+				display: block;
+				left: 0px;
+				top: 0px;
+				width: 335px;
+				height: 50px;
+				line-height: 50px;
+				background-color: rgba(0, 102, 255, 1);
+				border: none;
+				border-radius: 131px;
+				-moz-box-shadow: none;
+				-webkit-box-shadow: none;
+				box-shadow: none;
+				font-family: '微软雅黑';
+				font-weight: 400;
+				font-style: normal;
+				font-size: 18px;
+				color: #FFFFFF;
+				margin: 0 auto;
+				text-decoration: none;
+				text-align: center;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--首页-->
+		<div id="header_img">
+			<img src="../asset/images/u22.png" />
+
+		</div>
+		<div id="buttons">
+			<div class="button">
+				<a id="hedao" href="#">河湖管护情况</a>
+			</div>
+
+			<div class="button">
+				<a id="yanghu" href="#">养护作业情况</a>
+			</div>
+
+		</div>
+
+		<div id="">
+		</div>
+	</body>
+
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/app.js"></script>
+
+	<script>
+		$("#hedao").click(function(){
+			app.open('riverlake_Manage.html');
+		})
+		$("#yanghu").click(function(){
+			app.open('maintenance_work.html');
+		})
+		
+	</script>
+
+</html>

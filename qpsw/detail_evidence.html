@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/iconfont.css" rel="stylesheet"/>
+    <link href="css/style.css" rel="stylesheet"/> 
+    <style>
+.mui-preview-image.mui-fullscreen {
+                position: fixed;
+                z-index: 20;
+                background-color: #000;
+            }
+            .mui-preview-header,
+            .mui-preview-footer {
+                position: absolute;
+                width: 100%;
+                left: 0;
+                z-index: 10;
+            }
+            .mui-preview-header {
+                height: 44px;
+                top: 0;
+            }
+            .mui-preview-footer {
+                height: 50px;
+                bottom: 0px;
+            }
+            .mui-preview-header .mui-preview-indicator {
+                display: block;
+                line-height: 25px;
+                color: #fff;
+                text-align: center;
+                margin: 15px auto 4;
+                width: 70px;
+                background-color: rgba(0, 0, 0, 0.4);
+                border-radius: 12px;
+                font-size: 16px;
+            }
+            .mui-preview-image {
+                display: none;
+                -webkit-animation-duration: 0.5s;
+                animation-duration: 0.5s;
+                -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+            }
+            .mui-preview-image.mui-preview-in {
+                -webkit-animation-name: fadeIn;
+                animation-name: fadeIn;
+            }
+            .mui-preview-image.mui-preview-out {
+                background: none;
+                -webkit-animation-name: fadeOut;
+                animation-name: fadeOut;
+            }
+            .mui-preview-image.mui-preview-out .mui-preview-header,
+            .mui-preview-image.mui-preview-out .mui-preview-footer {
+                display: none;
+            }
+            .mui-zoom-scroller {
+                position: absolute;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: flex;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                align-items: center;
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                justify-content: center;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                -webkit-backface-visibility: hidden;
+            }
+            .mui-zoom {
+                -webkit-transform-style: preserve-3d;
+                transform-style: preserve-3d;
+            }
+            .mui-slider .mui-slider-group .mui-slider-item img {
+                width: auto;
+                height: auto;
+                max-width: 100%;
+                max-height: 100%;
+            }
+            .mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+                width: 100%;
+            }
+            .mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+                display: inline-table;
+            }
+            .mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+                display: table-cell;
+                vertical-align: middle;
+            }
+            .mui-preview-loading {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                display: none;
+            }
+            .mui-preview-loading.mui-active {
+                display: block;
+            }
+            .mui-preview-loading .mui-spinner-white {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin-left: -25px;
+                margin-top: -25px;
+                height: 50px;
+                width: 50px;
+            }
+            .mui-preview-image img.mui-transitioning {
+                -webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+                transition: transform 0.5s ease, opacity 0.5s ease;
+            }
+            @-webkit-keyframes fadeIn {
+                0% {
+                    opacity: 0;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+            @keyframes fadeIn {
+                0% {
+                    opacity: 0;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+            @-webkit-keyframes fadeOut {
+                0% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                }
+            }
+            @keyframes fadeOut {
+                0% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                }
+            }
+            
+        .img_item {
+            max-height: 200px;
+            max-width: 200px;
+        }
+        
+        .div_correct_title {
+            margin: 10px;
+        }
+        
+        #div_correct {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+        <a id="btn_action" href="#popover_action" class="mui-btn mui-btn-link mui-pull-right" style="display: none;">操作</a>
+        
+        <a id="btn_del" class="mui-btn mui-btn-link mui-pull-right" style="display: none;">删除</a>
+        <a id="btn_edit" class="mui-btn mui-btn-link mui-pull-right" style="display: none;">编辑</a>
+        <a id="btn_upload" class="mui-btn mui-btn-link mui-pull-right" style="display: none;">上传</a>
+        <a id="btn_cancel_upload" class="mui-btn mui-btn-link mui-pull-right" style="display: none;">取消上传</a>
+        <h1 class="mui-title">取证详情</h1>
+    </header>
+    <div class="mui-content">
+        <ul id="list-option" class="mui-table-view">
+           <!-- <li class="mui-table-view-cell">
+                <i class="iconfont icon-list4f"></i> 状态
+                <span id="idState" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li> -->
+			<li class="mui-table-view-cell">
+			    <i class="iconfont icon-weizhibiaoji"></i> 位置描述
+			    <p id="txtPosDesc" class=""></p>
+			</li>
+			<!-- 经度 -->
+			<li class="mui-table-view-cell">
+			    <i class="iconfont icon-weizhibiaoji"></i> 经度
+			    <p id="lon" class=""></p>
+			</li>
+			<!-- 纬度 -->
+			<li class="mui-table-view-cell">
+			    <i class="iconfont icon-weizhibiaoji"></i> 纬度
+			    <p id="lat" class=""></p>
+			</li>
+			<!-- 发现时间 -->
+			<li class="mui-table-view-cell">
+			    <i class="iconfont icon-weizhibiaoji"></i> 发现时间
+			    <p id="foundtime" class=""></p>
+			</li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-list4f"></i> 上报编号
+                <span id="idReport" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-list4f"></i> 取证编号
+                <span id="idEvidence" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-wode"></i> 报告员
+                <span id="txtReporter" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-kaishixuncha"></i> 片区
+                <span id="txtArea" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-wode"></i> 村居
+                <span id="txt_cun" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-heliu"></i> 河道
+                <span id="txtRiver" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-hedaoshuiwenzhan"></i> 岸别
+                <span id="txtBank" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-date1"></i> 发现时间
+                <span id="txtFoundtime" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-leibieguanli"></i> 问题类别
+                <span id="txtType" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+            </li>
+          
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-camera"></i> 取证描述
+                <p id="txtEvidDesc" class=""></p>
+            </li>
+            <li class="mui-table-view-cell">
+                <i class="iconfont icon-image"></i> 取证照片
+                <br>
+                <div id="list_imgs">
+                </div>
+            </li>
+        </ul>
+        <div id="div_correct">
+            <div class="div_correct_title">
+            整改
+            </div>
+            <ul id="list-option" class="mui-table-view">
+                <li class="mui-table-view-cell">
+                    <i class="iconfont icon-camera"></i> 整改描述
+                    <p id="txtCorrectDesc" class=""></p>
+                </li>
+                <li class="mui-table-view-cell">
+                    <i class="iconfont icon-image"></i> 整改照片
+                    <br>
+                    <div id="list_imgs_correct">
+                    </div>
+                </li>
+            </ul>
+        </div>
+  </div>
+   
+    <div id="popover_action" class="mui-popover mui-popover-action mui-popover-bottom">
+        <ul class="mui-table-view">
+            <li id="btn_rectification" class="mui-table-view-cell" style="display: none;">
+                <a class="link_open">整改</a>
+            </li>
+            <li id="btn_rectification_to_need" class="mui-table-view-cell" style="display: none;">
+                <a class="link_open">需整改</a>
+            </li>
+            <li id="btn_rectification_to_cancel" class="mui-table-view-cell" style="display: none;">
+                <a class="link_open">撤销</a>
+            </li>
+            <li id="btn_rectification_to_good" class="mui-table-view-cell" style="display: none;">
+                <a class="link_open">整改合格</a>
+            </li>
+            <li id="btn_rectification_to_ng" class="mui-table-view-cell" style="display: none;">
+                <a class="link_open">不合格</a>
+            </li>
+            <li id="btn_rectification_move_to" class="mui-table-view-cell" style="display: none;">
+                <a class="link_open">移交第三方</a>
+            </li>
+        </ul>
+        <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+                <a href="#popover_action"><b>取消</b></a>
+            </li>
+        </ul>
+    </div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/mui.min.js"></script>
+<script src="js/mui.zoom.js"></script>
+<script src="js/mui.previewimage.js"></script>
+<script src="js/app.js"></script>
+<script type="text/javascript" charset="utf-8">
+    var currentUserId = app.getUserId();
+ 
+    var item_id = app.getUrlParam('item_id');
+    var time_id = app.getUrlParam('time_id');
+    var personnelType = app.getUrlParam('type'); // 1是巡查2是监理
+    var list_imgs = document.getElementById('list_imgs');
+    var list_imgs_correct = document.getElementById('list_imgs_correct');
+    var item_no = '';
+    
+    var itemState = 0;
+    
+    mui.init();
+    mui.previewImage();
+    
+    var timerCheckUpload = 0;
+    var timerExpired = 0;
+    var waiterUpload = 0;
+    
+    // 42 "发现问题"
+    // 62 "整改中"
+    // 63 "提交整改"
+    // 64 "整改完成"
+    // 65 "取消"
+    // 84  移送第三方
+    function changeState(nState) {
+        var currentUrl = app.url('api/forensics/change');
+        var arrData = {forensicsId: item_id, state: nState};
+        if(personnelType == 2)
+        {
+            currentUrl = app.url('api/supervisor/change');
+            arrData = {supervisorId: item_id, state: nState};
+        }
+        
+//        console.log(currentUrl);
+//        console.log(JSON.stringify(arrData));
+        
+        app.ajax(currentUrl,arrData,function(ret){
+//            console.log(JSON.stringify(ret));
+            if(ret.code == 200)
+            {
+                mui.toast('成功修改状态');
+                loadData(false);
+                
+                var parentViewer = mui.currentWebview.opener();    
+                mui.fire(parentViewer,'qpsw_refresh');
+            }
+            else
+            {
+                mui.toast('修改状态失败');
+            }
+        })
+    }
+    
+    function toUploading(val) {
+        if(val)
+        {
+            $('#btn_upload').hide();
+            $('#btn_edit').hide();
+            $('#btn_del').hide();
+            $('#btn_cancel_upload').show();
+        }
+        else
+        {
+            $('#btn_upload').show();
+            $('#btn_edit').show();
+            $('#btn_del').show();
+            $('#btn_cancel_upload').hide();
+        }
+    }
+ 
+    mui.ready(function(){
+        loadData(true);
+ 
+        if(time_id)
+        {
+            toUploading(false);
+            document.getElementById('btn_cancel_upload').addEventListener('tap',function(e){
+                toUploading(false);
+                
+                clearInterval(timerCheckUpload);
+            
+                // stop upload
+                var lst_events = JSON.parse(app.getSetting('event_list') || '[]');
+                var bUpdated = false;
+                for(var i = 0; i < lst_events.length; ++i)
+                {
+                    if(lst_events[i].time_id == time_id && lst_events[i].userId == currentUserId)
+                    {
+                        lst_events[i].toUpload = 0;
+                    }
+                }
+                
+                if(waiterUpload)
+                    waiterUpload.close();    
+            })
+            
+            // upload
+            document.getElementById('btn_upload').addEventListener('tap',function(e){
+                toUploading(true);
+                
+                var btnArray = ['取消', '上传'];
+                mui.confirm('是否真的上传？', '上传', btnArray, function(e) {
+                    if (e.index == 1) {
+                        var lst_events = JSON.parse(app.getSetting('event_list') || '[]');
+                        var bUpdated = false;
+                        var var_upload_res_arr = []
+                        for(var i = 0; i < lst_events.length; ++i)
+                        {
+                            if(lst_events[i].time_id == time_id && lst_events[i].userId == currentUserId)
+                            {
+                                app.removeSetting("detail_evidence_upload_"+time_id)
+                                lst_events[i].toUpload = 1;
+                                lst_events[i].try_times = 0;
+                                lst_events[i].to_upload_allow = 0;
+                                bUpdated = true;
+                                break;
+                            }
+                        }
+                        
+                        console.log('var_upload_res_arr： ' + bUpdated)
+                        
+                        if(bUpdated)
+                        {
+                            app.setSetting('event_list', JSON.stringify(lst_events));
+                            console.log(app.getSetting('event_list'));
+                            
+                            waiterUpload = plus.nativeUI.showWaiting( "上传中..." ,{modal:false});
+                            
+                            // check upload
+                            timerCheckUpload = setInterval(function(){
+                                //上传失败
+                                if(app.getSetting("detail_evidence_upload_"+time_id)=="upload error"){
+                                    clearInterval(timerCheckUpload);
+                                    clearInterval(timerExpired);
+                                    waiterUpload.close();
+                                    toUploading(false);
+                                    return
+                                }
+                                
+                                var lst_events = JSON.parse(app.getSetting('event_list') || '[]');
+                                
+                                var bUpdated = false;
+                                for(var i = 0; i < lst_events.length; ++i)
+                                {
+                                    if(lst_events[i].time_id == time_id && lst_events[i].userId == currentUserId)
+                                    {
+                                        bUpdated = true;
+                                    }
+                                }
+                                
+                                console.log("bUpdated:" + bUpdated)
+ 
+                                if(!bUpdated)
+                                {
+                                    clearInterval(timerCheckUpload);
+                                    clearInterval(timerExpired);
+                                    mui.toast('成功上传');
+                                    waiterUpload.close();
+                                    
+                                    var parentViewer = mui.currentWebview.opener();    
+                                    mui.fire(parentViewer,'qpsw_refresh');
+ 
+                                    mui.back();
+                                }
+                            },1000);
+                            
+                            // time out
+                            timerExpired = setTimeout(function(){
+                                clearInterval(timerCheckUpload);
+                                
+                                // stop upload
+                                var lst_events = JSON.parse(app.getSetting('event_list') || '[]');
+                                var bUpdated = false;
+                                for(var i = 0; i < lst_events.length; ++i)
+                                {
+                                    if(lst_events[i].time_id == time_id && lst_events[i].userId == currentUserId)
+                                    {
+                                        lst_events[i].toUpload = 0;
+                                        bUpdated = true;
+                                    }
+                                }
+                                
+                                if(bUpdated)
+                                {
+                                    app.setSetting('event_list', JSON.stringify(lst_events));                    
+                                    mui.toast('上传超时');
+                                    toUploading(false);
+                                }
+                                else
+                                {
+                                    mui.toast('成功上传');
+                                    
+                                    var parentViewer = mui.currentWebview.opener();    
+                                    mui.fire(parentViewer,'qpsw_refresh');
+ 
+                                    mui.back(); 
+                                }
+                                
+                                waiterUpload.close();
+                            }, 300000); // 5 minutes
+                        }
+                        else
+                        {
+                            mui.toast('未找到取证');
+                        }
+                    }
+                })
+            })
+            
+            // delete
+            document.getElementById('btn_del').addEventListener('tap',function(e){
+                var btnArray = ['取消', '删除'];
+                mui.confirm('是否真的删除？', '删除', btnArray, function(e) {
+                    if (e.index == 1) {
+                        var lst_events = JSON.parse(app.getSetting('event_list') || '[]');
+                        var bUpdated = false;
+                        for(var i = 0; i < lst_events.length; ++i)
+                        {
+                            if(lst_events[i].time_id == time_id)
+                            {
+                                lst_events.splice(i,1);
+                                bUpdated = true;
+                                break;
+                            }
+                        }
+                        
+                        if(bUpdated)
+                        {
+                            app.setSetting('event_list', JSON.stringify(lst_events));
+                            
+                            var parentViewer = mui.currentWebview.opener();    
+                            mui.fire(parentViewer,'qpsw_refresh');
+                            
+                            mui.toast('成功删除');
+                            mui.back();
+                        }
+                        else
+                        {
+                            mui.toast('未找到取证');
+                        }
+                    }
+                })
+            })
+            
+            // edit
+            document.getElementById('btn_edit').addEventListener('tap',function(e){
+                app.open('op_evidence.html?time_id=' + time_id);
+            })
+        
+            return;
+        }
+        
+        document.getElementById('btn_rectification_to_ng').addEventListener('tap',function(e){
+            mui('#popover_action').popover('hide');
+            var btnArray = ['取消', '不合格'];
+            mui.confirm('确认整改不合格？', '确认', btnArray, function(e) {
+                if (e.index == 1) {
+                    changeState(62);
+                }
+            })
+        })
+        
+        document.getElementById('btn_rectification_to_good').addEventListener('tap',function(e){
+            mui('#popover_action').popover('hide');
+            var btnArray = ['取消', '合格'];
+            mui.confirm('确认整改合格？', '确认', btnArray, function(e) {
+                if (e.index == 1) {
+                    changeState(64);
+                }
+            })
+        })
+        
+        document.getElementById('btn_rectification_to_cancel').addEventListener('tap',function(e){
+            mui('#popover_action').popover('hide');
+            var btnArray = ['取消', '撤消取证'];
+            mui.confirm('确认撤消取证？', '确认', btnArray, function(e) {
+                if (e.index == 1) {
+                    changeState(65);
+                }
+            })
+        })
+        
+        document.getElementById('btn_rectification_to_need').addEventListener('tap',function(e){
+            mui('#popover_action').popover('hide');
+            var btnArray = ['取消', '需要整改'];
+            mui.confirm('确认取证需要整改？', '确认', btnArray, function(e) {
+                if (e.index == 1) {
+                    changeState(62);
+                }
+            })
+        })
+        
+        document.getElementById('btn_rectification_move_to').addEventListener('tap',function(e){
+            mui('#popover_action').popover('hide');
+            var btnArray = ['取消', '移交第三方'];
+            mui.confirm('确认移交第三方？', '确认', btnArray, function(e) {
+                if (e.index == 1) {
+                    changeState(84);
+                }
+            })
+        })
+        
+        document.getElementById('btn_rectification').addEventListener('tap',function(e){
+            mui('#popover_action').popover('hide');
+            //console.log('btn_rectification')
+            // find correct
+            var _event_list = JSON.parse(app.getSetting('event_list') || "[]");
+            for(var i = 0; i < _event_list.length; ++i) {
+                var item = _event_list[i];
+//                console.log(item.event_type);
+                if(item.event_type == 2)
+//                    console.log(item.data.forensicsId);
+                if(item.event_type == 2 && item.data.forensicsId == item_id)
+                {
+                    mui.alert('该取证已保存整改信息，请至"信息流转\\待上传"进行处理')
+                    return;
+                }
+            }
+            
+            app.open('op_rectify.html?item_id=' + item_id + '&item_no=' + item_no + '&type=' + personnelType);
+        })
+    })
+    
+    mui.plusReady(function() {
+        plus.screen.lockOrientation("portrait-primary");
+    });
+    
+    if(item_id)
+    {
+        loadData(false);
+        // setInterval(function(){
+        //     loadData(false);
+        // },3000);
+    }
+ 
+    function loadData(bRefreshImg) {
+//        console.log("item_id:" + item_id)
+//        console.log("time_id:" + time_id)
+        
+        if(bRefreshImg)
+        {
+            list_imgs.innerText = '';
+            list_imgs_correct.innerText = '';
+        }
+        
+        // remote
+        console.log("---------------"+item_id);
+        if(item_id)
+        {
+            app.showProgressBar();
+            app.ajax(app.url('api/forensics/info'),{evidenceId:item_id,evidenceType:personnelType},function(ret){
+                console.log(JSON.stringify(ret));
+                app.showProgressBar(false);
+                if(ret.code == 200)
+                {
+                    document.getElementById('idState').innerText = ret.data.stateName;
+                    document.getElementById('idReport').innerText = ret.data.number;
+                    document.getElementById('idEvidence').innerText = item_no = ret.data.evidenceId;
+                    document.getElementById('txtReporter').innerText = ret.data.username;
+                    document.getElementById('txtArea').innerText = ret.data.areaName;
+                    document.getElementById('txt_cun').innerText = (ret.data.regionName?ret.data.regionName:"");
+                    document.getElementById('txtRiver').innerText = ret.data.river;
+                    document.getElementById('txtBank').innerText = ret.data.bankName;
+                    document.getElementById('txtFoundtime').innerText = ret.data.foundTime;
+                    document.getElementById('txtType').innerText = ret.data.typeName + '/' + ret.data.subName;
+                    document.getElementById('txtPosDesc').innerText = ret.data.pointDesc;
+                    if(ret.data.supervisorDesc)
+                        document.getElementById('txtEvidDesc').innerText = ret.data.supervisorDesc;
+                    else
+                        document.getElementById('txtEvidDesc').innerText = ret.data.forensicsDesc;
+                    
+                    
+                    // 42 "发现问题"
+                    // 62 "整改中"
+                    // 63 "提交整改"
+                    // 64 "整改完成"
+                    // 65 "取消"
+                    itemState = ret.data.processState;
+                    if(itemState == 63 || itemState == 64)
+                    {
+                        $('#div_correct').show();
+                        
+                        if(ret.data.correctDesc)
+                        {
+                            document.getElementById('txtCorrectDesc').innerText = ret.data.correctDesc;
+                        }
+                        else if(ret.data.correctAdvice)
+                        {
+                            document.getElementById('txtCorrectDesc').innerText = ret.data.correctAdvice ;
+                        }
+                        else
+                        {
+                            document.getElementById('txtCorrectDesc').innerText = '';
+                        }
+                        
+                        if(bRefreshImg)
+                        {
+                            if(ret.data.correctUrls)
+                            {
+                                ret.data.correctUrls.forEach(function(item2){
+                                    console.log("---12222222222222222>"+item2);
+                                    addImg(app.url(item2.slice(7),0));
+                                })
+                            }
+                        }
+                    }
+                    
+                    if(bRefreshImg)
+                    {
+                        ret.data.files.forEach(function(item2){
+							   console.log("---12222222222222222>"+item2);
+                            addImg(app.url(item2.slice(7),0));
+                        })
+                    }
+                    
+                    initCtrls()
+                }
+                else
+                {
+                    mui.toast(ret.desc);
+                }
+            })
+        }
+        // local
+        else
+        {
+            var event_list = app.getSetting('event_list') || "[]";
+            event_list = JSON.parse(event_list);
+            
+            event_list.forEach(function(item){
+                if(item.event_type == 1 && item.time_id == time_id)
+                {
+                    document.getElementById('idReport').innerText = '';
+                    document.getElementById('idEvidence').innerText = item.time_id;
+                    document.getElementById('txtReporter').innerText = item.data.username;
+                    document.getElementById('txtArea').innerText = item.data.areaName;
+                    document.getElementById('txt_cun').innerText = (item.data.regionName?item.data.regionName:"");
+                    document.getElementById('txtRiver').innerText = item.data.riverName;
+                    document.getElementById('txtBank').innerText = item.data.bankName;
+                    document.getElementById('txtFoundtime').innerText = item.data.foundTime;
+                    document.getElementById('txtType').innerText = item.data.typeName;// + '/' + ret.data.subName;
+                    document.getElementById('txtPosDesc').innerText = item.data.pointDesc;
+                    document.getElementById('txtEvidDesc').innerText = item.data.forensicsDesc;
+ 
+                    item.imgs.forEach(function(item2){
+                        addImg(app.url(item2,0));
+                    })
+                }
+            })
+        }
+    }
+        
+    function addImg(strSrc) {
+       console.log('addImg:》》》》》》》》》》》' + strSrc);
+       console.log('addImg:《《《《《《《《<《《' + encodeURI(strSrc.slice(6)));
+        var newImg = document.createElement('img');
+        $(newImg).attr('data-preview-src', '');
+        $(newImg).attr('data-preview-group','1');
+        newImg.src = encodeURI(strSrc);
+    //    newImg.src = strSrc;
+        newImg.classList.add("img-selected");
+        newImg.classList.add("img_item");
+        
+        list_imgs.appendChild(newImg);
+    }
+    
+    function addImg2(strSrc) {
+//        console.log('addImg:' + strSrc);
+//        console.log('addImg:' + encodeURI(strSrc));
+        var newImg = document.createElement('img');
+        $(newImg).attr('data-preview-src', '');
+        $(newImg).attr('data-preview-group','1');
+        newImg.src = encodeURI(strSrc);
+    //    newImg.src = strSrc;
+        newImg.classList.add("img-selected");
+        newImg.classList.add("img_item");
+        
+        list_imgs_correct.appendChild(newImg);
+    }
+ 
+    $('#img_preview').click(function(){
+        $('.mui-content').show();
+        $('#img_preview').animate({opacity:"0"},400,function(){
+            $('#img_preview').hide();
+        })
+    })
+    
+    /*
+    mui('#list_imgs').on('tap','.img_item',function(){
+        $('#img_preview img').attr('src',$(this).attr('src'));
+        $('#img_preview').show();
+        $('#img_preview').animate({opacity:"1"},400,function(){
+            $('.mui-content').hide();
+        })
+    }) */
+    function initCtrls() {
+        $('#btn_action').hide();
+        $('#btn_rectification').hide();
+        $('#btn_rectification_to_ng').hide();
+        $('#btn_rectification_to_good').hide();
+        $('#btn_rectification_to_cancel').hide();
+        $('#btn_rectification_to_need').hide();
+        $('#btn_rectification_move_to').hide();
+                
+        // 42 "发现问题"
+        // 62 "整改中"
+        // 63 "提交整改"
+        // 64 "整改完成"
+        // 65 "取消"
+        if(app.isAdmin())
+        {
+            // 42 "发现问题"
+            if(itemState == 42)
+            {
+                $('#btn_action').show();
+                $('#btn_rectification_to_cancel').show();
+                $('#btn_rectification_to_need').show();
+                
+                if(personnelType == 1)
+                {
+                    $('#btn_rectification_move_to').show();
+                }
+            }
+            // 62 "整改中"
+            else if(itemState == 62)
+            {
+                if(personnelType == 1)
+                {
+                    $('#btn_action').show();
+                    $('#btn_rectification_move_to').show();
+                }
+            }
+            // 63 "提交整改"
+            else if(itemState == 63)
+            {
+                $('#btn_action').show();
+                $('#btn_rectification_to_ng').show();
+                $('#btn_rectification_to_good').show();
+            }
+            // 64 "整改完成"
+            else if(itemState == 64)
+            {
+            //    $('#btn_rectification_to_ng').show();
+            }
+            // 65 "取消"
+            else if(itemState == 65)
+            {
+            //    $('#btn_rectification_to_need').show();
+            }
+        }
+        else if(app.isXc() || app.isJl()) {
+        }
+        else if(app.isYf()) {
+            // 62 "整改中"
+            if(itemState == 62)
+            {
+                $('#btn_action').show();
+                $('#btn_rectification').show();
+            }
+        }
+    }
+    
+    // refresh
+    window.addEventListener('qpsw_refresh',function(event){
+        loadData(true);
+        
+        var parentViewer = mui.currentWebview.opener();    
+        mui.fire(parentViewer,'qpsw_refresh');
+    });
+</script>
+</html>

@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit;
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.mui-bar {
+				height: 100px;
+			}
+			
+			.mui-search:before {
+				top: 24px;
+			}
+			
+			.rbtn {
+				width: 33px;
+				overflow: hidden;
+				letter-spacing: 800px;
+				margin: 11px 4%;
+				border-radius: 24px;
+				text-indent: -3.5px;
+			}
+			.search_list{
+				
+			}
+			.mui-bar-nav~.mui-content {
+				padding-top: 108px
+			}
+			
+			.mui-content>.mui-table-view:first-child {
+				margin-top: 0;
+			}
+			
+			#construction_detail_warp h4,
+			.mui-table-view-cell {
+				font-size: 16px !important;
+			}
+			
+			.detail_btn {
+				background-color: #007aff;
+				color: #fff;
+				font-size: 12px;
+				line-height: 14px;
+				padding: 3px 6px;
+				display: inline-block;
+				border-radius: 5px;
+				margin-left: 10px;
+			}
+			
+			.sluice_open {
+				color: dodgerblue !important;
+			}
+			
+			.sluice_close {
+				color: red !important;
+			}
+			
+			#filter_warp {
+				display: none;
+			}
+			
+			@media screen and (max-width: 321px) {
+				#construction_detail_warp {
+					font-size: 16px !important;
+				}
+				.rbtn {
+					margin: 11px 3%;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a class="mui-btn mui-btn-link mui-pull-right link_open" href="../../info/my_concern.html">我的关注</a>
+			<h1 class="mui-title">历史监控数据</h1>
+			<nav id="monitor_data" class="mui-bar-tab">
+				<a id="jx_type_ship" class="mui-tab-item mui-active" href="#">
+					监测点
+				</a>
+				<a class="mui-tab-item" href="#">
+					水利设施
+				</a>
+
+			</nav>
+			
+		</header>
+
+		<div id="monitor" class="mui-content ">
+
+			<ul id="list" class="mui-table-view">
+				<!--<li class="mui-table-view-cell">
+					商榻<span class="mui-pull-right">2.81m</span>
+				</li>
+
+				<li class="mui-table-view-cell">
+					青浦南门 <span class="mui-pull-right">2.66m</span>
+				</li>
+				<li class="mui-table-view-cell">
+					泖甸 <span class="mui-pull-right">2.21m</span>
+				</li>
+				<li class="mui-table-view-cell">
+					赵屯<span class="mui-pull-right">1.99m</span>
+				</li>
+				<li class="mui-table-view-cell">
+					商榻<span class="mui-pull-right">2.81m</span>
+				</li>-->
+
+			</ul>
+		</div>
+
+		<div id="construction_detail" >
+			<div id="construction_detail_warp" class="mui-content  mui-slider-group mui-scroll-wrapper" style="padding-top: 108px;">
+				<div class="mui-scroll">
+					<div style="background: #fff;    padding: 5px 0;">
+					<div class="mui-input-row mui-search" style="margin: 5px 15px;">
+						<input type="search" id="query_search" class="mui-input-clear" placeholder="输入水利设施名称" style="    margin-bottom: 0;">
+					</div>
+					<div id="filter_warp" style="text-align: center;">
+						<button id='all_facility' class="mui-btn mui-btn-primary rbtn" type='button'>全</button>
+						<button id='showUserPicker' class="mui-btn mui-btn-primary rbtn" type='button'>圩</button>
+						<button id='town_picker' class="mui-btn mui-btn-primary rbtn" type='button'>镇</button>
+						<button id='village_picker' class="mui-btn mui-btn-primary rbtn" type='button'>村</button>
+						<button id='river_picker' class="mui-btn mui-btn-primary rbtn" type='button'>河</button>
+					</div>
+					
+				</div>
+
+				<ul id="construction_list" class="mui-table-view">
+					<!--<li class="mui-table-view-cell mui-media search_list"   controlAreaName="新联"  facility_name="张塘浜泵闸"   townName="华新" villageName="北新村"  riverName="张塘浜" >	<a class="link_open mui-navigate-right"   href="259" facility_name="张塘浜泵闸">		<div class="mui-media-body div_warp">张塘浜泵闸<span class="map_navigate iconfont icon-dingwei mui-pull-right" facility_id="259"  style="color: red;font-size: 18px;"></span>		</div><p class="mui-ellipsis">&nbsp;</p><p class="mui-ellipsis">新联</p><p class="mui-ellipsis">华新/北新村</p><p class="mui-ellipsis">张塘浜</p>	</a></li><li class="mui-table-view-cell mui-media search_list"   controlAreaName="青松大控制"  facility_name="施家浜泵闸"   townName="华新" villageName="马阳村"  riverName="施家浜" >	<a class="link_open mui-navigate-right"   href="265" facility_name="施家浜泵闸">		<div class="mui-media-body div_warp">施家浜泵闸<span class="map_navigate iconfont icon-dingwei mui-pull-right" facility_id="265"  style="color: red;font-size: 18px;"></span>		</div><p class="mui-ellipsis">&nbsp;</p><p class="mui-ellipsis">青松大控制</p><p class="mui-ellipsis">华新/马阳村</p><p class="mui-ellipsis">施家浜</p>	</a></li><li class="mui-table-view-cell mui-media search_list"   controlAreaName="青松大控制"  facility_name="华新泵闸"   townName="华新" villageName="陆象村"  riverName="新通坡塘" >	<a class="link_open mui-navigate-right"   href="261" facility_name="华新泵闸">		<div class="mui-media-body div_warp">华新泵闸<span class="map_navigate iconfont icon-dingwei mui-pull-right" facility_id="261"  style="color: red;font-size: 18px;"></span>		</div><p class="mui-ellipsis">&nbsp;</p><p class="mui-ellipsis">青松大控制</p><p class="mui-ellipsis">华新/陆象村</p><p class="mui-ellipsis">新通坡塘</p>	</a></li><li class="mui-table-view-cell mui-media search_list"   controlAreaName="青松大控制"  facility_name="南马巷泵闸"   townName="华新" villageName=""  riverName="马巷河" >	<a class="link_open mui-navigate-right"   href="263" facility_name="南马巷泵闸">		<div class="mui-media-body div_warp">南马巷泵闸<span class="map_navigate iconfont icon-dingwei mui-pull-right" facility_id="263"  style="color: red;font-size: 18px;"></span>		</div><p class="mui-ellipsis">&nbsp;</p><p class="mui-ellipsis">青松大控制</p><p class="mui-ellipsis">华新/</p><p class="mui-ellipsis">马巷河</p>	</a></li><li class="mui-table-view-cell mui-media search_list"   controlAreaName="青松大控制"  facility_name="盐仓浦水闸"   townName="华新" villageName="新谊村"  riverName="新谊河" >	<a class="link_open mui-navigate-right"   href="267" facility_name="盐仓浦水闸">		<div class="mui-media-body div_warp">盐仓浦水闸<span class="map_navigate iconfont icon-dingwei mui-pull-right" facility_id="267"  style="color: red;font-size: 18px;"></span>		</div><p class="mui-ellipsis">&nbsp;</p><p class="mui-ellipsis">青松大控制</p><p class="mui-ellipsis">华新/新谊村</p><p class="mui-ellipsis">新谊河</p>	</a></li><li class="mui-table-view-cell mui-media search_list"   controlAreaName="青松大控制"  facility_name="秀龙水闸"   townName="华新" villageName="秀龙村"  riverName="华杨河" >	<a class="link_open mui-navigate-right"   href="268" facility_name="秀龙水闸">		<div class="mui-media-body div_warp">秀龙水闸<span class="map_navigate iconfont icon-dingwei mui-pull-right" facility_id="268"  style="color: red;font-size: 18px;"></span>		</div><p class="mui-ellipsis">&nbsp;</p><p class="mui-ellipsis">青松大控制</p><p class="mui-ellipsis">华新/秀龙村</p><p class="mui-ellipsis">华杨河</p>	</a></li>-->
+	
+				</ul>
+				<div id="page_loading" class="page_loader">
+					<img src="../../asset/images/loading.gif"> 加载中...
+				</div>
+				<div id="page_ended" class="page_loader">
+					列表已到最后
+				</div>
+				</div>
+			</div>
+		</div>
+		
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=9f4e8708dc930f1ac309d418fc485070&callback=init&plugin=AMap.Geocoder"></script>
+	<script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+	<script type="text/javascript" charset="utf-8">
+ 
+ 
+		
+		var timer;
+		var g_facility_name;
+		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		var cp_id = user_data.company_id
+		var g_data = {}
+		var var_controlAreaName_arr = [];
+		var var_all_facility_arr = [];
+		var var_town_arr = [];
+		var var_village_arr = [];
+		var var_river_arr = [];
+		var currentPage = 0;
+		var maxPage = 1;
+		var countPageItems = 30;
+		var isLoading = false;
+		mui('#construction_detail_warp').scroll();
+		document.getElementById('construction_detail_warp').addEventListener('scroll', function(e) {
+			if(isLoading)
+				return;
+//			console.log(mui('#construction_detail_warp').scroll().y - mui('#construction_detail_warp').scroll().maxScrollY)
+			if((mui('#construction_detail_warp').scroll().y - mui('#construction_detail_warp').scroll().maxScrollY) < 20) {
+				if(currentPage != maxPage) {
+					init_html(false)
+				}
+			}
+		});
+		//普通示例
+			var all_facility_picker = new mui.PopPicker();
+			var all_facility_arr_data = [{
+				value: "全",
+				text: "全部",
+				id: ""
+			}]
+
+			var all_facility_button = document.getElementById('all_facility');
+
+			all_facility_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				all_facility_picker.show(function(items) {
+					search_facilty()
+					all_facility_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+				});
+			}, false);
+
+			//普通示例
+			var userPicker = new mui.PopPicker();
+			var picker_arr_data = [{
+				value: "圩",
+				text: "全部",
+				id: ""
+			}]
+
+			var showUserPickerButton = document.getElementById('showUserPicker');
+			var userResult = document.getElementById('userResult');
+			showUserPickerButton.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				userPicker.show(function(items) {
+					search_facilty(items[0]["value"], "facility_name")
+
+					showUserPickerButton.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+				});
+			}, false);
+
+			var town_picker = new mui.PopPicker();
+			var town_picker_arr_data = [{
+				value: "镇",
+				text: "全部",
+				id: ""
+			}]
+
+			var town_picker_button = document.getElementById('town_picker');
+
+			town_picker_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				town_picker.show(function(items) {
+					search_facilty(items[0]["value"], "townName")
+					town_picker_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					console.log(items[0]["value"])
+					if(items[0]["value"] != "镇") {
+						var street_name = items[0]["value"]
+						app.ajax(app.url("query/street_water_gate_list"), {
+							street_name: street_name
+						}, function(ret) {
+
+							if(ret.code == 0) {
+
+								village_picker_arr_data = [{
+									value: "村",
+									text: "全部",
+
+								}]
+								if(ret.data[0]["villages"]) {
+									var data = ret.data[0].villages
+									for(var i = 0; i < data.length; i++) {
+
+										village_picker_arr_data.push({
+											value: data[i]["name"],
+											text: data[i]["name"]
+										})
+									}
+								}
+
+								village_picker_button.innerHTML = "村"
+								village_picker.setData(village_picker_arr_data);
+							} else {
+								mui.toast(ret.error)
+							}
+						})
+					}
+				});
+			}, false);
+
+			var village_picker = new mui.PopPicker();
+			var village_picker_arr_data = [{
+				value: "村",
+				text: "全部",
+				id: ""
+			}]
+
+			var village_picker_button = document.getElementById('village_picker');
+
+			village_picker_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				village_picker.show(function(items) {
+					search_facilty(items[0]["value"], "villageName")
+					village_picker_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+				});
+			}, false);
+			var river_picker = new mui.PopPicker();
+			var river_picker_arr_data = [{
+				value: "河",
+				text: "全部",
+				id: ""
+			}]
+
+			var river_picker_button = document.getElementById('river_picker');
+
+			river_picker_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				river_picker.show(function(items) {
+					search_facilty(items[0]["value"], "riverName")
+					river_picker_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+				});
+			}, false);
+		var slideUpTimer;
+
+			function input_search_facilty(this_value) {
+				clearTimeout(timer)
+				timer = setTimeout(function() {
+
+					$(".search_list").each(function() {
+						var that = $(this)
+
+						//			 			console.log(that.attr("facility_name"));
+						if(that.attr("facility_name").indexOf(this_value) == -1) {
+
+							that.hide()
+						} else {
+							//							console.log($(this).attr("facility_name").indexOf(this_value) == -1)
+							that.show()
+						}
+					})
+				}, 500)
+			}
+
+			function search_facilty() {
+				clearTimeout(timer)
+				timer = setTimeout(function() {
+
+					$(".search_list").each(function() {
+						var var_arr = [];
+						var that = $(this)
+						if(all_facility_button.innerHTML != "全")
+							var_arr.push({
+								attr: "facility_name",
+								id: "all_facility"
+							})
+						if(showUserPickerButton.innerHTML != "圩")
+							var_arr.push({
+								attr: "controlAreaName",
+								id: "showUserPicker"
+							})
+						if(town_picker_button.innerHTML != "镇")
+							var_arr.push({
+								attr: "townName",
+								id: "town_picker"
+							})
+
+						if(village_picker_button.innerHTML != "村")
+							var_arr.push({
+								attr: "villageName",
+								id: "village_picker"
+							})
+						if(river_picker_button.innerHTML != "河")
+							var_arr.push({
+								attr: "riverName",
+								id: "river_picker"
+							})
+
+						//						console.log(var_arr)
+						var flag = true
+						for(var i = 0; i < var_arr.length; i++) {
+							if(that.attr(var_arr[i]["attr"]).indexOf($("#" + var_arr[i]["id"]).html()) == -1) {
+								flag = false
+							}
+						}
+
+						if(flag) {
+							that.show()
+						} else {
+							that.hide()
+						}
+					})
+				}, 300)
+			}
+		mui.ready(function() {
+
+			mui.init();
+			$('#page_loading').show();
+			$('#page_ended').hide();
+			document.getElementById("query_search").addEventListener('input', function() {
+				var this_value = this.value
+				//				mui('#construction_detail_warp').scroll().scrollTo(0, 0);
+				g_facility_name = this_value
+				init_html(true)
+//				input_search_facilty(this_value);
+
+				console.log("input")
+			});
+			document.getElementById("query_search").addEventListener('focus', function() {
+				console.log("focus")
+				$("#filter_warp").slideDown()
+			});
+			document.getElementById("query_search").addEventListener('blur', function() {
+				console.log("blur")
+
+			});
+			//滑动关闭键盘
+			$("#construction_list").bind("tap swipeup touchmove", function(e) {
+//				console.log("swipeup")
+		
+				clearTimeout(slideUpTimer)
+				slideUpTimer = setTimeout(function() {
+					$("#filter_warp").slideUp()
+				}, 500)
+				//				app.open("history_water_detail.html")
+				document.activeElement.blur();
+			})
+
+			$(".mui-icon-clear").on("tap", function() {
+				input_search_facilty("");
+			})
+			//			$("#construction_detail_warp").on("tap",".open_the_link", function() {
+			//				console.log("111")
+			//				app.open("history_water_detail.html")
+			//			})
+			
+			
+			mui('#monitor_data').on('tap', '.mui-tab-item', function() {
+				current_tree_type = this.innerText;
+
+				if(current_tree_type == '监测点') {
+					$('#monitor').show();
+					$('#construction_detail').hide();
+
+				} else if(current_tree_type == '水利设施') {
+					$('#monitor').hide();
+					$('#construction_detail').show();
+
+				}
+			})
+			mui('#list').on('tap', '.link_open', function() {
+				
+				app.open($(this).attr('href'));
+			})
+			
+			mui('#construction_list').on('tap', '.link_open', function() {
+				
+				app.open($(this).attr('href'));
+			})
+			mui('body').on('tap', '.map_navigate', function() {
+
+				facility_id = this.getAttribute("facility_id")
+				app.open("../../map.html?facility_id=" + facility_id)
+
+			})
+			//			$('#monitor').hide();
+			//			$('#construction_detail').show();
+			$('#monitor').show();
+			$('#construction_detail').hide();
+
+		})
+	 
+		function uniq(array) {
+			var temp = []; //一个新的临时数组
+			for(var i = 0; i < array.length; i++) {
+				if(temp.indexOf(array[i]) == -1) {
+					temp.push(array[i]);
+				}
+			}
+			return temp;
+		}
+ 		var init_all_list_flag = true;
+		function init_water(){
+			app.ajax(app.url('query/history/checkpoint_list'), {
+
+			}, function(ret) {
+				console.log(JSON.stringify(ret))
+				$('#page_loading').hide();
+				$('#page_ended').show();
+				if(ret.code == 0) {
+					var html = ""
+					var data = ret.data
+//					console.log(JSON.stringify(data))
+					data.forEach(function(item) {
+						html += '<li class="mui-table-view-cell">'
+						html += '<a class="link_open mui-navigate-right" href="history_water_level.html?id='+item.monitoringPointId+'&name='+item.monitoringPointName+'">'
+						html +=  item.monitoringPointName 
+						html += '</a>'
+						html += '</li>'
+					})
+					$("#list").html(html)
+				} else {
+					mui.toast(ret.error);
+				}
+			})
+		}
+		function init_html(load_flag) {
+			console.log("init_html")
+			if(!init_all_list_flag) {
+				return;
+			}
+			init_all_list_flag = false;
+			if(load_flag) {
+				currentPage = 0;
+			}
+			currentPage = currentPage + 1
+			var wDlg = plus.nativeUI.showWaiting("加载中...");
+			
+			if($("#selectCompany").attr('item_id')){
+				cp_id = $("#selectCompany").attr('item_id')
+			}
+			
+			var post_data =  {
+				// company_id: cp_id,
+				page_no: currentPage,
+				page_size: countPageItems
+			}
+			if(g_facility_name){
+				post_data["facility_name"] = g_facility_name
+			}
+			post_data["uid"] = app.getUserId()
+			console.log(JSON.stringify(post_data))
+		
+			app.ajax(app.url('query/facility_list'), post_data, function(ret) {
+				wDlg.close();
+				console.log(JSON.stringify(ret))
+				//				$('#page_loading').hide();
+				$('#page_ended').show();
+				if(ret.code == 0) {
+					currentPage = ret.data.page_no
+					maxPage = ret.data.page_count
+					var data = ret.data.items
+					var html = ""
+
+					for(var i = 0; i < data.length; i++) {
+						g_data[data[i]["id"]] = data[i]
+						html += '<li class="mui-table-view-cell mui-media search_list"   controlAreaName="' + (data[i]["control_area"] ? data[i]["control_area"] : "") + '"  facility_name="' + (data[i]["name"] ? data[i]["name"] : "") + '"   townName="' + (data[i]["street"] ? data[i]["street"] : "") + '" villageName="' + (data[i]["village"] ? data[i]["village"] : "") + '"  riverName="' + (data[i]["river"] ? data[i]["river"] : "") + '" >'
+						html += '	<a class="link_open mui-navigate-right"   href="history_water_detail.html?id=' + data[i]["id"] + '&facility_name='+data[i]["name"]+'" facility_name="'+data[i]["name"]+'">'
+
+						html += '		<div class="mui-media-body div_warp">'
+						html += data[i]["name"]
+						if(data[i]["lon"] && data[i]["lat"])
+							html += '<span class="map_navigate iconfont icon-dingwei mui-pull-right" facility_id="' + data[i]["id"] + '"  style="color: red;font-size: 18px;"></span>'
+						html += '		</div>'
+
+						//						html+='			<div class="mui-pull-right right_warp"><span class="text-red">'+data[i]["type"]+'</span>-<span class="text-blue">'+data[i]["river"]+'</span></div>'
+						html += '<p class="mui-ellipsis">&nbsp;</p>'
+						html += '<p class="mui-ellipsis">' + (data[i]["control_area"]?data[i]["control_area"]:"") + '</p>'
+						html += '<p class="mui-ellipsis">' + (data[i]["street"]?data[i]["street"]:"") + "/" + (data[i]["village"]?data[i]["village"]:"") + '</p>'
+						
+						html += '<p class="mui-ellipsis">' + (data[i]["river"]?data[i]["river"]:"") + '</p>'
+						
+//						html += '<p class="mui-ellipsis">责任单位：' + (data[i]["company_name"]?data[i]["company_name"]:"") + '</p>'
+						
+
+						html += '	</a>'
+						html += '</li>'
+						var_all_facility_arr.push(data[i]["name"])
+						var_controlAreaName_arr.push(data[i]["control_area"])
+						var_town_arr.push(data[i]["street"])
+						var_village_arr.push(data[i]["village"])
+						var_river_arr.push(data[i]["river"])
+					}
+					all_facility_arr_data = [{
+						value: "全",
+						text: "全部",
+						id: ""
+					}]
+					
+					 picker_arr_data = [{
+						value: "圩",
+						text: "全部",
+						id: ""
+					}]
+					
+					 picker_arr_data = [{
+						value: "圩",
+						text: "全部",
+						id: ""
+					}]
+					
+					village_picker_arr_data = [{
+						value: "村",
+						text: "全部",
+						id: ""
+					}]
+					river_picker_arr_data = [{
+						value: "河",
+						text: "全部",
+						id: ""
+					}]
+					var_all_facility_arr = uniq(var_all_facility_arr);
+					
+					var_all_facility_arr.forEach(function(item) {
+						if(item) {
+							all_facility_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					all_facility_picker.setData(all_facility_arr_data);
+
+					var_controlAreaName_arr = uniq(var_controlAreaName_arr);
+					var_controlAreaName_arr.forEach(function(item) {
+						if(item) {
+							picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					userPicker.setData(picker_arr_data);
+//					console.log("var_town_arr:"+var_town_arr)
+					var_town_arr = uniq(var_town_arr);
+//					console.log("var_town_arr:"+var_town_arr)
+					var_town_arr.forEach(function(item) {
+						if(item) {
+							town_picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					town_picker.setData(town_picker_arr_data);
+					
+					var_village_arr = uniq(var_village_arr);
+					var_village_arr.forEach(function(item) {
+						if(item) {
+							village_picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+
+					village_picker.setData(village_picker_arr_data);
+
+					river_picker.setData(river_picker_arr_data);
+					var_river_arr = uniq(var_river_arr);
+					var_river_arr.forEach(function(item) {
+						if(item) {
+							river_picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					river_picker.setData(river_picker_arr_data);
+//					console.log(html)
+					if(load_flag) {
+
+						
+						$("#construction_list").html(html);
+
+					} else {
+						console.log(".append(html)")
+						$("#construction_list").append(html);
+					}
+					
+				} else {
+					mui.toast(ret.error);
+				}
+				init_all_list_flag = true
+			});
+			
+		}
+		mui.plusReady(function() {
+			init_html(true)
+			init_water()
+			plus.screen.lockOrientation("portrait-primary");
+		});
+	</script>
+
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../asset/css/mui.min.css">
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			#list {
+				/*margin-top: 55px;*/
+			}
+			h4{
+				font-size: 18px !important;
+			}
+			  .mui-table-view-cell{
+					font-size: 16px !important;
+				}
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+			
+			.h4_header {
+				margin-top: 55px;
+				background: #fff;
+				font-size: 24px;
+				padding: 10px;
+				border-bottom: 1px solid #ccc;
+			}
+			
+			.state {
+				margin: 10px;
+				display: block;
+				/*letter-spacing: 18px;*/
+				border: 1px dashed red;
+				width: 40%;
+				text-align: center;
+				padding: 4px;
+				border-radius: 5px;
+				color: red;
+				display: inline-block;
+			}
+			
+			.div_warp {
+				padding: 15px;
+				background: #f7f6f6;
+				border-bottom: 1px solid #666;
+			}
+			#step_number{
+				float: right;margin: 10px;color: #fff;background: #06f;border: 0;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">签到详情</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-scroll-wrapper" style="background: #FFFFFF;">
+				<div class="mui-scroll">
+					<h4 class="h4_header">
+						<span id="current_month"></span>
+						<button class="mui-pull-right name"  style="    margin-top: -8px;" ></button>
+					</h4>
+					
+					<div id="div_checked_list">
+						<span class="state" style=""></span>
+						<button id="step_number" >步数统计</button>
+					</div>
+
+					<div class="mui-slider-handle div_warp" id="first" style="display: none;">
+						<div class="mui-table-cell mui-media ">
+							<!--<img class="mui-media-object mui-pull-left" src="./images/image.png">-->
+							<div class="mui-media-body">
+								上班签到<span style="color: red;">（<span id="clockinAttendanceStateStr"></span>）</span>
+								<p class='mui-ellipsis'>限定时间： <span id="first_limit_time" style="color: red;"></span></p>
+								<p class='mui-ellipsis'>签到时间： <span id="first_sign_time" style="color: red;"></span> </p>
+								<p class=''>签到地址：<br>
+									<span style="color: #06f;" id="first_position"></span> </p>
+								<p class='mui-ellipsis'>经纬度：<span id="first_lonlan"></span> </p>
+								<p class=''>签到备注：<br>
+									<span style="color: #06f;" id="first_memo"></span> </p>
+								<img id="first_img" style="width: 80%; " src="">
+							</div>
+						</div>
+					</div>
+					<div class="mui-slider-handle div_warp" id="second"  style="display: none;" >
+						<div class="mui-table-cell mui-media ">
+
+							<!--<img class="mui-media-object mui-pull-left" src="./images/image.png">-->
+							<div class="mui-media-body">
+								下班签到<span style="color: red;">（<span id="clockoutAttendanceStateStr"></span>）</span>
+								<p class='mui-ellipsis'>限定时间： <span id="second_limit_time" style="color: red;"></span></p>
+								<p class='mui-ellipsis'>签到时间： <span id="second_sign_time" style="color: red;"></span> </p>
+								<p class=''>签到地址：<br>
+									<span style="color: #06f;" id="second_position"></span> </p>
+								<p class='mui-ellipsis'>经纬度：<span id="second_lonlan"></span></p>
+								<p class=''>签到备注：<br>
+									<span style="color: #06f;" id="second_memo"></span> </p>
+									<img id="second_img" style="width: 80%; " src="">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		var isJL = app.isJl();
+		
+		if(isJL)
+		{
+			$('.div_warp').hide();
+		}
+		
+		var date = app.getUrlParam('date');
+		var state = app.getUrlParam('state');
+		
+		var user_name = app.getUrlParam('user_name');
+		var user_id = app.getUrlParam('user_id');
+		
+		$("#current_month").html(date.split("-")[0]+"年"+date.split("-")[1]+"月"+date.split("-")[2]+"日")
+		$(".state").html(state)
+		var user_data = app.getUserInfo();
+		if(!user_name){
+			user_name = user_data.user_name
+		}
+		if(!user_id){
+			user_id = user_data["id"]
+		}
+		$(".name").html(user_name)
+		
+		document.getElementById("step_number").addEventListener("tap",function(){
+			
+			app.open("step_number_detail.html?id="+user_id+"&date="+date+"&user_name="+user_name)
+		})
+		mui.ready(function() {
+			if(app.isGly() || app.isAdmin()){
+				$("#step_number").show()
+			}else{
+				$("#step_number").hide()
+			}
+			mui(".mui-scroll-wrapper").scroll();
+			console.log(JSON.stringify({
+				user_id:user_id,
+				year: date.split("-")[0],
+				month: date.split("-")[1],
+				day: date.split("-")[2],
+			}))
+			app.ajax(app.url('query/attendance/check_in_detail'), {
+				user_id:user_id,
+				year: date.split("-")[0],
+				month: date.split("-")[1],
+				day: date.split("-")[2],
+			}, function(ret) {
+				console.log(JSON.stringify(ret))
+				if(ret.code == 0) {
+					var data = ret.data
+					if(data) {
+						var first_flag = false
+						var second_flag = false
+						var strHtml = '';
+						for(var i = 0; i < data.date_list.length; i++) {
+							if(isJL)
+							{
+								strHtml+='<span class="state" style="">' + data.date_list[i]["facilityName"] + '</span>';
+								strHtml+='<div class="mui-slider-handle div_warp">';
+								strHtml+='	<div class="mui-table-cell mui-media ">';
+								strHtml+='<div class="mui-media-body">';
+								strHtml+=	'签到';
+								strHtml+=	'<p class="mui-ellipsis">签到时间： <span id="second_sign_time" style="color: red;">'+ data.date_list[i]["clockinTime"] +'</span> </p>';
+								strHtml+=	'<p>签到地址：<br>'
+								strHtml+=	'	<span style="color: #06f;" id="second_position">' + data.date_list[i]["locationClockin"] + '</span> </p>'
+								strHtml+=	'<p class="mui-ellipsis">经纬度：<span id="second_lonlan">' + data.date_list[i]["lonClockin"] + " - " + data.date_list[i]["latClockin"] + '</span></p>'
+								strHtml+=	'<p>签到备注：<br>'
+								strHtml+=	'<span style="color: #06f;" id="second_memo">' + data.date_list[i]["remarkClockin"] + '</span> </p>'
+								if(data.date_list[i]["clockinImage"])
+									strHtml+=	'<img id="second_img" style="width: 80%; " src="'+ app.urlImg(data.date_list[i]["clockinImage"]) +'">'
+						
+								
+								
+								strHtml+=	'</div>'
+								strHtml+=	'</div>'
+								strHtml+=	'</div>'
+							}
+							else
+							{
+								if(data.date_list[i]["scheduleClockinTime"])
+									$("#first_limit_time").html(data.date_list[i]["scheduleClockinTime"])
+								if(data.date_list[i]["clockinTime"])
+									$("#first_sign_time").html(data.date_list[i]["clockinTime"])
+								if(data.date_list[i]["remarkClockin"])
+									$("#first_memo").html(data.date_list[i]["remarkClockin"])
+								if(data.date_list[i]["locationClockin"])
+									$("#first_position").html(data.date_list[i]["locationClockin"])
+								if(data.date_list[i]["lonClockin"])
+									$("#first_lonlan").html(data.date_list[i]["lonClockin"] + " - " + data.date_list[i]["latClockin"])
+	
+								if(data.date_list[i]["scheduleClockoutTime"])
+									$("#second_limit_time").html(data.date_list[i]["scheduleClockoutTime"])
+								if(data.date_list[i]["clockoutTime"])
+									$("#second_sign_time").html(data.date_list[i]["clockoutTime"])
+								if(data.date_list[i]["remarkClockout"])
+									$("#second_memo").html(data.date_list[i]["remarkClockout"])
+								if(data.date_list[i]["locationClockout"])
+									$("#second_position").html(data.date_list[i]["locationClockout"])
+								if(data.date_list[i]["lonClockout"])
+									$("#second_lonlan").html(data.date_list[i]["lonClockout"] + " - " + data.date_list[i]["latClockout"])
+								if(data.date_list[i]["clockinImage"])
+									$("#first_img").attr("src",app.urlImg(data.date_list[i]["clockinImage"]))
+								else
+									$("#first_img").hide()
+								
+								if(data.date_list[i]["clockoutImage"])
+									$("#second_img").attr("src",app.urlImg(data.date_list[i]["clockoutImage"]))
+								else
+									$("#second_img").hide()
+								if(data.date_list[i]["clockinAttendanceStateStr"])
+									$("#clockinAttendanceStateStr").html(data.date_list[i]["clockinAttendanceStateStr"])
+									
+								if(data.date_list[i]["clockoutAttendanceStateStr"])
+									$("#clockoutAttendanceStateStr").html(data.date_list[i]["clockoutAttendanceStateStr"])	
+								
+								if(data.date_list[i]["clockinAttendanceStateStr"]) {
+									first_flag = true
+								}
+								if(data.date_list[i]["clockoutAttendanceStateStr"]) {
+									second_flag = true
+								}
+							}
+						}
+						
+						if(isJL)
+						{
+							console.log("isJL",first_flag,second_flag)
+							$('#div_checked_list').html(strHtml);
+						}
+						else
+						{
+							console.log("isnotJL",first_flag,second_flag)
+							if(first_flag) {
+								$("#first").show()
+							} else {
+								$("#first").hide()
+							}
+	
+							if(second_flag) {
+								$("#second").show()
+							} else {
+								$("#second").hide()
+							}
+						}
+					}else{
+						mui.toast(ret.desc);
+//						setTimeout(function(){
+//							app.ajaxBack();
+//						},2000);
+						
+					}
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+
+			mui('#list').on('tap', '.link_open', function() {
+				app.open($(this).attr('href'));
+			})
+
+		})
+
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+	</script>
+
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../asset/css/mui.min.css">
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 100px;
+			}
+			
+			.mui-bar {
+				height: 100px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">覆盖查询</h1>
+
+			<div class="mui-input-row mui-search">
+				<input id="query_search" type="search" class="mui-input-clear" placeholder="输入水利设施名称">
+			</div>
+		</header>
+		<div class="mui-content">
+			<ul id="list" class="mui-table-view">
+
+			</ul>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		var cp_id = app.getUrlParam('id');
+		var cp_name = app.getUrlParam('cp_name');
+		var timer;
+		$(".mui-title").html(cp_name + "覆盖查询")
+		mui.ready(function() {
+
+			document.getElementById("query_search").addEventListener('input', function() {
+				var this_value = this.value
+				
+				clearTimeout(timer)
+				timer = setTimeout(function() {
+					console.log(this_value);
+					$(".search_list").each(function() {
+						
+						if($(this).attr("facility_name").indexOf(this_value) == -1) {
+							
+							$(this).hide()
+						} else {
+//							console.log($(this).attr("facility_name").indexOf(this_value) == -1)
+							$(this).show()
+						}
+					})
+				}, 500)
+
+			});
+			app.ajax(app.url('query/cover_facility_list'), {
+				companyId: cp_id
+			}, function(ret) {
+
+				if(ret.code == 0) {
+					var data = ret.data;
+					var html = "";
+					for(var i = 0; i < data.length; i++) {
+
+						html += '<li  class="mui-table-view-cell search_list" facility_name="' + data[i]["facility_name"] + '" >'
+						html += '<a  class="link_open mui-navigate-right"  href="date_override_query.html?facility_id=' + data[i]["facility_id"] + '">'
+						html += data[i]["facility_name"]
+						html += '</a>'
+						html += '</li>'
+					}
+					$("#list").html(html)
+					//					app.open('main.html');
+
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+			mui('#list').on('tap', '.link_open', function() {
+				app.open($(this).attr('href'));
+			})
+
+		})
+
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+	</script>
+
+</html>

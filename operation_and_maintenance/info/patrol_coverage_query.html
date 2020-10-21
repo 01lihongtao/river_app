@@ -1,0 +1,356 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-bar {
+				height: 100px;
+				border-bottom: 1px solid #ddd;
+			}
+
+			.mui-bar-nav~.mui-content {
+				padding-top: 100px;
+			}
+
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+
+			.init-html-h3 {
+				text-align: left;
+				font-size: 18px;
+				font-weight: 100;
+				margin-left: 13px;
+				line-height: 40px;
+			}
+
+			.mui-control-content {
+				background-color: white;
+				/*min-height: 215px;*/
+			}
+
+			.mui-control-content .mui-loading {
+				margin-top: 50px;
+			}
+
+			.div_warp {
+				margin: 0;
+				font-size: 14px;
+				/*border-bottom: 1px solid #ccc;*/
+			}
+
+			.left_warp {
+				width: 50%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+				padding: 8px 0;
+			}
+
+			.middle_warp {
+				width: 25%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+				padding: 8px 0;
+			}
+
+			.l_warp {
+				width: 50%;
+				float: left;
+				text-align: center;
+				padding: 8px 0;
+			}
+
+			.m_warp {
+				width: 25%;
+				float: left;
+				text-align: center;
+				padding: 8px 0;
+			}
+			.mui-popup-text{
+				height:400px !important;
+			}
+			.mui-popup{
+				width:80% !important;
+			}
+			.sluice_open {
+				color: dodgerblue !important;
+			}
+
+			.sluice_close {
+				color: red !important;
+			}
+
+			.mui-table-view-chevron .mui-table-view-cell {
+				padding-right: 15px;
+			}
+			.alert_tab{
+				width: 100%;
+				border-color: #ccc;
+			}
+			.alert_tab th{
+				background: #000000;
+				color: #fff;
+			}
+			.detail_btn {
+				background-color: #007aff;
+				color: #fff;
+				font-size: 12px;
+				line-height: 14px;
+				padding: 3px 6px;
+				display: inline-block;
+				border-radius: 5px;
+				margin-left: 10px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+
+		<!-- 主页面容器 -->
+		<div class="mui-inner-wrap">
+			<!-- 主页面标题 -->
+			<header class="mui-bar mui-bar-nav">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+				<!--<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right">过滤</a>-->
+				<h1 class="mui-title" id="name">巡检覆盖查询</h1>
+				<div class="mui-bar-tab">
+					<button class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
+					<div class="" style="text-align: right">
+						<span class=" mui-icon mui-icon-search" id="search"></span>
+						<span id='selectDateStart' style="color: grey">开始时间</span> -
+						<span id='selectDateEnd' style="color: grey">结束时间</span>
+					</div>
+				</div>
+			</header>
+
+			<div class="mui-content">
+				<ul id="query_ul" class="mui-table-view mui-table-view-chevron" style="line-height: 28px;">
+					<!-- <li class="mui-table-view-cell mui-media">
+						<div class="mui-media-body">
+							火星水闸
+							<span class="detail_btn mui-pull-right" onclick="show_detail($(this))">
+								巡查结果
+							</span>
+							<p class="mui-ellipsis">
+								监理员实际 / 达标工作量：
+								<span class="mui-pull-right">1 / 2</span>
+							</p>
+							<p class="mui-ellipsis">
+								巡检覆盖率
+								<span class="mui-pull-right">50%</span>
+							</p>
+						</div>
+					</li> -->
+				</ul>
+			</div>
+		</div>
+		
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js "></script>
+	<script src="../../asset/js/mui.picker.min.js "></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript ">
+		var id = app.getUrlParam('id');
+
+		var selectDateStart = document.getElementById('selectDateStart');
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var btn_date_range = document.getElementById('btn_date_range');
+		var currentCityType = 2;
+		var currentCityTypeName = '市区管';
+
+		mui.init();
+
+		
+		//禁止左右滑动
+		// mui('.mui-slider').slider().stopped = true;
+		initDateRange();
+		$(function() {
+
+
+		})
+		mui.plusReady(function() {
+			init_html();
+			
+		});
+		
+		// 时间范围
+		var arrDateRanges = [{
+				text: '本日',
+				value: '本日'
+			},
+			// {
+			// 	text: '本周',
+			// 	value: '本周'
+			// },
+			{
+				text: '本月',
+				value: '本月'
+			},
+			// {
+			// 	text: '本季度',
+			// 	value: '本季度'
+			// },
+			// {
+			// 	text: '本年',
+			// 	value: '本年'
+			// }
+		];
+
+		var pickerDateRanges = new mui.PopPicker();
+		pickerDateRanges.setData(arrDateRanges);
+		btn_date_range.addEventListener('tap', function() {
+			pickerDateRanges.show(function(items) {
+				btn_date_range.innerText = items[0].text;
+				initDateRange();
+				init_html();
+				//返回 false 可以阻止选择框的关闭
+				//return false;
+			});
+		})
+
+		//选择时间
+		var selectDateStart = document.getElementById('selectDateStart');
+		selectDateStart.addEventListener('tap', function() {
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateStart.innerText = items.value;
+				init_html();
+			})
+		})
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var startTime = selectDateStart.innerText + '  00:00:00';
+		var endTime = selectDateEnd.innerText + ' 23:59:59';
+		selectDateEnd.addEventListener('tap', function() {
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateEnd.innerText = items.value;
+				init_html();
+			})
+		})
+
+		//读取数据
+		function init_html() {
+			var startTime = selectDateStart.innerText + ' 00:00:00';
+			var endTime = selectDateEnd.innerText + ' 23:59:59';
+
+			var mapData = {
+				startTime: startTime,
+				endTime: endTime
+			};
+
+			console.log(JSON.stringify(mapData));
+			app.showProgressBar();
+
+			app.ajax(app.url1("inspection/coverRateQuery"), mapData, function(ret) {
+				app.showProgressBar(false);
+				console.log(JSON.stringify(ret))
+				// ret = JSON.parse('{"code":200,"data":{"facilityCount":2,"completeFacilityCount":0,"unCompleteFacilityCount":2,"totalRate":0,"facilityCoverRateList":[],"facilityUnCoverRateList":[{"facilityId":null,"facilityName":null,"shouldCount":0,"completeCount":0,"completeRate":0,"list":[],"unList":[[{"id":174,"gmtCreate":"2019-07-09 15:56:39","gmtModified":"2019-07-09 15:56:39","facilityInfoType":null,"facilityInfoId":1,"inspectionType":null,"facilityInspectionTargetInfoId":8,"imgGroupId":1762,"reporterUid":9,"isAbnormal":1,"remark":"1外河水位尺2内河水位尺","deviceSerialNumber":null,"rectificationSerial":null,"facilityName":"中横泾北口泵闸","targetName":"水位仪","reporterName":"监理员测试","images":["images/20190709160157_img0.jpg","images/20190709160157_img1.jpg"]},{"id":163,"gmtCreate":"2019-07-09 14:52:41","gmtModified":"2019-07-09 14:52:41","facilityInfoType":null,"facilityInfoId":1,"inspectionType":null,"facilityInspectionTargetInfoId":9,"imgGroupId":1746,"reporterUid":9,"isAbnormal":1,"remark":"","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-140 21:42:17","facilityName":"中横泾北口泵闸","targetName":"闸位仪","reporterName":"监理员测试","images":["images/20190709145313_img0.jpg"]},{"id":164,"gmtCreate":"2019-07-09 14:52:52","gmtModified":"2019-07-09 14:52:52","facilityInfoType":null,"facilityInfoId":1,"inspectionType":null,"facilityInspectionTargetInfoId":10,"imgGroupId":1748,"reporterUid":9,"isAbnormal":1,"remark":"PLC，外河水位尺","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-144 14:24:58","facilityName":"中横泾北口泵闸","targetName":"水位尺","reporterName":"监理员测试","images":["images/20190709145749_img0.jpg","images/20190709145749_img1.jpg","images/20190709145749_img2.jpg","images/20190709145749_img3.jpg"]},{"id":169,"gmtCreate":"2019-07-09 14:57:44","gmtModified":"2019-07-09 14:57:44","facilityInfoType":null,"facilityInfoId":1,"inspectionType":null,"facilityInspectionTargetInfoId":11,"imgGroupId":1753,"reporterUid":9,"isAbnormal":1,"remark":"","deviceSerialNumber":null,"rectificationSerial":null,"facilityName":"中横泾北口泵闸","targetName":"PLC柜","reporterName":"监理员测试","images":["images/20190709145842_img0.jpg"]}]]},{"facilityId":null,"facilityName":null,"shouldCount":0,"completeCount":0,"completeRate":0,"list":[],"unList":[[{"id":152,"gmtCreate":"2019-07-09 12:55:06","gmtModified":"2019-07-09 12:55:06","facilityInfoType":null,"facilityInfoId":261,"inspectionType":null,"facilityInspectionTargetInfoId":8,"imgGroupId":1727,"reporterUid":9,"isAbnormal":1,"remark":"PLC，外河水位计，内河水位计","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-137 14:39:02","facilityName":"华新泵闸","targetName":"水位仪","reporterName":"监理员测试","images":["images/20190709132232_img0.jpg","images/20190709132232_img1.jpg","images/20190709132232_img2.jpg"]},{"id":150,"gmtCreate":"2019-07-09 13:04:54","gmtModified":"2019-07-09 13:04:54","facilityInfoType":null,"facilityInfoId":261,"inspectionType":null,"facilityInspectionTargetInfoId":9,"imgGroupId":1724,"reporterUid":9,"isAbnormal":1,"remark":"1外闸2内闸","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-137 13:53:08","facilityName":"华新泵闸","targetName":"闸位仪","reporterName":"监理员测试","images":["images/20190709130630_img0.jpg","images/20190709130630_img1.jpg"]},{"id":149,"gmtCreate":"2019-07-09 13:03:35","gmtModified":"2019-07-09 13:03:35","facilityInfoType":null,"facilityInfoId":261,"inspectionType":null,"facilityInspectionTargetInfoId":10,"imgGroupId":1723,"reporterUid":9,"isAbnormal":1,"remark":"","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-137 13:51:57","facilityName":"华新泵闸","targetName":"水位尺","reporterName":"监理员测试","images":["images/20190709130435_img0.jpg","images/20190709130435_img1.jpg","images/20190709130435_img2.jpg"]},{"id":147,"gmtCreate":"2019-07-09 11:32:04","gmtModified":"2019-07-09 11:32:04","facilityInfoType":null,"facilityInfoId":261,"inspectionType":null,"facilityInspectionTargetInfoId":11,"imgGroupId":1721,"reporterUid":9,"isAbnormal":1,"remark":"","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-136 13:15:29","facilityName":"华新泵闸","targetName":"PLC柜","reporterName":"监理员测试","images":["images/20190709114407_img0.jpg","images/20190709114407_img1.jpg","images/20190709114407_img2.jpg"]}]]}]},"msg":"查询成功"}')
+				if (ret.code == "200") {
+					var html = ""
+					var data = ret["data"]["facilityCoverRateList"].concat(ret["data"]["facilityUnCoverRateList"]);
+				
+					for (var i = 0; i < data.length; i++) {
+						
+						html += '<li class="mui-table-view-cell mui-media">'
+						html += '<div class="mui-media-body">'
+						html += data[i]["facilityName"]?data[i]["facilityName"]:"&nbsp;"
+						html += '	<span class="detail_btn mui-pull-right" data=\''+JSON.stringify(data[i])+'\' onclick="show_detail($(this))">'
+						html += '		巡查结果'
+						html += '	</span>'
+						html += '	<p class="mui-ellipsis">'
+						html += '		监理员实际 / 达标工作量：'
+						html += '		<span class="mui-pull-right">'+data[i]["completeCount"]+' / '+data[i]["shouldCount"]+'</span>'
+						html += '	</p>'
+						html += '	<p class="mui-ellipsis">'
+						html += '		巡检覆盖率'
+						html += '		<span class="mui-pull-right">'+parseFloat(parseFloat(data[i]["completeRate"])*100).toFixed(2)+'%</span>'
+						html += '	</p>'
+						html += '</div>'
+						html += '</li>'
+					}
+					$("#query_ul").html(html)
+
+				} else {
+					mui.toast(ret.msg)
+				}
+			})
+
+		}
+		function show_detail(obj){
+			console.log(obj.attr("data"))
+			var data = JSON.parse(obj.attr("data"))
+			alert_detail(data)
+		}
+		function alert_detail(data){
+			var facility_name = ""
+			var html = '<div class="mui-scroll-wrapper" style="top: 45px;"> <div  class="mui-scroll">    '
+			var list = data['list']
+			var unList = data['unList']
+			var count = list.length>=unList.length?list.length:unList.length
+			for (var i = 0; i < count; i++) {
+				html+= '<span class="sluice_open">第'+(i+1)+'次</span>'+'巡查结果'
+				html+= '<table class="alert_tab" border="1" cellspacing="" cellpadding="">'
+				html+= '	<tr><th>巡查点</th><th>结果</th></tr>'
+				
+				if(list[i]){
+					for (var j = 0; j < list[i].length; j++) {
+						if(list[i][j]['facilityName'])
+						facility_name = list[i][j]['facilityName']
+						html+= '<tr><td>'+list[i][j]['targetName']+'</td><td><span class="sluice_open">正常</span></td></tr>'
+					}
+				}
+				if(unList[i]){
+					for (var j = 0; j < unList[i].length; j++) {
+						if(unList[i][j]['facilityName'])
+						facility_name = unList[i][j]['facilityName']
+						html+= '<tr><td>'+unList[i][j]['targetName']+'</td><td><span class="sluice_close">异常</span></td></tr>'
+					}
+				}
+				html+= '</table>'
+				
+			}
+			
+			html+= '</div></div>'
+			mui.alert(html, facility_name, function() {},'div');
+			mui(".mui-scroll-wrapper").scroll();
+		}
+		function initDateRange() {
+			if (btn_date_range.innerText == '本日') {
+				selectDateStart.innerText = app.getDay();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本周') {
+				selectDateStart.innerText = app.getWeekBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本月') {
+				selectDateStart.innerText = app.getMonthBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本季度') {
+				selectDateStart.innerText = app.getSeasonBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本年') {
+				selectDateStart.innerText = app.getYearBegin();
+				selectDateEnd.innerText = app.getDay();
+			}
+		}
+	</script>
+</html>

@@ -1,0 +1,623 @@
+<!doctype html>
+<html>
+ 
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <link href="css/mui.min.css" rel="stylesheet" />
+        <link href="css/iconfont.css" rel="stylesheet" />
+        <link href="css/mui.picker.min.css" rel="stylesheet" />
+        <link href="css/style.css" rel="stylesheet" />
+        <link href="css/mui.poppicker.css" rel="stylesheet" />
+        <style type="text/css">
+            .mui-bar {
+                height: 85px;
+                border-bottom: 1px solid #ddd;
+            }
+ 
+            .mui-bar-nav~.mui-content {
+                padding-top: 85px;
+                /* margin:0px 5px 0px 5px; */
+            }
+ 
+            .page_loader {
+                text-align: center;
+                color: gray;
+                border-top: 1px solid #ccc;
+                padding-top: 5px;
+            }
+ 
+            .init-html-h3 {
+                text-align: center;
+                font-size: 18px;
+                font-weight: 100;
+                margin-left: 13px;
+                line-height: 30px;
+            }
+ 
+            .kq-row {
+                padding: 15px;
+            }
+ 
+            .kq-6 {
+                width: 50%;
+                float: left;
+            }
+ 
+            .kq-6:last-child {
+                text-align: right;
+            }
+ 
+            .kq-6 p {
+                font-size: 16px;
+            }
+ 
+            .card_show {
+                background-color: rgb(109, 164, 247);
+                border-radius: 0px 0px 5px 5px;
+                margin: 0px 5px 0px 5px;
+            }
+ 
+            .search_style {
+                background-color: rgb(109, 164, 247);
+                color: white;
+                padding: 10px;
+                margin: 0px 5px 0px 5px;
+            }
+ 
+            .card_number {
+                color: white;
+                font-size: 35px;
+                margin: 0px 15px 15px 15px;
+            }
+ 
+            .detail_title {
+                display: inline-block;
+                color: black;
+                text-align: center;
+                width: 15%;
+ 
+            }
+ 
+            .detail_title1 {
+                display: inline-block;
+                color: white;
+                text-align: center;
+                width: 33%;
+            }
+ 
+            .detail_title_one {
+                display: inline-block;
+                width: 18%;
+                /* border:1px solid red; */
+                text-align: center;
+ 
+            }
+ 
+            .detail_title_one1 {
+                display: inline-block;
+                width: 20%;
+                /* height: 20px; */
+                color: gray;
+                margin: 8px 0px;
+                font-size: 15px;
+                font-weight: 600;
+                text-align: center;
+                /* border:1px solid red; */
+                z-index: 9999;
+            }
+ 
+            .detail_title_one2 {
+                display: inline-block;
+                width: 22%;
+                height: 20px;
+                color: gray;
+                margin: 8px 0px;
+                font-size: 14px;
+                text-align: center;
+                /* border:1px solid red; */
+                z-index: 9999;
+            }
+ 
+            .only_style {
+                margin-left: -26px;
+            }
+ 
+            .only_style2 {
+                margin-left: -26px;
+            }
+ 
+ 
+            .detail_title_small {
+                display: inline-block;
+                width: 16.5%;
+                /* border:1px solid red; */
+                /* margin-left: 10px; */
+                color: #000000;
+                text-align: left;
+            }
+ 
+            .TextCenter2 {
+                color: rgb(8, 102, 214)
+            }
+ 
+            .mui-scroll-wrapper {
+                overflow-y: scroll
+            }
+ 
+            .detail_name {
+                word-break: break-all;
+                white-space: normal;
+            }
+        </style>
+    </head>
+    <!-- 作业考核部分                   新页面 -->
+    <body onload="app.route()">
+        <!-- 侧滑导航根容器 -->
+        <div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+            <!-- 菜单容器 -->
+            <aside class="mui-off-canvas-right">
+                <div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+                    <div class="mui-scroll">
+                        <form class="mui-input-group">
+                            <div class="mui-input-row">
+                                <label>管辖</label>
+                            </div>
+                            <div class="mui-input-row mui-radio">
+                                <label>市区</label>
+                                <input name="cityType" type="radio" value=1 checked="checked">
+                            </div>
+                            <div class="mui-input-row mui-radio">
+                                <label>村镇</label>
+                                <input name="cityType" type="radio" value=0>
+                            </div>
+                            <div class="mui-content-padded" style="text-align: right;">
+                                <button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+                                    重置
+                                </button>
+                                <button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+                                    确认
+                                </button>
+                            </div>
+ 
+                        </form>
+                    </div>
+                </div>
+            </aside>
+            <!-- 主页面容器 -->
+            <div class="mui-inner-wrap">
+                <!-- 主页面标题 -->
+                <header class="mui-bar mui-bar-nav">
+                    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+                    <a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right">过滤</a>
+                    <h1 class="mui-title">作业考核</h1>
+                    <div id="cityTable" class="mui-bar-tab">
+                        <a id="citynmain" class="mui-tab-item mui-active" href="#">
+                            市养护单位
+                        </a>
+                        <a id="citysup" class="mui-tab-item" href="#">
+                            市监理单位
+                        </a>
+                        <a id="cityInspect" class="mui-tab-item " href="#">
+                            市巡查单位
+                        </a>
+                        <a id="townmain" class="mui-tab-item mui-active" href="#">
+                            镇养护单位
+                        </a>
+                        <a id="townInspect" class="mui-tab-item " href="#">
+                            镇巡查单位
+                        </a>
+                    </div> 
+                </header>
+                <div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+                    <div class="mui-scroll">
+                        <div  class="search_style" >
+                            <span style="text-align: left;display:inline-block;">
+                                <span style="color: white;margin-left:10px;"class=" mui-icon mui-icon-search" id="search"></span>
+                                <span id='selectDateStart' style="color: white;">开始时间</span> -
+                                <span id='selectDateEnd' style="color: white">结束时间</span>
+                            </span>
+                        </div>
+                        <div class="search_style" style="text-align: left">
+                            <span id='Date_name' style="color: white;margin-left:15px;">市养护单位</span>
+                            <span id='Date_count' style="color: white;margin-left:15px;">0%</span>
+ 
+                        </div>
+                        <div class="mui-content" id="list">
+ 
+                        </div>
+                    </div>
+                </div>
+ 
+                <div id="page_ended" class="page_loader">
+                    列表已到最后
+                </div>
+                <div class="mui-off-canvas-backdrop"></div>
+            </div>
+        </div>
+    </body>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/mui.min.js "></script>
+    <script src="js/mui.picker.min.js "></script>
+    <script src="js/app.js"></script>
+    <script src="./js/mui.picker.min.js"></script>
+    <script type="text/javascript ">
+        var selectDateStart = document.getElementById('selectDateStart');
+        var selectDateEnd = document.getElementById('selectDateEnd');
+        var townTable = document.getElementById('townmain'); //镇村
+        var townInspect = document.getElementById('townInspect'); //镇村
+        var currentUnitType = 3;
+        var currentUnitTypeName = '养护单位';
+        var currentCityType = 1;
+        var currentCityTypeName = '市区';
+        townTable.style.display = 'none';
+        townInspect.style.display = 'none';
+        mui.init();
+        // initDateRange();
+        mui('#offCanvasSideScroll').scroll();
+        mui('#offCanvasContentScroll').scroll();
+        mui.plusReady(function() {
+            loadData(3);
+        });
+        // button filter
+        var btn_filter = document.getElementById('btn_filter');
+        var offCanvasWrapper = mui('#offCanvasWrapper');
+        btn_filter.addEventListener('tap', function() {
+            offCanvasWrapper.offCanvas('show');
+        });
+        function clickReset() {
+            $('#rdo_all').prop('checked', true);
+        }
+        function clickOk() {
+            offCanvasWrapper.offCanvas('close');
+            _f_city_type = $("input[name='cityType']:checked").val();
+            currentCityType = _f_city_type
+            if (currentCityType == 1) {
+                loadData(3);
+                // cityInspect   citysup citynmain
+                $('#cityInspect').show()
+                $('#citysup').show()
+                $('#citynmain').show()
+                $('#townmain').hide()
+                $('#townInspect').hide()
+            } else if (currentCityType == 0) {
+                // townmain townInspect
+                $('#cityInspect').hide()
+                $('#citysup').hide()
+                $('#citynmain').hide()
+                $('#townmain').show()
+                $('#townInspect').show()
+                loadData(4);
+            }
+            // loadData();
+        }
+        mui('.mui-bar-tab').on('tap', 'a', function(e) {
+            if (currentUnitTypeName == this.innerText)
+                return;
+ 
+            if (this.innerText == '市巡查单位') {
+                currentUnitType = 1;
+                type = 1;
+ 
+            } else if (this.innerText == '市监理单位') {
+                currentUnitType = 2;
+                type = 2;
+ 
+            } else if (this.innerText == '市养护单位') {
+                currentUnitType = 3;
+                type = 3;
+ 
+            } else if (this.innerText == '镇养护单位') {
+                currentUnitType = 4;
+                type = 4;
+ 
+            } else if (this.innerText == '镇巡查单位') {
+                currentUnitType = 5;
+                type = 5;
+ 
+            }
+            loadData(currentUnitType);
+            currentUnitTypeName = this.innerText;
+ 
+        })
+        //选择时间
+        var selectDateStart = document.getElementById('selectDateStart');
+        selectDateStart.addEventListener('tap', function() {
+            var dtpicker = new mui.DtPicker({
+                type: "date", //设置日历初始视图模式    
+            })
+            dtpicker.show(function(items) {
+                selectDateStart.innerText = items.value;
+                loadData();
+            })
+        })
+        var selectDateEnd = document.getElementById('selectDateEnd')
+        selectDateEnd.addEventListener('tap', function() {
+            var dtpicker = new mui.DtPicker({
+                type: "date", //设置日历初始视图模式    
+            })
+            dtpicker.show(function(items) {
+                selectDateEnd.innerText = items.value;
+                loadData();
+            })
+        })
+        //跳转
+        mui('#list').on('tap', '.mui-table-view-cell', function() {
+            return;
+            var regionId = this.getAttribute('regionId');
+            var url = "report_sta_detail_alarm.html?regionId=" + regionId;
+            if (selectDateStart.innerText != '开始时间' && selectDateEnd.innerText != '结束时间') {
+                var startTime = selectDateStart.innerText;
+                var endTime = selectDateEnd.innerText;
+                url += '&start=' + startTime + '&end=' + endTime;
+            }
+            app.open(url);
+        })
+ 
+        function DateDiff(sDate1, sDate2) { //sDate1和sDate2是2002-12-18格式  
+            var aDate, oDate1, oDate2, iDays
+            aDate = sDate1.split("- ")
+            oDate1 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]) //转换为12-18-2002格式  
+            aDate = sDate2.split("- ")
+            oDate2 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0])
+            iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24) //把相差的毫秒数转换为天数  
+            return iDays + 1;
+        }
+        // 时间封装
+         function getNowTime(type, newDate) {
+                var date = newDate ? newDate : new Date();
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var strDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var strDate1 = (date.getDate()-1) < 10 ? "0" + (date.getDate()-1) : (date.getDate()-1);
+                var strDate2 = (date.getDate()-2) < 10 ? "0" + (date.getDate()-2) : (date.getDate()-2);
+                if (type == 'start') {
+                    var currentdate = date.getFullYear() + "-" + month + "-" + strDate + " 00" + ":" + "00" + ":" + "00";
+                } else if (type == 'china') {
+                    var currentdate = date.getFullYear() + "年" + month + "月" + strDate + '日';
+                } else if(type=="yesterday"){
+                    var currentdate = date.getFullYear() + "-" + month + "-" + strDate1 + " 00" + ":" + "00" + ":" + "00";
+                }else if(type=="eve"){
+                    var currentdate = date.getFullYear() + "-" + month + "-" + strDate2 + " 00" + ":" + "00" + ":" + "00";
+                }
+                else {
+                    var currentdate = date.getFullYear() + "-" + month + "-" + strDate + " 23" + ":" + "59" + ":" + "59";
+                }
+                return currentdate; 
+            }
+        //读取数据 
+        function loadData(value) {
+            var startTime2
+            var endTime2
+            var mapData = {
+                start: selectDateStart.innerText != '开始时间'?selectDateStart.innerText + ' 00:00:00':getNowTime('start'),
+                end: selectDateEnd.innerText != '结束时间'?selectDateEnd.innerText + ' 23:59:59':getNowTime(),
+            }
+            console.log('参数2'+JSON.stringify(mapData));
+            app.showProgressBar();
+            app.ajax(app.getQPVMS_IP() + "sms/getRegionConclusion", mapData, function(result) {
+                // console.log("作业考核2" + JSON.stringify(result))
+                console.log('url'+JSON.stringify(app.getQPVMS_IP() + "/sms/getRegionConclusion"))
+                app.showProgressBar(false);
+                if (result.code == 200) {
+                    var datas = result.data;
+                    var html = '';
+                    if (value == 3) {
+                        html = init_html(datas[0], 3);
+                        document.getElementById("list").innerHTML = html;
+                    } else if (value == 1) {
+                        html = init_html(datas[1], 1);
+                        document.getElementById("list").innerHTML = html;
+                    } else if (value == 2) {
+                        html = init_html(datas[2], 2);
+                        document.getElementById("list").innerHTML = html;
+                    } else if (value == 4) {
+                        html = init_html(datas[3], 4);
+                        document.getElementById("list").innerHTML = html;
+                    } else if (value == 5) {
+                        html = init_html(datas[4], 5);
+                        document.getElementById("list").innerHTML = html;
+                    }
+                } else {
+                    mui.toast("加载数据错误:" + result.error);
+                }
+            })
+        }
+        function init_html(datas, value) {
+            var string = '';
+            var subCount = datas.children;
+            var maintenance = null;
+            if (datas) {
+                var mainrealy = ((datas && datas.num) / (datas && datas.totalNum))
+                maintenance = (mainrealy * 100 >= 100 ? 100 :( mainrealy * 100).toFixed(1)) + '%';
+            }
+            if (value == 1) {
+                document.getElementById('Date_name').innerHTML = '市区管巡查';
+                document.getElementById('Date_count').innerText = maintenance
+            } else if (value == 2) {
+                document.getElementById('Date_name').innerHTML = '市区管监理';
+                document.getElementById('Date_count').innerText = maintenance
+            } else if (value == 3) {
+                document.getElementById('Date_name').innerHTML = '市区管养护';
+                document.getElementById('Date_count').innerText = maintenance
+            } else if (value == 4) {
+                document.getElementById('Date_name').innerHTML = '镇村管养护';
+                document.getElementById('Date_count').innerText = maintenance
+            } else if (value == 5) {
+                document.getElementById('Date_name').innerHTML = '镇村管巡查';
+                document.getElementById('Date_count').innerText = maintenance
+            }
+            string +=
+                '<div >' +
+                '<div style="margin:10px 10px  10px 15px;">' +
+                '<span class="detail_title">' + '名称' + '</span>' +
+                '<span class="detail_title">' + '时长' + '</span>' +
+                '<span class="detail_title">' + '里程' + '</span>' +
+                '<span class="detail_title">' + '覆盖' + '</span>' +
+                '<span class="detail_title">' + '问题' + '</span>' +
+                '</div>' +
+                //这是下面展示部分
+                '<div>'
+            // 这是循环详情列表
+            for (var i = 0; i < subCount.length; i++) {
+                var sonData = subCount[i].children; //这是每个片区的值
+                var parentdata = subCount[i];
+                var parentdata_new = JSON.stringify(parentdata);
+                var sonStr = ''
+                var duration = ''; //时长
+                var number=0;
+                if (parentdata.workDuration != null && parentdata.workDurationStandard != null) {
+                    if( parentdata.workDurationStandard !=0){
+                        duration = ((parentdata.workDuration / parentdata.workDurationStandard) * 100 >= 100 ? 100 : ((parentdata.workDuration /
+                            parentdata.workDurationStandard) * 100).toFixed(1))
+                    }else{
+                        duration=number.toFixed(1)
+                    }
+                    
+                }
+                var mileage = ''; //里程
+                if (parentdata.workLength != null && parentdata.workLengthStandard != null) {
+                    if(parentdata.workLengthStandard != 0){
+                        mileage = ((parentdata.workLength / parentdata.workLengthStandard) * 100 >= 100 ? 100 : ((parentdata.workLength /
+                            parentdata.workLengthStandard) * 100).toFixed(1));
+                    }else{
+                        mileage=number.toFixed(1)
+                    }
+                    
+                }
+                var cover = ''; //覆盖
+                if (parentdata.coverRange != null && parentdata.coverRangeStandard != null) {
+                    if(parentdata.coverRangeStandard !=0){
+                        cover = ((parentdata.coverRange / parentdata.coverRangeStandard) * 100 >= 100 ? 100 : ((parentdata.coverRange /
+                            parentdata.coverRangeStandard) * 100).toFixed(1)) + '%'
+                    }else{
+                        cover=number.toFixed(1)
+                    }
+                    
+                }
+                var problem = ''; //问题
+                if (value == 4 || value == 3) {
+                    problem = ''
+                } else {
+                    if (parentdata.reportCount != null && parentdata.reportCountStandard != null) {
+                        if(parentdata.reportCountStandard !=0){
+                            problem = ((parentdata.reportCount / parentdata.reportCountStandard) * 100 >= 100 ? 100 : ((parentdata.reportCount /
+                                parentdata.reportCountStandard) * 100).toFixed(1)) + '%';
+                        }else{
+                            problem=number.toFixed(1)
+                        }
+                    }
+                }
+                if (sonData != null) {
+                    for (var j = 0; j < sonData.length; j++) {
+                        var app = sonData[j];
+                        var sondata_new = JSON.stringify(app);
+                        // var sonStr = ''
+                        var duration2 = 0; //时长
+                        if (app.workDuration != null && app.workDurationStandard != null) {
+                            if(app.workDurationStandard != 0){
+                                duration2 = ((app.workDuration / app.workDurationStandard) * 100 >= 100 ? 100 : ((app.workDuration /
+                                    app.workDurationStandard) * 100).toFixed(1))
+                            }else{
+                                duration2=0
+                            }
+                        
+                        }
+                        var mileage2 = 0; //里程
+                        if (app.workLength != null && app.workLengthStandard != null) {
+                            if(app.workLengthStandard !=0){
+                                mileage2 = ((app.workLength / app.workLengthStandard) * 100 >= 100 ? 100 : ((app.workLength / app.workLengthStandard) *
+                                    100).toFixed(1));
+                            }else{
+                                mileage2=0
+                            }
+                        
+                        }
+                        var cover2 = 0; //覆盖
+                        if (app.coverRange != null && app.coverRangeStandard != null) {
+                            if(app.coverRangeStandard !=0){
+                                cover2 = ((app.coverRange / app.coverRangeStandard) * 100 >= 100 ? 100 : ((app.coverRange / app.coverRangeStandard) *
+                                    100).toFixed(1)) + '%'
+                            }else{
+                                cover2 =0
+                            }
+                            
+                        }
+                        var problem2 = ''; //问题
+                        if (app.reportCount != null && app.reportCountStandard != null) {
+                            if(app.reportCountStandard !=0){
+                                problem2 = ((app.reportCount / app.reportCountStandard) * 100 >= 100 ? 100 : ((app.reportCount / app.reportCountStandard) *
+                                    100).toFixed(1)) + '%';
+                            }else{
+                                problem2 = 0
+                            }
+                            
+                        }
+                        // class="mui-table-view-cell"
+                        sonStr += '<li class="mui-table-view-cell ">' + '<a class="mui-navigate-left" href="#">' +
+                            '<span class="detail_title_one1 only_style detail_name">' + (app.name) + '</span>' +
+                            '<span class="detail_title_one1">' +
+                            '<div>' + duration2 + '</div>' +
+                            '</span>' +
+                            '<span class="detail_title_one1">' +
+                            '<div >' + mileage2 + '</div>' +
+                            '</span>' +
+                            '<span class="detail_title_one1">' +
+                            '<div >' + cover2 + '</div>' +
+                            '</span>' +
+                            '<span class="detail_title_one1">' +
+                            '<div >' + problem2 + '</div>' +
+                            '</span>' +
+                            '<span class="detail_title_one1">' +
+                            '<div class="TextCenter2" action=' + sondata_new + ' >' +
+                            '详情' 
+                            +
+                            '</div>' +
+                            '</span>' +
+                            '</a>' +
+                            '</li>'
+                    }
+                }
+                string +=
+                    '<div class="count_style">' +
+                    '<ul class="mui-table-view mui-table-view-chevron">' +
+                    '<li class="mui-table-view-cell mui-collapse">' + '<a class="mui-navigate-right" href="#">' +
+ 
+                    '<span  class="detail_title_one detail_name2s detail_name">' + (parentdata.name) + '</span>' +
+                    '<span class="detail_title_one">' +
+                    '<div >' + duration +
+                    '</div>' +
+                    '</span>' +
+                    '<span class="detail_title_one">' +
+                    '<div >' + mileage +
+                    '</div>' +
+                    '</span>' +
+                    '<span class="detail_title_one">' +
+                    '<div >' + cover + '</div>' +
+                    '</span>' +
+                    '<span class="detail_title_one">' +
+                    '<div >' + problem +
+                    '</div>' +
+                    '</span>' +
+                    '<span class="detail_title_one">' +
+                    '<div class="TextCenter2" action=' + parentdata_new + '>' + '详情' + '</div>' +
+                    '</span>' +
+                    '</a>' +
+                    '<ul class="mui-table-view mui-table-view-chevron">' +
+                    sonStr +
+                    '</ul>' +
+                    '</li>' +
+                    '</ul>'
+                '</div>'
+            }
+            // 这是市区管监理和循环 
+            return string;
+        }
+        mui('#list').on('tap', '.TextCenter2', function() {
+            // console.log('5555')
+            console.log('传过去的值是哪个？'+JSON.stringify(this.getAttribute('action')))
+            app.open("work_detail.html", this.getAttribute('action'));
+        })
+    </script>
+ 
+</html>

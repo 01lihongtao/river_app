@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../asset/css/mui.min.css">
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			#list {
+				/*margin-top: 55px;*/
+			}
+			h4{
+				font-size: 18px !important;
+			}
+			  .mui-table-view-cell{
+					font-size: 16px !important;
+				}
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+			.h4_header{
+				 margin-top: 55px;
+				 background: #fff;
+				 font-size: 24px;
+				 padding: 10px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+
+	 
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="close" class="mui-btn mui-btn-link mui-pull-right">关闭</a>
+					<h1 class="mui-title">本月签到统计</h1>
+
+				</header>
+				<div class="mui-content">
+					<div class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<h4 class="h4_header"  >
+								<span id="current_month"></span>
+								<button class="mui-pull-right name"  style="    margin-top: -8px;" ></button>
+							</h4>
+							<ul id="list" class="mui-table-view">
+								<!--<li class="mui-table-view-cell">
+									<a class="link_open "   style="background: #000;color: #fff;">
+										<div style="width: 25%;float: left;text-align: center;">日期</div>
+										<div style="width: 50%;float: left;text-align: center;">签到状况</div>
+										<div style="width: 25%;float: left;text-align: center;">详情</div>
+									</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a class="link_open " href="attendance_month_detail.html">
+										<div class="date_id" style="width: 25%;float: left;text-align: center;">01</div>
+										<div class="state" style="width: 50%;float: left;text-align: center;">合格</div>
+										<div  style="width: 25%;float: left;text-align: center;">查看</div>
+									</a>
+								</li>-->
+								
+								 
+
+							</ul>
+							<div id="page_ended" class="page_loader">
+								列表已到最后
+							</div>
+							<div class="mui-off-canvas-backdrop"></div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+ 
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		var user_id = app.getUrlParam('user_id');
+		var year = app.getUrlParam('year');
+		var month = app.getUrlParam('month');
+ 		 
+		mui.ready(function() {
+			
+			document.getElementById("close").addEventListener('tap', function() {
+				app.ajaxBack()
+			})
+			mui(".mui-scroll-wrapper").scroll();
+//			init_html(new Date().format("yyyy-MM"))
+			//		var startTime = selectDateStart.innerText + '  00:00:00';
+			//		var endTime = selectDateEnd.innerText + ' 23:59:59';
+			
+			mui('#list').on('tap', '.link_open', function() {
+				
+				app.open($(this).attr('href')+$(this).find(".state").html()+"&user_id="+user_id);
+			})
+	 		console.log(JSON.stringify({
+	 			
+				user_id: user_id,
+				year:year,
+				month:month
+			
+	 		}))
+			app.ajax(app.url('query/attendance/check_in_statistics_month'), {
+				user_id: user_id,
+				year:year,
+				month:month
+			}, function(ret) {
+				console.log(JSON.stringify(ret))
+				if(ret.code == 0) {
+					var data = ret.data
+					$("#current_month").html(data.current_month)
+					$(".name").html(data.name)
+					init_html(year+"-"+month)
+					for (var i = 0; i < data.date_list.length; i++) {
+						$("."+data.date_list[i]["date"].replace(" 00:00:00","")).css("color","red").html(data.date_list[i]["sign_state"])
+					}
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+		})
+		
+		 
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+	 
+
+		function getDaysInOneMonth(year_month) {
+
+			var arr = year_month.split("-");
+			year = arr[0];
+			month = arr[1];
+			month = parseInt(month, 10);
+			var d = new Date(year, month, 0);
+			var return_arr = [];
+			for(var i = 1; i <= d.getDate(); i++) {
+				var ii = i;
+				if(ii < 10) {
+					ii = "0" + ii
+				}
+				return_arr.push(year_month + "-" + ii)
+			}
+			return return_arr;
+		}
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+		
+		function init_html(year_mouth){
+			var data_arr = getDaysInOneMonth(year_mouth);
+			var html = "";
+			html += '<li class="mui-table-view-cell">'
+			html += '	<a class="link_open "   style="background: #000;color: #fff;">'
+			html += '		<div style="width: 25%;float: left;text-align: center;">日期</div>'
+			html += '		<div style="width: 50%;float: left;text-align: center;">签到状况</div>'
+			html += '		<div style="width: 25%;float: left;text-align: center;">详情</div>'
+			html += '	</a>'
+			html += '</li>'
+			for(var i = 0; i < data_arr.length; i++) {
+			 
+				
+				html += '<li class="mui-table-view-cell">'
+				html += '	<a class="link_open " href="../operation/attendance_month_detail.html?date='+data_arr[i]+'&state=">'
+				html += '		<div class="date_id" style="width: 25%;float: left;text-align: center;">'+data_arr[i]+'</div>'
+				html += '		<div class="state '+data_arr[i]+'"  style="width: 50%;float: left;text-align: center;">合格</div>'
+				html += '		<div  style="width: 25%;float: left;text-align: center;color:#06f">查看</div>'
+				html += '	</a>'
+				html += '</li>'
+			}
+			$("#list").html(html)
+			
+			 
+		}
+	</script>
+
+</html>

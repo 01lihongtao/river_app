@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit;
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.img-selected,.img-selected1 {
+				width: 80px;
+				height: 80px;
+				margin-top: 10px;
+			}
+			
+			#popover {
+				min-width: 282px;
+				height: 300px;
+				top: 50% !important;
+				margin-top: -150px;
+				left: 50% !important;
+				margin-left: -141px;
+			}
+			
+			@media (min-width: 400px) {
+				#reject_popover,#popover {
+					width: 80%;
+					margin-left: -40%;
+				}
+			}
+
+			#reject_popover {
+				min-width: 282px;
+				position: absolute;
+				z-index: 999;
+				display: none;
+				width: 280px;
+				-webkit-transition: opacity .3s;
+				transition: opacity .3s;
+				-webkit-transition-property: opacity;
+				transition-property: opacity;
+				-webkit-transform: none;
+				transform: none;
+				border-radius: 7px;
+				background-color: #f7f7f7;
+				-webkit-box-shadow: 0 0 15px rgba(0,0,0,.1);
+				box-shadow: 0 0 15px rgba(0,0,0,.1);
+				top: 50% !important;
+				margin-top: -150px;
+				left: 50% !important;
+				margin-left: -141px;
+			}
+
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a class="mui-btn mui-btn-link mui-pull-right " onclick="saveData()" id="wrp_upload">上传</a>
+			<a class="mui-btn mui-btn-link mui-pull-right " onclick="delete_data()" id="wrp_delete">删除</a>
+			<a class="mui-btn mui-btn-link mui-pull-right " onclick="edit_data()" id="wrp_edit">编辑</a>
+			<h1 class="mui-title">水利整改单</h1>
+		</header>
+		<div class="mui-content">
+			<ul id="list-option" class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<!--<i class="iconfont icon-dituleiwanggequ"></i>-->问题状态
+					<span id="wrd_state" style="max-width: 100%;color: red;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<!--<i class="iconfont icon-dituleiwanggequ"></i>-->问题编号
+					<span id="wrd_no" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<!--<i class="iconfont icon-dituleiwanggequ"></i>-->水利设施
+					<span id="wrd_facility" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell mui-hidden">
+					<!--<i class="iconfont icon-dituleiwanggequ"></i>-->所在区划
+					<span id="wrd_area" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"><!--青松大控制/华新镇/火星村--></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<!--<i class="iconfont icon-date1"></i>-->报告时间
+					<span id="wrd_date" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<!--<i class="iconfont icon-date1"></i>-->报告人
+					<span id="wrd_reporter_name" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell" style="display: none;">
+					<!--<i class="iconfont icon-date1"></i>-->联系方式
+					<span id="wrd_reporter_mobile" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<!--<i class="iconfont icon-list4f"></i>-->问题点
+					<span id="wrd_problem_point" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<!--<i class="iconfont icon-list4f"></i>-->问题设备
+					<span id="wrd_problem_device" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<!--<i class="iconfont icon-list4f"></i>-->问题类型
+					<span id="wrd_problem_type" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<!--<i class="iconfont icon-wenhaoxiao"></i>-->问题项目
+					<span id="wrd_problem_item" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					检查情况说明<br><br>
+					<p id="detail"></p>
+				</li>
+				<li class="mui-table-view-cell">
+					检查问题照片
+					<div id="detail_img_list">
+						<!--<img src="images/evid1.png" class="img-selected1">
+						<img src="images/evid1.png" class="img-selected1">
+						<img src="images/evid1.png" class="img-selected1">-->
+					</div>
+				</li>
+				<li class="mui-table-view-cell" id="wrd_money_warp" style="display: none;">
+					<!--<i class="iconfont icon-list4f"></i>-->申请资金
+					<span id="wrd_money" style="max-width: 100%;color: red;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell" id="complete_time_warp"  style="display: none;">
+					<!--<i class="iconfont icon-list4f"></i>-->预计完成时间
+					<span id="wrd_need_days" style="max-width: 100%;color: red;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell" style="display: none;">
+					<i class="iconfont icon-zijin"></i> 所需资金
+					<span class="mui-pull-right">(元)</span>
+					<input type="number" class="mui-pull-right" style="margin-right:5px;width: 30vw;height: 24px;" />
+				</li>
+				<li class="mui-table-view-cell" id="zg_detail_warp" style="display: none;">
+					整改中说明：<br><br>
+					<p id="zg_detail"></p>
+				</li>
+				<li class="mui-table-view-cell" id="zg_img_list_warp" style="display: none;">
+					整改中照片
+					<div id="zg_img_list">
+						<!--<img src="images/evid1.png" class="img-selected1">
+                <img src="images/evid1.png" class="img-selected1">
+                <img src="images/evid1.png" class="img-selected1">
+                -->
+					</div>
+				</li>
+				<li class="mui-table-view-cell reject_warp"  style="display: none;">
+					<!--<i class="iconfont icon-date1"></i>-->整改处理人
+					<span id="user_name" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell reject_warp"  style="display: none;">
+					<!--<i class="iconfont icon-date1"></i>-->联系方式
+					<span id="user_mobile" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell reject_warp"  style="display: none;">
+					<!--<i class="iconfont icon-date1"></i>-->整改报告时间
+					<span id="time_save" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell reject_warp"  style="display: none;">
+					整改情况说明：<br><br>
+					<p id="reject_detail"></p>
+				</li>
+				<li class="mui-table-view-cell reject_warp" id="memo_warp"  style="display: none;">
+					备注：<br><br>
+					<p id="reject_memo"></p>
+				</li>
+				<li class="mui-table-view-cell reject_warp"  style="display: none;">
+					整改完成照片
+					<div id="img_list111">
+						<!--<img src="images/evid1.png" class="img-selected1">
+                <img src="images/evid1.png" class="img-selected1">
+                <img src="images/evid1.png" class="img-selected1">
+                -->
+					</div>
+				</li>
+				<br>
+				<br>
+				<br>
+				<br>
+			</ul>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script src="../../asset/js/mui.zoom.js"></script>
+	<script src="../../asset/js/mui.previewimage.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var user_data = app.getUserInfo();
+		var user_id = user_data.id
+		var uuid = app.getUrlParam('uuid');
+		var global_data = JSON.parse(app.getSetting("problem_report"+user_id) || "[]");;
+		var current_data;
+		for(var i = 0; i < global_data.length; i++) {
+			if(global_data[i]["list_info"]["uuid"] == uuid) {
+				current_data = global_data[i]
+			}
+		}
+		
+		mui.init({
+				gestureConfig: {
+					longtap: true
+				}
+			});
+		mui.previewImage();
+
+		mui.plusReady(function() {
+			initCtrls()
+		})
+		function initCtrls(){
+			console.log(JSON.stringify(current_data))
+			$("#wrd_facility").html(current_data["list_info"]["name"]) 
+			$("#wrd_date").html(current_data["post_json"]["reportDate"]) 
+			$("#wrd_reporter_name").html(current_data["list_info"]["user_name"]) 
+			if(current_data["data"]["problem_type"]){
+				$("#wrd_problem_type").html(current_data["data"]["problem_type"])
+			}else{
+				$("#wrd_problem_type").parent().hide()
+			}
+			if(current_data["data"]["problem_item"]){
+				$("#wrd_problem_item").html(current_data["data"]["problem_item"])
+			}else{
+				$("#wrd_problem_item").parent().hide()
+			}
+			
+			if(current_data["post_json"]["inspectionType"]=="8502"){
+				$(".mui-title").html("维护整改单")
+			}
+			if(current_data["data"]["level2_id"]) {
+				$("#wrd_problem_point").html(current_data["data"]["level2_name"])
+			}else{
+				$("#wrd_problem_point").parent().hide()
+			}
+			if(current_data["data"]["problemDeviceName"]) {
+				$("#wrd_problem_device").html(current_data["data"]["problemDeviceName"]) 
+			}else{
+				$("#wrd_problem_device").parent().hide()
+			}
+			
+			$("#detail").html(current_data["post_json"]["rectificationReason"])
+			
+			var html = ""
+			for (var i = 0; i < current_data["arr_imgs"].length; i++) {
+				
+				html += '<img src="' +current_data["arr_imgs"][i]+'"   data-preview-src="'+  current_data["arr_imgs"][i] + '" data-preview-group="1"   class="img-selected">'
+				
+			}
+			$("#detail_img_list").html(html)
+		}
+		function delete_data() {
+			mui.confirm('确定删除吗？', '水利整改单', ['否', '是'], function(e) {
+				console.log(e.index)
+				if(e.index == 1) {
+					for(var i = 0; i < global_data.length; i++) {
+						if(global_data[i]["list_info"]["uuid"] == uuid) {
+							global_data.remove(global_data[i])
+							app.setSetting("problem_report"+user_id, JSON.stringify(global_data));
+						}
+					}
+					
+					mui.toast("删除成功")
+					var parentViewer = mui.currentWebview.opener();
+					mui.fire(parentViewer, 'wga_refresh');
+					app.ajaxBack();
+				} else {
+		
+				}
+			})
+		
+		}
+		
+		function edit_data(){
+			app.open("../operation/problem_reporting.html?uuid=" + uuid)
+		}
+		
+		var upload;
+		//		保存
+		function saveData() {
+			
+			var arrImgs = new Array();
+			$(".img-selected").each(function(key, value) {
+				arrImgs.push($(value).attr('src'))
+			})
+
+			upload = plus.nativeUI.showWaiting('上传中...');
+			if(fg) {
+				getImgToBase64(arrImgs)
+
+				fg = false;
+			}
+		}
+		var count = 0;
+		var file_data_arr = [];
+		var fg = true;
+		var save_time; 
+		//上传
+		function uploadImg() {
+			console.log("uploadImg")
+			var xhr = new XMLHttpRequest();
+			xhr.timeout = 120000;
+			xhr.ontimeout = function(e) { 
+				mui.toast('请求超时，请再网络状态良好的地方重试');
+				upload.close()
+			};
+
+			var formData = new FormData();
+			console.log(file_data_arr)
+			for(var i = 0; i < file_data_arr.length; i++) {
+				formData.append('files', file_data_arr[i]);
+			}
+			for(var item in current_data["post_json"]) {
+				// console.log(item, current_data["post_json"][item])
+				formData.append(item, current_data["post_json"][item]);
+				// console.log("item="+item);//problemDeviceName
+				// console.log("---item="+current_data["post_json"][item]);//张马水闸(内河水位)
+			}
+			// console.log("------------------>"+current_data["post_json"]["rectificationSerial"])
+			formData.append("rectificationSerial",current_data["post_json"]["rectificationSerial"]);
+			
+
+// 			formData.append("conservancyId", level1_id);
+// 			formData.append("rectificationType", $('#select_problem_type').attr('item_id'));
+// 			formData.append("targetId", level2_id);
+// 			if(need_problem_device)
+// 			{
+// 				formData.append("deviceSerialNumber", $('#selectDevice').attr('item_id'));
+// 			}
+// 			if(level3_id)
+// 			formData.append("subTargetId", level3_id);
+// 			
+// 			
+// 			formData.append("rectificationReason", $("#textarea").val());
+// 			formData.append("reportDate", $("#selectDate").html());
+// //			console.log(level1_id)
+// //			console.log(level2_id)
+// //			console.log(level3_id)
+			xhr.onreadystatechange = function(e) {
+//				console.log(22222222)
+				if(xhr.readyState == 4) {
+					console.log(xhr.responseText)
+					var ret = JSON.parse(xhr.responseText);
+					file_data_arr = [];
+					count = 0;
+					fg = true;
+					if(xhr.status == 200) {
+						
+						if(ret.code == 200) {
+							mui.toast('上传成功');
+							var parentViewer = mui.currentWebview.opener();
+							console.log(ret.data)
+
+							var arr = JSON.parse(app.getSetting("problem_report"+user_id) || "[]")
+							var var_uuid = uuid ? uuid : new Date().format("yyyyMMddhhmmssS")
+							for(var i = 0; i < arr.length; i++) {
+								if(arr[i]["list_info"]["uuid"] == var_uuid) {
+									arr.remove(arr[i])
+								}
+
+							}
+							app.setSetting("problem_report"+user_id, JSON.stringify(arr));
+							mui.fire(parentViewer, 'wga_refresh');
+							app.ajaxBack();
+						} else {
+							mui.toast(get_error_msg(ret,'上传失败，请重新保存'));
+						}
+					} else {
+						mui.toast(get_error_msg(ret,'上传失败，请重新保存'));
+					}
+					upload.close()
+					return;
+				}
+			}
+
+			xhr.open('POST', app.url1('inspect/add/rectification'), true);
+			xhr.send(formData);
+		}
+
+		//将图片转换为Base64
+		function getImgToBase64(arr) {
+//			console.log("getImgToBase64")
+			var canvas = document.createElement('canvas'),
+				ctx = canvas.getContext('2d'),
+				img = new Image;
+			img.crossOrigin = 'Anonymous';
+
+			img.onload = function() {
+				var originWidth = img.width;
+		        var originHeight = img.height;
+		        // 最大尺寸限制
+		        var maxWidth = app.maxWidth(), maxHeight = app.maxWidth();
+		        // 目标尺寸
+		        var targetWidth = originWidth, targetHeight = originHeight;
+		        // 图片尺寸超过1000x1000的限制
+		        if (originWidth > maxWidth || originHeight > maxHeight) {
+		            if (originWidth / originHeight > maxWidth / maxHeight) {
+		                targetWidth = maxWidth;
+		                targetHeight = Math.round(maxWidth * (originHeight / originWidth));
+		            } else {
+		                targetHeight = maxHeight;
+		                targetWidth = Math.round(maxHeight * (originWidth / originHeight));
+		            }
+		        }
+				
+				// canvas对图片进行缩放
+		        canvas.width = targetWidth;
+		        canvas.height = targetHeight;
+		    
+		        // 清除画布
+		        ctx.clearRect(0, 0, targetWidth, targetHeight);
+		        // 图片压缩
+		        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+			
+				ctx.font = targetWidth / 20 + "px microsoft yahei";
+				ctx.fillStyle = "rgba(255,128,0,1)";
+				var txt = save_time ? save_time : new Date().format("yyyy-MM-dd hh:mm:ss")
+				var pos_x = targetWidth - ctx.measureText(txt).width
+				var pos_y = targetHeight - targetWidth / 20
+			 
+				ctx.fillText(txt, pos_x, pos_y);
+				console.log(targetWidth,targetHeight)
+				var dataURL = canvas.toDataURL('image/jpeg');
+
+				file_data_arr.push(dataURLtoFile(dataURL, 'img' + count + '.jpg'))
+				//						console.log("====")
+				count++;
+				getImgToBase64(arr)
+
+				canvas = null;
+			};
+			img.src = arr[count];
+			if(file_data_arr.length == arr.length) {
+				uploadImg()
+			}
+		}
+		
+		//将base64转换为文件
+		function dataURLtoFile(dataurl, filename) {
+			var arr = dataurl.split(','),
+				mime = arr[0].match(/:(.*?);/)[1],
+
+				bstr = atob(arr[1]),
+				n = bstr.length,
+				u8arr = new Uint8Array(n);
+			//					console.log(mime)
+			while(n--) {
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+			return new File([u8arr], filename, {
+				type: mime
+			});
+		}
+		window.addEventListener('problem_refresh', function(event) {
+			var parentViewer = mui.currentWebview.opener();
+			mui.fire(parentViewer, 'wga_refresh');
+		});
+		window.addEventListener('problem_back', function(event) {
+			setTimeout(function(){
+				app.ajaxBack()
+			},800)
+			
+		});
+		
+	</script>
+
+</html>

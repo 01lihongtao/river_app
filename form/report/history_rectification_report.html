@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			body,
+			.mui-content {
+				background: #fff;
+			}
+			
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit;
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.mui-bar {
+				height: auto;
+			}
+			
+			.mui-search:before {
+				top: 24px;
+			}
+			
+			.rbtn {
+				width: 33px;
+				overflow: hidden;
+				letter-spacing: 800px;
+				margin: 11px 4%;
+				border-radius: 24px;
+				text-indent: -3.5px;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 145px
+			}
+			
+			.mui-content>.mui-table-view:first-child {
+				margin-top: 0;
+			}
+			
+			#construction_detail_warp h4,
+			.mui-table-view-cell {
+				font-size: 16px !important;
+			}
+			
+			.detail_btn {
+				background-color: #007aff;
+				color: #fff;
+				font-size: 12px;
+				line-height: 14px;
+				padding: 3px 6px;
+				display: inline-block;
+				border-radius: 5px;
+				margin-left: 10px;
+			}
+			
+			.sluice_open {
+				color: dodgerblue !important;
+			}
+			
+			.sluice_close {
+				color: red !important;
+			}
+			
+			#filter_warp {
+				display: none;
+			}
+			
+			.div_warp {
+				margin: 0;
+				font-size: 14px;
+				/*border-bottom: 1px solid #ccc;*/
+			}
+			
+			.left_warp {
+				width: 50%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+				padding: 8px 0;
+			}
+			
+			.middle_warp {
+				width: 25%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+				padding: 8px 0;
+			}
+			
+			.l_warp {
+				width: 50%;
+				float: left;
+				text-align: center;
+				padding: 8px 0;
+			}
+			
+			.m_warp {
+				width: 25%;
+				float: left;
+				text-align: center;
+				padding: 8px 0;
+			}
+			.mui-bar .mui-segmented-control{
+				width: 100%;
+				position:static;
+				border-radius: 0;
+			}
+			@media screen and (max-width: 321px) {
+				#construction_detail_warp {
+					font-size: 16px !important;
+				}
+				.rbtn {
+					margin: 11px 3%;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!--菜单部分-->
+			<aside id="offCanvasSide" class="mui-off-canvas-right">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<h6 style="padding:5px;">过滤</h6>
+						<ul id="list-option" class="mui-table-view">
+							
+							<li class="mui-table-view-cell mui-hidden">
+								<i class="iconfont icon-dituleiwanggequ"></i> 问题点
+								<span id="select_target_id" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell mui-hidden">
+								<i class="iconfont icon-dituleiwanggequ"></i> 问题内容
+								<span id="select_subTarget_id" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell mui-hidden">
+								<i class="iconfont icon-zhuangtai"></i> 状态
+								<span id="select_state" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell ">
+								<i class="iconfont icon-gongsi"></i> 所属单位
+								<span id="select_company" style="max-width: 100px;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<i class="iconfont icon-wode"></i> 报告人
+								<span id="selectPerson" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<!-- <li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 开始时间</span>
+								<span id='selectDateStart' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 结束时间</span>
+								<span id='selectDateEnd' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li> -->
+							
+						</ul>
+						<div class="mui-content-padded" style="text-align: right;">
+							<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+							重置
+						</button>
+							<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+							确认
+						</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<div class="mui-inner-wrap">
+
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right selecting_hide">过滤</a>
+					<h1 class="mui-title">历史整改记录</h1>
+					<nav id="monitor_data" class="mui-segmented-control">
+						<a id="tongji" class="mui-control-item mui-active" href="#">统计</a>
+						<a id="liebiao" class="mui-control-item" href="#">列表</a>
+					</nav>
+					<div class="mui-bar-tab">
+						<button class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
+						<div class="" style="text-align: right">
+							<span class=" mui-icon mui-icon-search" id="search"></span>
+							<span id='selectDateStart' style="color: grey">开始时间</span> -
+							<span id='selectDateEnd' style="color: grey">结束时间</span>
+						</div>
+					</div>
+				</header>
+				<div id="offCanvasContentScroll" class="mui-content mui-slider-group mui-scroll-wrapper">
+
+					<div class="mui-scroll">
+						<div id="monitor" class="mui-content ">
+
+							<ul class="mui-table-view">
+								<li class="mui-table-view-cell">
+									问题总数：<span class="mui-pull-right"><span id="total" class="sluice_close"></span></span>
+								</li>
+								<li class="mui-table-view-cell">
+									水利整改类：<span class="mui-pull-right"><span id="facilityRectCount" class="sluice_close"></span></span>
+								</li>
+								
+								<div id="facilityRect" class="mui-slider-item  mui-active">
+									<!--<div class="div_warp">
+										<div class="left_warp" style="width: 25%;">问题状态</div>
+										<div class="middle_warp" style="width: 25%;">问题数量</div>
+										<div class="middle_warp" style="width: 25%;">占比率</div>
+										<div class="middle_warp" style="width: 25%;">详情</div>
+										<div class="clear"></div>
+									</div>
+									<div class="div_warp">
+										<div class="l_warp" style="width: 25%;">设备断线</div>
+										<div class="m_warp" style="width: 25%;">25</div>
+										<div class="m_warp" style="width: 25%;"><span class="sluice_close">25.00%</span></div>
+										<div class="m_warp" style="width: 25%;"><span class="sluice_open">查看</span></div>
+										<div class="clear"></div>
+									</div>
+									<div class="div_warp">
+										<div class="l_warp" style="width: 25%;">数据异常</div>
+										<div class="m_warp" style="width: 25%;">25</div>
+										<div class="m_warp" style="width: 25%;"><span class="sluice_close">25.00%</span></div>
+										<div class="m_warp" style="width: 25%;"><span class="sluice_open">查看</span></div>
+										<div class="clear"></div>
+									</div>
+									<hr style="border: 1px solid #c8c7cc;">-->
+								</div>
+								 
+								<li class="mui-table-view-cell">
+									设备维护类：<span class="mui-pull-right"><span class="sluice_close" id="facilityMainCount"></span></span>
+								</li>
+								<div id="facilityMain" class="mui-slider-item  mui-active">
+									<!--<div class="div_warp">
+										<div class="left_warp" style="width: 25%;">问题状态</div>
+										<div class="middle_warp" style="width: 25%;">问题数量</div>
+										<div class="middle_warp" style="width: 25%;">占比率</div>
+										<div class="middle_warp" style="width: 25%;">详情</div>
+										<div class="clear"></div>
+									</div>
+									<div class="div_warp">
+										<div class="l_warp" style="width: 25%;">设备断线</div>
+										<div class="m_warp" style="width: 25%;">25</div>
+										<div class="m_warp" style="width: 25%;"><span class="sluice_close">25.00%</span></div>
+										<div class="m_warp" style="width: 25%;"><span class="sluice_open">查看</span></div>
+										<div class="clear"></div>
+									</div>
+									<div class="div_warp">
+										<div class="l_warp" style="width: 25%;">数据异常</div>
+										<div class="m_warp" style="width: 25%;">25</div>
+										<div class="m_warp" style="width: 25%;"><span class="sluice_close">25.00%</span></div>
+										<div class="m_warp" style="width: 25%;"><span class="sluice_open">查看</span></div>
+										<div class="clear"></div>
+									</div>
+									<hr style="border: 1px solid #c8c7cc;">-->
+								</div>
+
+							</ul>
+
+						</div>
+
+						<div id="construction_detail" class="mui-content">
+							<div class="mui-input-row mui-search" style="margin: 5px 15px;clear:none">
+								<input type="search" id="query_search" class="mui-input-clear" placeholder="输入水利设施名称" style="    margin-bottom: 0;">
+							</div>
+							<div id="sliderSegmentedControl" style="border-bottom: 1px solid #eee;" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+								<a id="a-item1mobile" class="mui-control-item mui-active" href="#item1mobile">水利整改</a>
+								<a id="a-item2mobile" class="mui-control-item" href="#item2mobile">设备维护</a>
+							</div>
+							<ul id="item1mobile" class=" mui-slider-item mui-control-content mui-active" style="margin: 0;padding: 0;">
+								<!--<li item_id="1" class="mui-table-view-cell mui-media">
+									<a class="mui-navigate-right">
+										<div class="mui-input-row mui-checkbox mui-left">
+											<img class="mui-media-object mui-pull-left" style="margin: 0 5px;" src="../../asset/images/evid1.png">
+											<div class="mui-media-body">
+												火星1水闸 <span class="mui-pull-right item_state" style="color: red;">待站长处理</span>
+												<p class='mui-ellipsis'>登记时间： 2018-07-27 12:00:00</p>
+												<p class='mui-ellipsis'>登记人：王大海</p>
+											</div>
+										</div>
+									</a>
+								</li>
+								<li item_id="2" class="mui-table-view-cell mui-media">
+									<a class="mui-navigate-right">
+										<div class="mui-input-row mui-checkbox mui-left">
+				
+										 
+											<img class="mui-media-object mui-pull-left" style="margin: 0 5px;" src="../../asset/images/evid1.png">
+											<div class="mui-media-body">
+												火星水闸
+												<p class='mui-ellipsis'>登记时间： 2018-07-27 12:00:00</p>
+												<p class='mui-ellipsis'>登记人：王大海</p>
+											</div>
+										</div>
+				
+									</a>
+								</li>-->
+							</ul>
+							<ul id="item2mobile" class="mui-slider-item mui-control-content"  style="margin: 0;padding: 0;">
+								<!--<li item_id="1" class="mui-table-view-cell mui-media">
+									<a class="mui-navigate-right">
+										<div class="mui-input-row mui-checkbox mui-left">
+											<img class="mui-media-object mui-pull-left" style="margin: 0 5px;" src="../../asset/images/evid1.png">
+											<div class="mui-media-body">
+												火星1水闸 <span class="mui-pull-right item_state" style="color: red;">待站长处理</span>
+												<p class='mui-ellipsis'>登记时间： 2018-07-27 12:00:00</p>
+												<p class='mui-ellipsis'>登记人：王大海</p>
+											</div>
+										</div>
+									</a>
+								</li>
+								<li item_id="2" class="mui-table-view-cell mui-media">
+									<a class="mui-navigate-right">
+										<div class="mui-input-row mui-checkbox mui-left">
+				
+										 
+											<img class="mui-media-object mui-pull-left" style="margin: 0 5px;" src="../../asset/images/evid1.png">
+											<div class="mui-media-body">
+												火星水闸
+												<p class='mui-ellipsis'>登记时间： 2018-07-27 12:00:00</p>
+												<p class='mui-ellipsis'>登记人：王大海</p>
+											</div>
+										</div>
+				
+									</a>
+								</li>-->
+							</ul>
+						<div id="page_loading" class="page_loader">
+							<img src="../../asset/images/loading.gif"> 加载中...
+						</div>
+						<div id="page_ended" class="page_loader">
+							列表已到最后
+						</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="mui-off-canvas-backdrop"></div>
+
+			</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=9f4e8708dc930f1ac309d418fc485070&callback=init&plugin=AMap.Geocoder"></script>
+	<script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+	<script type="text/javascript" charset="utf-8">
+		var timer;
+		var lon;
+		var lat;
+		var swipeup_flag = true
+		var detail_obj = {}
+		var selectDateStart = document.getElementById('selectDateStart');
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var btn_date_range = document.getElementById('btn_date_range');
+		
+		var select_company = document.getElementById('select_company');
+		var select_target_id = document.getElementById('select_target_id');
+		var select_subTarget_id = document.getElementById('select_subTarget_id');
+		var select_state = document.getElementById('select_state');
+		var selectPerson = document.getElementById('selectPerson');
+		var type_dict_obj = JSON.parse(app.getSetting('type_dict_obj') || "{}")
+		var dict_obj = {}
+		for(var item in type_dict_obj){
+			dict_obj[type_dict_obj[item]] = item
+		}
+		 
+		var all_facility_picker = new mui.PopPicker();
+		var selectNamePicker = new mui.PopPicker();
+		var selectStatePicker = new mui.PopPicker();
+		var subTargetIdPicker = new mui.PopPicker();
+		var targetIdPicker = new mui.PopPicker();
+		var name_data = [];
+		var state_data = [];
+		var subTarget_id_data = [];
+		var target_id_data = [];
+		
+		var post_data= {};
+
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		$(function() {
+		 
+			$('#page_loading').show();
+			$('#page_ended').hide();
+
+		})
+		// 时间范围
+		var arrDateRanges = [{
+				text: '本日',
+				value: '本日'
+			},
+			{
+				text: '本周',
+				value: '本周'
+			},
+			{
+				text: '本月',
+				value: '本月'
+			},
+			{
+				text: '本季度',
+				value: '本季度'
+			},
+			{
+				text: '本年',
+				value: '本年'
+			}
+		];
+
+		var pickerDateRanges = new mui.PopPicker();
+		pickerDateRanges.setData(arrDateRanges);
+		btn_date_range.addEventListener('tap', function() {
+			pickerDateRanges.show(function(items) {
+				btn_date_range.innerText = items[0].text;
+				initDateRange();
+				init_alert_record();
+				//返回 false 可以阻止选择框的关闭
+				//return false;
+			});
+		})
+
+		//选择时间
+		var selectDateStart = document.getElementById('selectDateStart');
+		selectDateStart.addEventListener('tap', function() {　　
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateStart.innerText = items.value;
+				init_alert_record();
+			})
+		})
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var startTime = selectDateStart.innerText + '  00:00:00';
+		var endTime = selectDateEnd.innerText + ' 23:59:59';
+		selectDateEnd.addEventListener('tap', function() {　　
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateEnd.innerText = items.value;
+				init_alert_record();
+			})
+		})
+
+		function clickReset() {
+			// $('#select_target_id').html('全部')
+			// $('#select_target_id').attr('item_id',"");
+			// 
+			// $('#select_target_id').html('全部')
+			// $('#select_target_id').attr('item_id',"");
+			// 
+			// $('#select_subTarget_id').html('全部')
+			// $('#select_subTarget_id').attr('item_id',"");
+			
+			$('#selectPerson').html('全部')
+			$('#selectPerson').attr('item_id',"");
+			
+			$('#select_company').html('全部')
+			$('#select_company').attr('item_id',"");
+			
+			selectDateStart.innerText = '请选择...';
+			selectDateEnd.innerText = '请选择...';
+		}
+		var post_data;
+
+		function clickOk() {
+			offCanvasWrapper.offCanvas('close');
+			post_data = {}
+			init_alert_record()
+			
+		}
+		
+		
+		mui.ready(function() {
+
+			mui.init();
+			$('#page_loading').show();
+			$('#page_ended').hide();
+			document.getElementById("query_search").addEventListener('input', function() {
+				var this_value = this.value
+				//				mui('#construction_detail_warp').scroll().scrollTo(0, 0);
+				input_search_facilty(this_value);
+				console.log("input")
+			});
+//			document.getElementById("query_search").addEventListener('focus', function() {
+//				console.log("focus")
+//				$("#filter_warp").slideDown()
+//				$("#offCanvasContentScroll").css("padding-top", "186px")
+//			});
+			document.getElementById("query_search").addEventListener('blur', function() {
+				console.log("blur")
+
+			});
+ 
+			//username poppicker
+			
+			app.ajax(app.url("query/person_list"),{},function(ret){
+				if(ret.code == 0) {
+					var picker_data = [];
+					picker_data.push({
+						value: "",
+						text: "全部"
+					})
+					for (var i = 0; i < ret["data"].length; i++) {
+//						if(ret["data"][i]["user_type"]=="巡查员"){
+							picker_data.push({
+								value: ret["data"][i]["id"],
+								text: ret["data"][i]["name"]
+							})
+//						}
+						
+					}
+					 
+					var personPicker = new mui.PopPicker();
+					
+					personPicker.setData(picker_data);
+					selectPerson.addEventListener('tap', function(event) {
+						personPicker.show(function(items) {
+							console.log(items[0]["id"])
+							selectPerson.innerText = items[0]["text"];
+							$('#selectPerson').attr('item_id', items[0]["value"]);
+						});
+					}, false);
+				}else{
+					
+				}
+			})
+		  
+			//select_state poppicker
+			
+			
+			state_data.push({
+				value: "",
+				text: "全部"
+			})
+			selectStatePicker.setData(state_data);
+			select_state.addEventListener('tap', function(event) {
+				selectStatePicker.show(function(items) {
+					select_state.innerText = items[0]["text"];
+					$(select_state).attr('item_id', items[0]["value"]);
+				});
+			}, false);
+			//subTarget_id poppicker
+			
+			
+			subTarget_id_data.push({
+				value: "",
+				text: "全部"
+			})
+			subTargetIdPicker.setData(subTarget_id_data);
+			select_subTarget_id.addEventListener('tap', function(event) {
+				subTargetIdPicker.show(function(items) {
+					select_subTarget_id.innerText = items[0]["text"];
+					$(select_subTarget_id).attr('item_id', items[0]["value"]);
+				});
+			}, false);
+			
+			//target_id poppicker
+			
+			
+			target_id_data.push({
+				value: "",
+				text: "全部"
+			})
+
+			targetIdPicker.setData(target_id_data);
+			select_target_id.addEventListener('tap', function(event) {
+				targetIdPicker.show(function(items) {
+					select_target_id.innerText = items[0]["text"];
+					$(select_target_id).attr('item_id', items[0]["value"]);
+				});
+			}, false);
+			//company poppicker
+			app.ajax(app.url('query/cover_company_list'), {}, function(ret) {
+				if(ret.code == 0) {
+					var data = ret.data;
+					var companyPicker = new mui.PopPicker();
+					var company_name_data = [];
+					company_name_data.push({
+						value: "",
+						text: "全部"
+					})
+					for(var i = 0; i < data.length; i++) {
+						company_name_data.push({
+							value: data[i]["company_id"],
+							text: data[i]["company_name"]
+						})
+					}
+				
+ 					companyPicker.setData(company_name_data);
+					select_company.addEventListener('tap', function(event) {
+						companyPicker.show(function(items) {
+							select_company.innerText = items[0]["text"];
+							$(select_company).attr('item_id', items[0]["value"]);
+						});
+					}, false);
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+			
+
+			mui('#monitor').on('tap', '.show_list', function() {
+				var current_type = this.getAttribute("type");
+				var processStageName = this.getAttribute("processStageName");
+				if(current_type=="shuili"){
+					$('#item1mobile').addClass("mui-active");
+					$('#item2mobile').removeClass("mui-active")
+					
+					$('#a-item1mobile').addClass("mui-active")
+					$('#a-item2mobile').removeClass("mui-active")
+					
+				}else{
+					$('#item2mobile').addClass("mui-active");
+					$('#item1mobile').removeClass("mui-active");
+					
+					$('#a-item2mobile').addClass("mui-active")
+					$('#a-item1mobile').removeClass("mui-active")
+					
+				}
+				$("#tongji").removeClass("mui-active")
+				$("#liebiao").addClass("mui-active")
+				$('#monitor').hide();
+				$('#construction_detail').show();
+				$(".search_list").each(function() {
+					var that = $(this)
+					if(that.attr("processStageName").indexOf(processStageName) == -1) {
+						that.hide()
+					} else {
+						that.show()
+					}
+				})
+				
+				
+				mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+			})
+			$(".mui-icon-clear").on("tap", function() {
+				input_search_facilty("");
+			})
+			var slideUpTimer;
+
+			function input_search_facilty(this_value) {
+				clearTimeout(timer)
+				timer = setTimeout(function() {
+
+					$(".search_list").each(function() {
+						var that = $(this)
+
+						//			 			console.log(that.attr("facility_name"));
+						if(that.attr("facility_name").indexOf(this_value) == -1) {
+
+							that.hide()
+						} else {
+							//							console.log($(this).attr("facility_name").indexOf(this_value) == -1)
+							that.show()
+						}
+					})
+				}, 500)
+			}
+
+			mui('#monitor_data').on('tap', '.mui-control-item', function() {
+				current_tree_type = this.innerText;
+				console.log(current_tree_type)
+				if(current_tree_type == '统计') {
+					$('#monitor').show();
+					$('#construction_detail').hide();
+					//					mui('#monitor').scroll().scrollTo(0, 0);
+
+				} else if(current_tree_type == '列表') {
+					$('#monitor').hide();
+					$('#construction_detail').show();
+					$(".search_list").show()
+					//					mui('#construction_detail').scroll().scrollTo(0, 0);
+				}
+				mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+			})
+			
+			mui('body').on('tap', '.map_navigate', function() {
+
+				facility_id = this.getAttribute("facility_id")
+				app.open("../../map.html?facility_id=" + facility_id)
+
+			})
+			//			$('#monitor').hide();
+			//			$('#construction_detail').show();
+			$('#monitor').show();
+			$('#construction_detail').hide();
+
+		})
+
+		function uniq(array) {
+			var temp = []; //一个新的临时数组
+			for(var i = 0; i < array.length; i++) {
+				if(temp.indexOf(array[i]) == -1) {
+					temp.push(array[i]);
+				}
+			}
+			return temp;
+		}
+
+		function show_detail(obj) {
+			console.log(obj.attr("id"))
+			console.log(detail_obj[obj.attr("id")] ? detail_obj[obj.attr("id")] : "")
+			mui.alert(detail_obj[obj.attr("id")] ? detail_obj[obj.attr("id")] : "")
+			app.open("history_water_detail.html")
+		}
+		mui.plusReady(function() {
+			initDateRange();
+			init_alert_record()
+			plus.screen.lockOrientation("portrait-primary");
+		});
+
+		function initDateRange() {
+			if(btn_date_range.innerText == '本日') {
+				selectDateStart.innerText = app.getDay();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本周') {
+				selectDateStart.innerText = app.getWeekBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本月') {
+				selectDateStart.innerText = app.getMonthBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本季度') {
+				selectDateStart.innerText = app.getSeasonBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本年') {
+				selectDateStart.innerText = app.getYearBegin();
+				selectDateEnd.innerText = app.getDay();
+			}
+		}
+		function init_alert_record(){
+	 
+			// if($('#all_facility').html() != '全部') {
+			// 	post_data["conservancyId"] = $('#all_facility').attr('item_id');
+			// }
+			// if($('#select_target_id').html() != '全部') {
+			// 	post_data["targetId"] = $('#select_target_id').attr('item_id');
+			// }
+			// if($('#select_subTarget_id').html() != '全部') {
+			// 	post_data["subTargetId"] = $('#select_subTarget_id').attr('item_id');
+			// }
+			if($('#selectPerson').html() != '全部') {
+				post_data["reporter"] = $('#selectPerson').attr('item_id');
+			}
+			if($('#select_company').html() != '全部') {
+				post_data["companyId"] = $('#select_company').attr('item_id');
+			}
+			
+			if(selectDateStart.innerHTML != '请选择...') {
+				post_data["startTime"] = selectDateStart.innerHTML+ ' 00:00:00';
+			}
+			if(selectDateEnd.innerHTML != '请选择...') {
+				post_data["endTime"] = selectDateEnd.innerHTML + ' 23:59:59';
+			}
+			
+			var wDlg = plus.nativeUI.showWaiting("加载中...");
+
+			console.log(JSON.stringify(post_data))
+			console.log(app.url1('inspect/getRectificationHistory'))
+			app.ajaxJson(app.url1('inspect/getRectificationHistory'), JSON.stringify(post_data), function(ret) {
+				console.log('inspect/getRectificationHistory'+JSON.stringify(ret))
+				wDlg.close();
+				// ret = JSON.parse('{"code":200,"data":{"total":169,"facilityRect":{"total":149,"preProcessed":{"total":132,"list":[{"rectificationId":476,"conservancyId":2,"facilityInfoType":8601,"facilityInfoId":2,"inspectionType":8501,"targetId":null,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"zgQPSL190624027C","rectificationReason":null,"expenseMoney":null,"imgGroupId":1683,"reporter":1,"flowType":null,"processStage":3003,"gmtCreate":"2019-06-24 13:41:00","gmtModified":"2019-06-24 13:41:00","conservancyName":"刘家角泵闸","targetName":null,"subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190624134100_img0.jpg"],"processStageName":"待整改","deviceName":null}]},"durProcessed":{"total":3,"list":[{"rectificationId":384,"conservancyId":734,"facilityInfoType":8601,"facilityInfoId":734,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"叶水路泵闸(节制闸闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-140 09:44:38","rectificationReason":"Dd","expenseMoney":null,"imgGroupId":1350,"reporter":1,"flowType":null,"processStage":3005,"gmtCreate":"2019-05-20 09:38:39","gmtModified":"2019-05-20 09:59:26","conservancyName":"叶水路泵闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190520094437_img0.jpg"],"processStageName":"整改中","deviceName":null},{"rectificationId":415,"conservancyId":322,"facilityInfoType":8601,"facilityInfoId":322,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"西大盈泵闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-148 09:48:50","rectificationReason":"。","expenseMoney":null,"imgGroupId":1415,"reporter":1,"flowType":null,"processStage":3005,"gmtCreate":"2019-05-28 09:48:30","gmtModified":"2019-05-30 19:36:24","conservancyName":"西大盈泵闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190528094850_img0.jpg"],"processStageName":"整改中","deviceName":null},{"rectificationId":438,"conservancyId":1,"facilityInfoType":8601,"facilityInfoId":1,"inspectionType":8501,"targetId":1,"subTargetId":1,"problemId":1,"subProblemId":null,"problemDeviceType":123,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"NO_SLSH_2019-06-155 14:18:29","rectificationReason":"12312312312","expenseMoney":null,"imgGroupId":1576,"reporter":1,"flowType":null,"processStage":3005,"gmtCreate":"2019-05-17 16:13:00","gmtModified":"2019-06-04 14:18:53","conservancyName":"中横泾北口泵闸","targetName":"闸门及金属结构","subTargetName":"螺栓","problemName":null,"subProblemName":null,"reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190604141829_123.jpg"],"processStageName":"整改中","deviceName":null}]},"afterProcessed":{"total":14,"list":[{"rectificationId":309,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"张马水闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-04-115 15:01:24","rectificationReason":"MJ","expenseMoney":null,"imgGroupId":1214,"reporter":1,"flowType":null,"processStage":3008,"gmtCreate":"2019-04-25 15:00:46","gmtModified":"2019-04-25 17:27:33","conservancyName":"张马水闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190425150123_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":313,"conservancyId":734,"facilityInfoType":8601,"facilityInfoId":734,"inspectionType":8501,"targetId":3,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"叶水路泵闸1#泵","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-135 10:03:02","rectificationReason":"ks ks ka","expenseMoney":null,"imgGroupId":1223,"reporter":9,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-15 10:01:58","gmtModified":"2019-05-28 11:04:43","conservancyName":"叶水路泵闸","targetName":"水泵","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"监理员测试","reporterMobile":"18888888888","images":["images/20190515100302_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":323,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"张马水闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-135 10:15:10","rectificationReason":"a","expenseMoney":null,"imgGroupId":1233,"reporter":1,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-15 10:14:54","gmtModified":"2019-05-28 11:03:40","conservancyName":"张马水闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190515101510_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":335,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"张马水闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-135 10:21:32","rectificationReason":"s","expenseMoney":null,"imgGroupId":1246,"reporter":1,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-15 10:21:13","gmtModified":"2019-05-28 11:03:47","conservancyName":"张马水闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190515102132_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":340,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"张马水闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-135 11:07:01","rectificationReason":"a","expenseMoney":null,"imgGroupId":1251,"reporter":1,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-15 11:06:35","gmtModified":"2019-05-28 11:03:36","conservancyName":"张马水闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190515110701_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":342,"conservancyId":261,"facilityInfoType":8601,"facilityInfoId":261,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"华新泵闸(外河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-135 11:10:12","rectificationReason":"q","expenseMoney":null,"imgGroupId":1253,"reporter":93,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-15 11:09:56","gmtModified":"2019-05-16 13:16:55","conservancyName":"华新泵闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"普适超级管理员","reporterMobile":"18621047805","images":["images/20190515111012_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":343,"conservancyId":261,"facilityInfoType":8601,"facilityInfoId":261,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"华新泵闸(外河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-135 13:46:19","rectificationReason":"a","expenseMoney":null,"imgGroupId":1254,"reporter":93,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-15 11:10:49","gmtModified":"2019-05-28 11:03:43","conservancyName":"华新泵闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"普适超级管理员","reporterMobile":"18621047805","images":["images/20190515134619_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":345,"conservancyId":261,"facilityInfoType":8601,"facilityInfoId":261,"inspectionType":8501,"targetId":null,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-135 13:47:21","rectificationReason":"a","expenseMoney":null,"imgGroupId":1256,"reporter":93,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-15 13:46:36","gmtModified":"2019-05-15 14:02:27","conservancyName":"华新泵闸","targetName":null,"subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"普适超级管理员","reporterMobile":"18621047805","images":["images/20190515134721_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":346,"conservancyId":808,"facilityInfoType":8601,"facilityInfoId":808,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"星光水闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-135 13:51:36","rectificationReason":"a","expenseMoney":null,"imgGroupId":1260,"reporter":1,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-15 13:51:16","gmtModified":"2019-05-16 10:47:34","conservancyName":"星光水闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190515135136_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":371,"conservancyId":734,"facilityInfoType":8601,"facilityInfoId":734,"inspectionType":8501,"targetId":6,"subTargetId":null,"problemId":null,"subProblemId":11,"problemDeviceType":null,"problemDeviceName":"建筑","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-139 16:08:00","rectificationReason":"树木倒塌","expenseMoney":null,"imgGroupId":1334,"reporter":9,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-19 16:07:08","gmtModified":"2019-05-19 16:09:47","conservancyName":"叶水路泵闸","targetName":"水工建筑物","subTargetName":null,"problemName":"闸容闸貌","subProblemName":"绿化养护","reporterName":"监理员测试","reporterMobile":"18888888888","images":["images/20190519160800_img0.jpg","images/20190519160800_img1.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":407,"conservancyId":734,"facilityInfoType":8601,"facilityInfoId":734,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":13,"problemDeviceType":null,"problemDeviceName":"叶水路泵闸(节制闸闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-140 21:51:42","rectificationReason":"闸门有大量裂纹，金属结构有断裂迹象","expenseMoney":null,"imgGroupId":1391,"reporter":9,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-20 21:50:23","gmtModified":"2019-05-20 21:57:03","conservancyName":"叶水路泵闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"闸容闸貌","subProblemName":"安全隐患","reporterName":"监理员测试","reporterMobile":"18888888888","images":["images/20190520215142_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":411,"conservancyId":734,"facilityInfoType":8601,"facilityInfoId":734,"inspectionType":8501,"targetId":7,"subTargetId":null,"problemId":null,"subProblemId":13,"problemDeviceType":null,"problemDeviceName":"1#清污机","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-144 14:24:58","rectificationReason":"ghkk","expenseMoney":null,"imgGroupId":1402,"reporter":9,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-24 14:24:31","gmtModified":"2019-05-28 09:58:55","conservancyName":"叶水路泵闸","targetName":"清污机","subTargetName":null,"problemName":"闸容闸貌","subProblemName":"安全隐患","reporterName":"监理员测试","reporterMobile":"18888888888","images":["images/20190524142458_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":425,"conservancyId":1,"facilityInfoType":8601,"facilityInfoId":1,"inspectionType":8501,"targetId":1,"subTargetId":1,"problemId":1,"subProblemId":null,"problemDeviceType":123,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"NO_SLSH_2019-05-150 15:56:36","rectificationReason":"12312312312","expenseMoney":null,"imgGroupId":1432,"reporter":1,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-17 16:13:00","gmtModified":"2019-05-30 15:57:20","conservancyName":"中横泾北口泵闸","targetName":"闸门及金属结构","subTargetName":"螺栓","problemName":null,"subProblemName":null,"reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190530155639_123.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":443,"conservancyId":261,"facilityInfoType":8601,"facilityInfoId":261,"inspectionType":8501,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":"华新泵闸（内河水位）","deviceSerialNumber":null,"rectificationSerial":"zgHL190606002C","rectificationReason":"","expenseMoney":null,"imgGroupId":1602,"reporter":4,"flowType":null,"processStage":3008,"gmtCreate":"2019-06-06 14:15:22","gmtModified":"2019-06-13 14:16:55","conservancyName":"华新泵闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":null,"reporterMobile":null,"images":["images/20190606142249_搜狗截图20181227155959.png"],"processStageName":"整改完成","deviceName":null}]}},"facilityMain":{"total":20,"preProcessed":{"total":15,"list":[{"rectificationId":416,"conservancyId":322,"facilityInfoType":8601,"facilityInfoId":322,"inspectionType":8502,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"西大盈泵闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-148 09:48:52","rectificationReason":"。","expenseMoney":null,"imgGroupId":1416,"reporter":1,"flowType":null,"processStage":3003,"gmtCreate":"2019-05-28 09:48:30","gmtModified":"2019-05-28 09:48:19","conservancyName":"西大盈泵闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190528094852_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":417,"conservancyId":322,"facilityInfoType":8601,"facilityInfoId":322,"inspectionType":8502,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"西大盈泵闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-148 09:49:17","rectificationReason":"。","expenseMoney":null,"imgGroupId":1417,"reporter":1,"flowType":null,"processStage":3003,"gmtCreate":"2019-05-28 09:48:59","gmtModified":"2019-05-28 09:48:43","conservancyName":"西大盈泵闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190528094917_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":418,"conservancyId":322,"facilityInfoType":8601,"facilityInfoId":322,"inspectionType":8502,"targetId":6,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-148 09:49:39","rectificationReason":"？？？？？","expenseMoney":null,"imgGroupId":1418,"reporter":1,"flowType":null,"processStage":3003,"gmtCreate":"2019-05-28 09:49:19","gmtModified":"2019-05-28 09:49:05","conservancyName":"西大盈泵闸","targetName":"水工建筑物","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190528094939_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":419,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8502,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"张马水闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-148 09:50:44","rectificationReason":"。。。。。。。。。。。明天明天明天明天明天明天明天明天明天明天明天明天明天明天明天明天明天明天明天下午两点明天明天明天明天","expenseMoney":null,"imgGroupId":1421,"reporter":1,"flowType":null,"processStage":3003,"gmtCreate":"2019-05-28 09:45:12","gmtModified":"2019-05-28 09:50:11","conservancyName":"张马水闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190528095044_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":420,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8502,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"张马水闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-148 09:50:52","rectificationReason":"。","expenseMoney":null,"imgGroupId":1422,"reporter":1,"flowType":null,"processStage":3003,"gmtCreate":"2019-05-28 09:50:13","gmtModified":"2019-05-28 09:50:19","conservancyName":"张马水闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190528095052_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":421,"conservancyId":322,"facilityInfoType":8601,"facilityInfoId":322,"inspectionType":8502,"targetId":6,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-148 09:51:57","rectificationReason":"。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。？？。。？？？！？。你搜之所以选择","expenseMoney":null,"imgGroupId":1426,"reporter":1,"flowType":null,"processStage":3003,"gmtCreate":"2019-05-28 09:51:28","gmtModified":"2019-05-28 09:51:24","conservancyName":"西大盈泵闸","targetName":"水工建筑物","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190528095157_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":422,"conservancyId":734,"facilityInfoType":8601,"facilityInfoId":734,"inspectionType":8502,"targetId":1,"subTargetId":null,"problemId":null,"subProblemId":8,"problemDeviceType":null,"problemDeviceName":"叶水路泵闸(节制闸闸位)","deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-148 14:41:13","rectificationReason":"j k k","expenseMoney":null,"imgGroupId":1429,"reporter":91,"flowType":null,"processStage":3003,"gmtCreate":"2019-05-28 14:40:13","gmtModified":"2019-05-28 14:40:39","conservancyName":"叶水路泵闸","targetName":"闸门及金属结构","subTargetName":null,"problemName":"闸容闸貌","subProblemName":"室内卫生","reporterName":"叶水路泵闸站长","reporterMobile":"13888888888","images":["images/20190528144113_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":430,"conservancyId":1,"facilityInfoType":8601,"facilityInfoId":1,"inspectionType":8502,"targetId":8,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"NO_SLSH_2019-06-154 13:19:01","rectificationReason":"都快","expenseMoney":null,"imgGroupId":1463,"reporter":1,"flowType":null,"processStage":3003,"gmtCreate":"2019-06-03 13:18:21","gmtModified":"2019-06-03 13:19:02","conservancyName":"中横泾北口泵闸","targetName":"水位仪","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190603131901_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":431,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8502,"targetId":8,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":"张马水闸(内河水位)","deviceSerialNumber":null,"rectificationSerial":"NO_SLSH_2019-06-154 13:19:48","rectificationReason":"不","expenseMoney":null,"imgGroupId":1464,"reporter":1,"flowType":null,"processStage":3003,"gmtCreate":"2019-06-03 09:19:13","gmtModified":"2019-06-03 13:19:48","conservancyName":"张马水闸","targetName":"水位仪","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190603131948_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":433,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8502,"targetId":9,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":"张马水闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"NO_SLSH_2019-06-154 15:40:48","rectificationReason":"j s j s ke k","expenseMoney":null,"imgGroupId":1534,"reporter":93,"flowType":null,"processStage":3003,"gmtCreate":"2019-06-03 15:39:57","gmtModified":"2019-06-03 15:40:48","conservancyName":"张马水闸","targetName":"闸位仪","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":"普适超级管理员","reporterMobile":"18621047805","images":["images/20190603154048_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":434,"conservancyId":769,"facilityInfoType":8601,"facilityInfoId":769,"inspectionType":8502,"targetId":10,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"NO_SLSH_2019-06-154 15:48:20","rectificationReason":"e ke ke","expenseMoney":null,"imgGroupId":1535,"reporter":93,"flowType":null,"processStage":3003,"gmtCreate":"2019-06-03 15:41:35","gmtModified":"2019-06-03 15:48:20","conservancyName":"桃园江水闸","targetName":"水位尺","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":"普适超级管理员","reporterMobile":"18621047805","images":["images/20190603154820_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":435,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8502,"targetId":10,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"NO_SLSH_2019-06-154 15:51:46","rectificationReason":"ke je je k","expenseMoney":null,"imgGroupId":1536,"reporter":93,"flowType":null,"processStage":3003,"gmtCreate":"2019-06-03 15:51:32","gmtModified":"2019-06-03 15:51:46","conservancyName":"张马水闸","targetName":"水位尺","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":"普适超级管理员","reporterMobile":"18621047805","images":["images/20190603155146_img0.jpg"],"processStageName":"待整改","deviceName":null},{"rectificationId":439,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8502,"targetId":8,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":"张马水闸（内河水位）","deviceSerialNumber":null,"rectificationSerial":"whSX190606001E","rectificationReason":"","expenseMoney":null,"imgGroupId":1598,"reporter":4,"flowType":null,"processStage":3003,"gmtCreate":"2019-06-06 14:08:08","gmtModified":"2019-06-06 14:10:20","conservancyName":"张马水闸","targetName":"水位仪","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":null,"reporterMobile":null,"images":["images/20190606141019_搜狗截图20181227155959.png"],"processStageName":"待整改","deviceName":null},{"rectificationId":440,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8502,"targetId":8,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":"张马水闸（内河水位）","deviceSerialNumber":null,"rectificationSerial":"whSX190606002E","rectificationReason":"","expenseMoney":null,"imgGroupId":1599,"reporter":4,"flowType":null,"processStage":3003,"gmtCreate":"2019-06-06 14:08:08","gmtModified":"2019-06-06 14:14:45","conservancyName":"张马水闸","targetName":"水位仪","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":null,"reporterMobile":null,"images":["images/20190606141444_搜狗截图20181227155959.png"],"processStageName":"待整改","deviceName":null},{"rectificationId":441,"conservancyId":1,"facilityInfoType":8601,"facilityInfoId":1,"inspectionType":8502,"targetId":8,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":"中横泾水闸（内河水位）","deviceSerialNumber":null,"rectificationSerial":"whSX190606003E","rectificationReason":"","expenseMoney":null,"imgGroupId":1600,"reporter":4,"flowType":null,"processStage":3003,"gmtCreate":"2019-06-06 14:10:08","gmtModified":"2019-06-06 14:20:53","conservancyName":"中横泾北口泵闸","targetName":"水位仪","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":null,"reporterMobile":null,"images":["images/20190606142052_搜狗截图20181227155959.png"],"processStageName":"待整改","deviceName":null}]},"durProcessed":{"total":2,"list":[{"rectificationId":432,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8502,"targetId":8,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":"张马水闸(内河水位)","deviceSerialNumber":null,"rectificationSerial":"NO_SLSH_2019-06-154 13:21:03","rectificationReason":"梦想","expenseMoney":null,"imgGroupId":1465,"reporter":1,"flowType":null,"processStage":3005,"gmtCreate":"2019-06-03 13:20:18","gmtModified":"2019-06-03 15:15:09","conservancyName":"张马水闸","targetName":"水位仪","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190603132103_img0.jpg"],"processStageName":"整改中","deviceName":null},{"rectificationId":477,"conservancyId":808,"facilityInfoType":8601,"facilityInfoId":808,"inspectionType":8502,"targetId":9,"subTargetId":null,"problemId":null,"subProblemId":null,"problemDeviceType":null,"problemDeviceName":"星光水闸(内河闸位)","deviceSerialNumber":null,"rectificationSerial":"whSX190625001E","rectificationReason":"j s k s","expenseMoney":null,"imgGroupId":1687,"reporter":94,"flowType":null,"processStage":3005,"gmtCreate":"2019-06-25 16:52:53","gmtModified":"2019-06-25 16:58:50","conservancyName":"星光水闸","targetName":"闸位仪","subTargetName":null,"problemName":null,"subProblemName":null,"reporterName":"刘川","reporterMobile":"18236159266","images":["images/20190625165321_img0.jpg"],"processStageName":"整改中","deviceName":null}]},"afterProcessed":{"total":3,"list":[{"rectificationId":423,"conservancyId":803,"facilityInfoType":8601,"facilityInfoId":803,"inspectionType":8502,"targetId":8,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-148 16:42:47","rectificationReason":"哦哦哦","expenseMoney":null,"imgGroupId":1430,"reporter":93,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-28 16:42:16","gmtModified":"2019-05-31 11:15:05","conservancyName":"邱姚水闸","targetName":"水位仪","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"普适超级管理员","reporterMobile":"18621047805","images":["images/20190528164247_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":424,"conservancyId":803,"facilityInfoType":8601,"facilityInfoId":803,"inspectionType":8502,"targetId":8,"subTargetId":null,"problemId":null,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":null,"deviceSerialNumber":null,"rectificationSerial":"NO.2019-05-148 16:45:04","rectificationReason":"哦哦哦","expenseMoney":null,"imgGroupId":1431,"reporter":93,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-28 16:42:16","gmtModified":"2019-05-31 11:14:15","conservancyName":"邱姚水闸","targetName":"水位仪","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"普适超级管理员","reporterMobile":"18621047805","images":["images/20190528164504_img0.jpg"],"processStageName":"整改完成","deviceName":null},{"rectificationId":426,"conservancyId":810,"facilityInfoType":8601,"facilityInfoId":810,"inspectionType":8502,"targetId":8,"subTargetId":null,"problemId":3,"subProblemId":4,"problemDeviceType":null,"problemDeviceName":"张马水闸(内河水位)","deviceSerialNumber":null,"rectificationSerial":"NO_SLSH_2019-05-151 13:25:55","rectificationReason":"车","expenseMoney":null,"imgGroupId":1444,"reporter":1,"flowType":null,"processStage":3008,"gmtCreate":"2019-05-31 13:25:18","gmtModified":"2019-05-31 13:26:36","conservancyName":"张马水闸","targetName":"水位仪","subTargetName":null,"problemName":"运行管理","subProblemName":"运行人员","reporterName":"张小平","reporterMobile":"18621047805","images":["images/20190531132555_img0.jpg"],"processStageName":"整改完成","deviceName":null}]}}},"msg":"获取成功"}')
+				if(ret.code == 200) {
+					var data = ret.data
+					var tatol_count = parseInt(data.total)
+					$("#total").html(tatol_count)
+					$("#facilityRectCount").html(data.facilityRect.total)
+					$("#facilityMainCount").html(data.facilityMain.total)
+					
+					var html = ""
+					html +='<div class="div_warp">'
+					html +='	<div class="left_warp" style="width: 34%;">问题状态</div>'
+					html +='	<div class="middle_warp" style="width: 33%;">问题数量</div>'
+					html +='	<div class="middle_warp" style="width: 33%;">详情</div>'
+					html +='	<div class="clear"></div>'
+					html +='</div>'
+					html +='<div class="div_warp">'
+					html +='	<div class="l_warp" style="width: 34%;">待处理</div>'
+					html +='	<div class="m_warp" style="width: 33%;">'+data.facilityRect.preProcessed.total+'</div>'
+					html +='	<div class="m_warp" style="width: 33%;"><span class="sluice_open show_list" type="shuili" processStageName="待整改" >查看</span></div>'
+					html +='	<div class="clear"></div>'
+					html +='</div>'
+					html +='<hr style="border: 1px solid #c8c7cc;">'
+					html +='<div class="div_warp">'
+					html +='	<div class="l_warp" style="width: 34%;">整改中</div>'
+					html +='	<div class="m_warp" style="width: 33%;">'+data.facilityRect.durProcessed.total+'</div>'
+					html +='	<div class="m_warp" style="width: 33%;"><span class="sluice_open show_list" type="shuili" processStageName="整改中" >查看</span></div>'
+					html +='	<div class="clear"></div>'
+					html +='</div>'
+					html +='<hr style="border: 1px solid #c8c7cc;">'
+					html +='<div class="div_warp">'
+					html +='	<div class="l_warp" style="width: 34%;">已完成</div>'
+					html +='	<div class="m_warp" style="width: 33%;">'+data.facilityRect.afterProcessed.total+'</div>'
+					html +='	<div class="m_warp" style="width: 33%;"><span class="sluice_open show_list" type="shuili" processStageName="整改完成"  >查看</span></div>'
+					html +='	<div class="clear"></div>'
+					html +='</div>'
+					html +='<hr style="border: 1px solid #c8c7cc;">'
+					
+					$("#facilityRect").html(html)
+					
+					var html = ""
+					html +='<div class="div_warp">'
+					html +='	<div class="left_warp" style="width: 34%;">问题状态</div>'
+					html +='	<div class="middle_warp" style="width: 33%;">问题数量</div>'
+					html +='	<div class="middle_warp" style="width: 33%;">详情</div>'
+					html +='	<div class="clear"></div>'
+					html +='</div>'
+					html +='<div class="div_warp">'
+					html +='	<div class="l_warp" style="width: 34%;">待处理</div>'
+					html +='	<div class="m_warp" style="width: 33%;">'+data.facilityMain.preProcessed.total+'</div>'
+					html +='	<div class="m_warp" style="width: 33%;"><span class="sluice_open show_list" type="shebei" processStageName="待整改" >查看</span></div>'
+					html +='	<div class="clear"></div>'
+					html +='</div>'
+					html +='<hr style="border: 1px solid #c8c7cc;">'
+					html +='<div class="div_warp">'
+					html +='	<div class="l_warp" style="width: 34%;">整改中</div>'
+					html +='	<div class="m_warp" style="width: 33%;">'+data.facilityMain.durProcessed.total+'</div>'
+					html +='	<div class="m_warp" style="width: 33%;"><span class="sluice_open show_list" type="shebei" processStageName="整改中"  >查看</span></div>'
+					html +='	<div class="clear"></div>'
+					html +='</div>'
+					html +='<hr style="border: 1px solid #c8c7cc;">'
+					html +='<div class="div_warp">'
+					html +='	<div class="l_warp" style="width: 34%;">已完成</div>'
+					html +='	<div class="m_warp" style="width: 33%;">'+data.facilityMain.afterProcessed.total+'</div>'
+					html +='	<div class="m_warp" style="width: 33%;"><span class="sluice_open show_list" type="shebei" processStageName="整改完成" >查看</span></div>'
+					html +='	<div class="clear"></div>'
+					html +='</div>'
+					html +='<hr style="border: 1px solid #c8c7cc;">'
+					$("#facilityMain").html(html)
+					var facilityRectpreProcessed = data.facilityRect.preProcessed.list
+					var facilityRectdurProcessed = data.facilityRect.durProcessed.list
+					var facilityRectafterProcessed = data.facilityRect.afterProcessed.list
+					
+					var facilityMainpreProcessed = data.facilityMain.preProcessed.list
+					var facilityMaindurProcessed = data.facilityMain.durProcessed.list
+					var facilityMainafterProcessed = data.facilityMain.afterProcessed.list
+					var html = ""
+					html += init_html(facilityRectpreProcessed)
+					html += init_html(facilityRectdurProcessed)
+					html += init_html(facilityRectafterProcessed)
+					// console.log(html)
+					$("#item1mobile").html(html)
+					var html = ""
+					html += init_html(facilityMainpreProcessed)
+					html += init_html(facilityMaindurProcessed)
+					html += init_html(facilityMainafterProcessed)
+					$("#item2mobile").html(html)
+					
+					mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+					$('#page_loading').hide();
+					$('#page_ended').show();
+				} else {
+					mui.toast(ret.error);
+				}
+			})
+		}
+		function init_html(all_arr){
+			var html = "";
+			for(var i = 0; i < all_arr.length; i++) {
+				html += '<li  facility_name="' + (all_arr[i]["conservancyName"] ? all_arr[i]["conservancyName"] : "") + '" processStageName="'+all_arr[i]["processStageName"]+'"   class="search_list mui-table-view-cell mui-media" >'
+//						html += '	<a class="mui-navigate-right">'
+				html += '		<div class="mui-input-row mui-checkbox mui-left">'
+				var thumb_url = (all_arr[i]["images"].length>0 ? (app.prefix(all_arr[i]["images"][0])) : "../../asset/images/empty_big.png") 
+				html += '			<img class="mui-media-object mui-pull-left" style="width:50px;height:50px;margin: 0 5px;" src="'+thumb_url+'">'
+				html += '			<div class="mui-media-body">'
+				html += '				'+all_arr[i]["conservancyName"]+' <span class="mui-pull-right item_state" style="color: red;">'+all_arr[i]["processStageName"]+'</span>'
+				html += '				<p class="mui-ellipsis">发现时间：'+all_arr[i]["gmtCreate"]+'</p>'
+				html += '				<p class="mui-ellipsis">报告人：'+(all_arr[i]["reporterName"]?all_arr[i]["reporterName"]:"&nbsp;")+'</p>'
+				html += '			</div>'
+				html += '		</div>'
+//						html += '	</a>'
+				html += '</li>'
+			}
+			return html
+		}
+	</script>
+
+</html>

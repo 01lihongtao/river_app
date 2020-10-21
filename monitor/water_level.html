@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="../asset/css/mui.min.css" rel="stylesheet"/>
+    <link href="../asset/css/iconfont.css" rel="stylesheet"/>
+    <link href="../asset/css/mui.picker.min.css" rel="stylesheet" />
+    <link href="../asset/css/mui.poppicker.css" rel="stylesheet" />
+    <link href="../asset/css/style.css" rel="stylesheet"/> 
+    <style>
+
+    </style>
+</head>
+<body onload="app.route()">
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<!--<a id="btn_year" class="mui-btn mui-btn-link mui-pull-right">2018年</a>-->
+		<h1 class="mui-title">监测点水位</h1>
+	</header>
+	<div class="mui-content">
+		<ul id="list" class="mui-table-view">
+			<li class="mui-table-view-cell" dt="201801">
+					商榻                                                        
+					<span class="fr_mr_19">2.81m</span> 
+			</li>
+			
+			<li class="mui-table-view-cell" dt="201801">
+					青浦南门                                                                                                         
+					<span class="fr_mr_19">2.66m</span> 
+			</li>
+			
+			<li class="mui-table-view-cell" dt="201801">
+					泖甸                                                                                                             
+					<span class="fr_mr_19">  2.21m </span> 
+			</li>
+			
+			<li class="mui-table-view-cell" dt="201801">
+					赵屯                                                                                                               
+					<span class="fr_mr_19">1.99m</span> 
+			</li>
+			
+		</ul>
+	</div>
+</body>
+<script src="../asset/js/jquery-3.3.1.min.js"></script>
+<script src="../asset/js/mui.min.js"></script>
+<script src="../asset/js/mui.picker.min.js"></script>
+<script src="../asset/js/mui.poppicker.js"></script>
+<script src="../asset/js/app.js"></script>
+<script type="text/javascript" charset="utf-8">
+	mui.ready(function(){
+		mui.init();
+		
+	 
+	})
+	
+	mui.plusReady(function() {
+		plus.screen.lockOrientation("portrait-primary");
+	});
+	
+	app.eventClickYear(document.getElementById('btn_year'),function(strYear){
+		
+	})
+
+</script>
+</html>

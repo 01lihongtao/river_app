@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<style type="text/css">
+			#header {
+				box-shadow: 0 1px 6px #ccc;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header id="header" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">人员报警历史统计</h1>
+		</header>
+		<div class="mui-content" id="list">
+
+
+		</div>
+		<script src="js/mui.min.js"></script>
+		<script src="js/app.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function() {
+				loadData();
+			});
+			//跳转
+			mui('#list').on('tap', '.mui-table-view-cell', function() {
+				var regionId = this.getAttribute('regionId');
+				var alarmTypeName = this.getAttribute('alarmTypeName');
+				// var url = 'list_alarm.html?regionId=' + regionId+'&alarmType=' + alarmTypeName;
+				var url = 'list_person_alarm.html?regionId=' + regionId + '&alarmType=' + alarmTypeName;
+				if (start != '' && end != '') {
+					url += '&start=' + start + '&end=' + end;
+				}
+				//				console.log(encodeURI(url));
+				app.open(encodeURI(url));
+			})
+			var start = app.getUrlParam('start');
+			var end = app.getUrlParam('end');
+			// 获取当前时间
+			function getNowTime(type, newDate) {
+				var date = newDate ? newDate : new Date();
+				var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+				var strDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+				if (type == 'start') {
+					 var currentdate = date.getFullYear() + "-" + month + "-" + (strDate-1) + " 00" + ":" + "00" + ":" + "00";
+					
+				} else {
+					var currentdate = date.getFullYear() + "-" + month + "-" + strDate + " 23" + ":" + "59" + ":" + "59";
+				}
+				return currentdate;
+			}
+			//读取数据
+			function loadData() {
+				app.showProgressBar();
+				//ajax
+				var  url = app.url("api/alarm/personCurrentStatistics");  //http://221.181.88.134:8082/qpvms/api/alarm/personDetail
+				// var url = app.url("api/alarm/personLogList");  //api/alarm/personCurrentStatistics
+				var regionId = app.getUrlParam('regionId');
+				var title = app.getUrlParam('title');
+				// document.getElementById('title').innerText = title; 
+				if (start == '' && end == '') {
+					var mapData = {
+						regionId: '',
+
+						start: getNowTime('start'),
+						end: getNowTime()
+					}
+				} else if (start != '' && end != '') {
+					var startTime = start + ' 00:00:00';
+					var endTime = end + ' 23:59:59';
+					var mapData = {
+						regionId: regionId,
+						start: startTime,
+						end: endTime
+					}
+				}
+				//	console.log(JSON.stringify(mapData))
+				app.ajax(
+					url,
+					mapData,
+					function(result) {
+
+						app.showProgressBar(false);
+						if (result.code == 0) {
+							var datas = result.data;
+							console.log('人员详情' + JSON.stringify(datas))
+							var string = '';
+							for (var i = 0; i < datas.length; i++) {
+								var subCount = datas[i].subCount;
+								if (datas[i].alarmCount != 0) {
+									string += '<h4 id="total" style="margin: 10px 0px 10px 15px">' + datas[i].regionName + '  报警总计：' + datas[i].alarmCount +
+										'次</h4>';
+								}
+								//								console.log(JSON.stringify(datas[i]))
+								for (var item in subCount) {
+									if (subCount[item] != 0) {
+										string += '<ul class="mui-table-view">';
+
+										string += '<li class="mui-table-view-cell" regionId=' + datas[i].regionId + ' alarmTypeName=' + item + ' > ';
+										string += '<a class="mui-navigate-right">';
+										string += item;
+										string += '<span class="align"  style="color:grey">次数：' + subCount[item] + '  (';
+										string += ((subCount[item] / datas[i].alarmCount) * 100).toFixed(2) + '%)</span></a></li>';
+										string += '</ul>';
+
+									}
+								}
+							}
+
+							document.getElementById("list").innerHTML = string;
+						} else {
+							mui.toast("加载数据错误:" + result.error);
+						}
+					}
+				)
+			}
+		</script>
+	</body>
+
+</html>

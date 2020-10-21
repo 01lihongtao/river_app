@@ -1,0 +1,1 @@
+define({  "name": "水利智慧通",  "version": "0.1.0",  "description": "水利智慧通接口",  "title": "水利智慧通接口",  "sampleUrl": false,  "defaultVersion": "0.0.0",  "apidoc": "0.3.0",  "generator": {    "name": "apidoc",    "time": "2019-01-18T01:24:10.999Z",    "url": "http://apidocjs.com",    "version": "0.17.6"  }});

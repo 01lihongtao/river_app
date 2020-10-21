@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+        <title>首页</title>
+        <link href="./new_demo/css/mui.css" rel="stylesheet" type="text/css" />
+        <link href="./new_demo/css/iconfont.css" rel="stylesheet" type="text/css" />
+        <link href="css/iconfont.css" rel="stylesheet" />
+        <link href="./new_demo/css/ol.css" rel="stylesheet" type="text/css" />
+        <link href="css/style.css" rel="stylesheet" />
+        <style type="text/css">
+            .map {
+                height: calc(100vh);
+                width: 100%;
+            }
+             
+            .map-btn {
+                position: absolute;
+                z-index: 200;
+                right: 5px;
+                width: 48px;
+                height: 48px;
+            }
+             
+            .map-btn i {
+                font-size: 16px;
+                line-height: 20px;
+            }
+             
+            .map-btn p {
+                font-size: 12px;
+                line-height: 12px;
+            }
+             
+            #btn-evidence {
+                z-index: 99999;
+                top: 40px;
+            }
+            #popup{
+                display:none
+            }
+			#wake {
+				position: absolute;
+				background-color: royalblue;
+				color: white;
+				margin-top: 120px;
+				right: 55px;
+			}
+        </style>
+        <!-- 字体相关 -->
+        <link rel="stylesheet" type="text/css" href="./new_demo/lib/css/iconfont.css" />
+        <!-- 弹出框样式 -->
+        <link rel="stylesheet" type="text/css" href="./new_demo/css/popup.css" />
+    </head>
+    <body onload="app.route()">
+        <div class="mui-content">
+            <div class="mui-content">
+                <a id="btn-evidence" class="mui-btn map-btn" href="#popover-evidence"><i class="iconfont icon-caozuo-moshi"></i>
+                    <p>确定</p>
+                </a>
+                <img id="locationImg" style="position: absolute;bottom: 44px;right: 16px;z-index: 666;background-color: white;" src="images/dingwei.png" />
+                <div id="map" class="map"></div>
+                <div id="">
+                    <img id="dituCenter" src="images/ditu-center.png" />
+                </div>
+         
+        
+                <div id="popover-layer" class="mui-popover mui-popover-action mui-popover-bottom">
+         
+                </div>
+               <div id="popup" class="ol-popup">
+                   <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                   <button id="navi">导航</button>
+				   	<button id="wake">尾迹</button>
+                   <button id="travel">轨迹</button>
+                   <div id="popup-content"></div>
+               </div>
+            </div>
+ 
+    </body>
+    <!-- 第三方 -->
+    <script src="./new_demo/js/jquery-3.3.1.min.js"></script>
+    <script src="./new_demo/js/ol.js"></script>
+    <script src="./new_demo/js/mui.js"></script>
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=366357a89ebbb8019eb0d86d19b3bacb"></script>
+    <script src="./new_demo/js/LonLatUtil.js"></script>
+    <!-- 自有 -->
+    <script src="./js/app.js"></script>
+    <script src="./new_demo/js/index/layerInfoService.js"></script>
+    <script src="./new_demo/js/index/mapService.js"></script>
+    <script src="./new_demo/js/base/versionService.js"></script>
+    <script src="./new_demo/js/base/backService.js"></script>
+    <script src="./new_demo/js/index/dictService.js"></script>
+    <script src="./new_demo/js/index/uploadService.js"></script>
+    <script src="./new_demo/js/index/inspectWaterQualityInfoService.js"></script>
+    <script src="./new_demo/js/index/inspectOutfalReportInfoService.js"></script>
+    <!-- 主程序 -->
+    <script type="text/javascript" charset="utf-8">
+        var startAndEndTime = {};
+        //上传相关用
+        var uploadInterval = null; //上传定时器
+        //地图对象
+        var switchTiandi1 = null;
+        var switchTiandi2 = null;
+        var switchTiandi3 = null;
+        var switchQp5 = null;
+        var dituCenter = null;
+        var geocoderResult = null; //跳转到取证页面传的值，每一次传值后要设置为null
+        var btnLayer = null;
+        var locationImg = null; //定位按钮
+        var search_count = null; //搜索内容
+        var watchGpsId = null;
+        var timer = null;
+        //确定
+        var btn_evidence = document.getElementById('btn-evidence')
+        // var all_location_lonlat=[]
+        $("#search_count").hide()
+        $("#popup").css("display","none");  
+        //关闭按钮
+        var closer = document.getElementById('popup-closer');
+      // $("#popup").hide()
+        $(document).ready(function() {
+            mui.init();
+            mui.plusReady(function() {
+                //授权
+                initPermission()
+ 
+            })
+        });
+        // 点击确定      btn_pack.addEventListener('tap',function(){
+        btn_evidence.addEventListener('tap', function() {
+            app.setSetting("test", "hello world!");
+            
+            // app.open('op_evidence.html')
+            mui.back()
+        })
+        function initPermission() {
+            plus.android.requestPermissions([
+                'android.permission.ACCESS_FINE_LOCATION', //定位
+                'android.permission.WRITE_EXTERNAL_STORAGE', //存储
+                'android.permission.CAMERA' //拍照或者拍视频
+            ], function(e) {
+                if (e.deniedAlways.length > 0) { //权限被永久拒绝
+                    // 弹出提示框解释为何需要定位权限，引导用户打开设置页面开启
+                    console.log('Always Denied!!! ' + e.deniedAlways.toString());
+                    // TODO 强制系统退出
+                    plus.runtime.quit();
+                }
+                if (e.deniedPresent.length > 0) { //权限被临时拒绝
+                    // 弹出提示框解释为何需要定位权限，可再次调用plus.android.requestPermissions申请权限
+                    console.log('Present Denied!!! ' + e.deniedPresent.toString());
+                    // TODO 强制系统退出
+                    plus.runtime.quit();
+                }
+                if (e.granted.length > 0) { //权限被允许
+                initBack();
+                    //初始化视图
+                    initView();
+                    //初始化监听器
+                    initListener();
+                    //获取图层信息
+                    getLayerInfo();
+                    //初始化一些网络请求
+                    initNetworkData();
+                    //退出按钮监听
+                    // initQuit();
+                }
+            }, function(e) {
+                console.log('Request Permissions error:' + JSON.stringify(e));
+            });
+        }
+        function getLayerInfo() {
+            var promise = layerInfoService.getLayerInfo();
+            promise.then(function(ret) {
+                var data = ret.data;
+                // console.log('图层信息'+JSON.stringify(data))
+                //初始化地图
+                mapService.initMap(dituCenter, this.getGeoResultInfo, data);
+                mapService.initLayerShowHide(switchTiandi1, switchTiandi2, switchTiandi3,
+                    switchQp5);
+            }, function(ret) {
+                mui.toast(ret.msg);
+            });
+        }
+        function initBack() {
+            var old_back = mui.back;
+            mui.back = function() {
+                //上一个界面刷新；
+                var self = plus.webview.currentWebview();
+                var opener = self.opener();
+                mui.fire(opener, 'lonLatIndexListener', {
+                    "lonLatIndexListener": {
+                        "lon" : 111,
+                        "lat" : 111
+                    }
+                });
+                old_back();
+            }
+        }
+        function initView() {
+            btnLayer = $("#btn-layer");
+            switchTiandi1 = $("#switch_tiandi1");
+            switchTiandi2 = $("#switch_tiandi2");
+            switchTiandi3 = $("#switch_tiandi3");
+ 
+            switchQp5 = $("#switch_qp5");
+            dituCenter = $("#dituCenter");
+            locationImg = $("#locationImg");
+            search_count = $("#search_count") //搜索内容
+ 
+        }
+        // 搜索事件
+    
+    
+        
+ 
+        function initListener() {
+            /**
+             * 监听上一个页面fire返回【上传】
+             * @param {Object} e
+             */
+            window.addEventListener('reloadWebview', function(e) {
+                // console.log("---》刷新图层数据！")
+                // var currentWebview = plus.webview.currentWebview();
+                // currentWebview.reload(true); //设置页面重新加载项(默认为false，改为true)
+                // mapService.initVectorLayer();
+            });
+ 
+            // //开启地图移动监听
+            window.addEventListener('openMapMoveendListener', function(e) {
+                console.log("--->openMapMoveendListener");
+                mapService.mapMoveListener(this.getGeoResultInfo);
+            });
+ 
+        
+ 
+            
+            
+ 
+            
+            //"定位"按钮监听
+            locationImg.click(function() {
+            console.log('猝发')
+                mapService.nativeLocation();
+            })
+        }
+ 
+        function getGeoResultInfo(geocoderResult) {
+            console.log("修改后详细的地理位置信息--->" + JSON.stringify(geocoderResult));
+             app.setSetting('move_location', JSON.stringify([geocoderResult]));
+               this.geocoderResult = geocoderResult;
+            var promise = inspectOutfalReportInfoService.getRiverNameList('getRiverNameList', geocoderResult);
+            promise.then(function(ret) {
+                var data = ret.data;
+                // console.log("data--->"+JSON.stringify(data));
+                var riverNameAndLevel = data;
+                var riverNameList = [];
+                for (var i = 0; i < data.length; i++) {
+                    riverNameList.push(data[i].riverName);
+                }
+                geocoderResult.riverNameList = riverNameList;
+                geocoderResult.riverNameAndLevel = riverNameAndLevel;
+            }, function(ret) {
+                // mui.toast(ret.msg);
+            });
+        }
+ 
+        /**
+         * 查询字典表、河道取证信息
+         */
+        function initNetworkData() {
+            //查询字典表信息
+            getDictInfo();
+ 
+            //启动定时上传任务
+            // initUploadService();
+ 
+            //获取河道取证信息
+            // getInspectWaterQualityInfo();
+        }
+ 
+        function getInspectWaterQualityInfo() {
+            var promise = inspectWaterQualityInfoService.getInspectWaterQualityInfo();
+            promise.then(function(ret) {
+                var data = ret.data.items;
+                var waterEvidenceData = JSON.stringify(ret.data.items);
+                app.setSetting("waterEvidenceData", waterEvidenceData);
+                // console.log(JSON.stringify(waterEvidenceData));
+            }, function(ret) {
+                mui.toast(ret.msg);
+            });
+        }
+ 
+        function getDictInfo() {
+            var promise = dictService.getDictInfo();
+            promise.then(function(ret) {
+                var data = ret.data;
+                // console.log(JSON.stringify(data));
+                var dictionary = data[0];
+                app.setSetting("dictionary", dictionary);
+ 
+                var dictionaryKey = data[1];
+                var dictionaryKeyReverse = data[2];
+                app.setSetting("dictionaryKey", dictionaryKey);
+                app.setSetting("dictionaryKeyReverse", dictionaryKeyReverse);
+            }, function(ret) {
+                //then方法接收的第二个函数就是容器中的reject函数
+                mui.toast(ret.msg);
+            });
+        }
+ 
+        // function initUploadService() {
+        //     app.setSetting("intervalFlag", true);
+        //     uploadService.upload(uploadInterval, this.getUploadCode);
+        // }
+ 
+        function getUploadCode(code) {
+            console.log("---》刷新图层数据！")
+            currentWebview.reload(true); //设置页面重新加载项(默认为false，改为true)
+            // mapService.initVectorLayer();
+        }
+    </script>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit;
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.img-selected,.img-selected1 {
+				width: 80px;
+				height: 80px;
+				margin-top: 10px;
+			}
+			
+			#popover {
+				min-width: 282px;
+				position: absolute;
+    z-index: 999;
+    display: none;
+    width: 280px;
+    -webkit-transition: opacity .3s;
+    transition: opacity .3s;
+    -webkit-transition-property: opacity;
+    transition-property: opacity;
+    -webkit-transform: none;
+    transform: none;
+  
+    border-radius: 7px;
+    background-color: #f7f7f7;
+    -webkit-box-shadow: 0 0 15px rgba(0,0,0,.1);
+    box-shadow: 0 0 15px rgba(0,0,0,.1);
+				top: 50% !important;
+				margin-top: -150px;
+				left: 50% !important;
+				margin-left: -141px;
+			}
+			
+			@media (min-width: 400px) {
+				#popover {
+					width: 80%;
+					margin-left: -40%;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+
+			<a class="mui-btn mui-btn-link mui-pull-right " id="doing_feedback">反馈</a>
+
+			<h1 class="mui-title">整改报告单</h1>
+		</header>
+		<div class="mui-content">
+			<ul id="list-option" class="mui-table-view">
+ 
+				<li class="mui-table-view-cell">
+					整改中说明：<br><br>
+					<p id="detail"></p>
+				</li>
+				
+				<li class="mui-table-view-cell">
+					整改中照片
+					<div id="img_list">
+
+						<!--<img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                -->
+					</div>
+				</li>
+
+			</ul>
+
+		</div>
+		
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var problem_id = app.getUrlParam('problem_id');
+		var rectificationSerial;
+		var level1_name;
+		app.setSetting("is_inner",false)
+		function initCtrls() {
+			app.ajax(app.url("query/problem_detail"), {
+				problem_id: problem_id
+			}, function(ret) {
+				var data = ret.data
+				if(ret.code == 0) {
+					level1_name = data["facility_name"]
+					rectificationSerial = data["problem_no"]
+					if(data["commitInfo"]) {
+						
+						 
+						$("#detail").html(data["commitInfo"]["detail"])
+						 
+						var html = ""
+						for(var i = 0; i < data["commitInfo"]["images"].length; i++) {
+							html += '<img src="http://info.ubinavi.com.cn:6104/' + data["commitInfo"]["images"][i]["url_img_thumb"] + '" class="img-selected1">'
+						}
+						$("#img_list").html(html)
+					}
+
+				} else {
+					mui.toast(ret.desc)
+				}
+			})
+		}
+
+		mui.ready(function() {
+			mui.init({
+				gestureConfig: {
+					longtap: true
+				}
+			});
+			initCtrls()
+		 
+			 
+		})
+		$("#doing_feedback").click(function() {
+			app.open("./water_rectification_feedback.html?rectificationSerial=" + encodeURIComponent(rectificationSerial) + "&level1_name="+level1_name+"&is_inner=no")
+		})
+	 
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+ 
+		window.addEventListener('wga_refresh_refresh_refresh', function(event) {
+  
+			var parentViewer = mui.currentWebview.opener();
+			mui.fire(parentViewer, 'wga_refresh_refresh');
+		});
+	</script>
+
+</html>

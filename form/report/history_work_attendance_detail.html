@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html>
+
+	<head> 
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			.mui-bar {
+				height: 100px;
+				border-bottom: 1px solid #ddd;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 100px;
+			}
+			/*#list {
+				    margin-top: 100px;
+			}*/
+			.mui-bar {
+				height: 100px;
+			}
+			
+			.mui-search:before {
+				top: 24px;
+			}
+			
+			.rbtn {
+				width: 33px;
+				overflow: hidden;
+				letter-spacing: 800px;
+				margin: 11px 4%;
+				border-radius: 24px;
+				text-indent: -3.5px;
+			}
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+			h4{
+				font-size: 18px !important;
+			}
+			  .mui-table-view-cell{
+					font-size: 16px !important;
+				}
+			.h4_header{
+				 margin-top: 100px;
+				 background: #fff;
+				 font-size: 16px !important;
+				 padding: 10px;
+				 font-weight: normal;
+			}
+			.mui-table-view-cell:after{
+				left: 0;
+			}
+			 #filter_warp{
+				display: none;
+			}
+			@media screen and (max-width: 321px) {
+				#construction_detail_warp {
+					font-size: 16px !important;
+				}
+				.rbtn{
+					margin: 11px 3%;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!-- 菜单容器 -->
+			<aside class="mui-off-canvas-right" id="offCanvasSideScroll" style="background: #fff;">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<h6 style="padding:5px;">过滤</h6>
+						<ul id="list-option" class="mui-table-view"> 
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-icon-user"></i> 人员</span>
+								<span id="selectPerson" style="    max-width: 100px;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							 
+
+						</ul>
+						<div class="mui-content-padded" style="text-align: right;">
+							<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+							重置
+						</button>
+							<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+							确认
+						</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+	 		<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right selecting_hide">过滤</a>
+
+					<h1 class="mui-title">历史考勤记录</h1>
+					<div class="mui-bar-tab">
+						<button class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
+						<div class="" style="text-align: right"> 
+							<span class=" mui-icon mui-icon-search" id="search"></span>
+							<span id='selectDateStart' style="color: grey">开始时间</span> -
+							<span id='selectDateEnd' style="color: grey">结束时间</span>
+						</div>
+					</div>
+					
+				</header>
+				<div class="mui-content">
+					<div class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<div style="padding: 5px 0;background: #fff;margin-top: 101px;">
+								<div class="mui-input-row mui-search" style="margin: 5px 15px;">
+									<input type="search" id="query_search" class="mui-input-clear" placeholder="输入水利设施名称" style="    margin-bottom: 0;">
+								</div>
+								<div id="filter_warp" style="text-align: center;">
+									<button id='all_facility' class="mui-btn mui-btn-primary rbtn" type='button'>全</button>
+									<button id='showUserPicker' class="mui-btn mui-btn-primary rbtn" type='button'>圩</button>
+									<button id='town_picker' class="mui-btn mui-btn-primary rbtn" type='button'>镇</button>
+									<button id='village_picker' class="mui-btn mui-btn-primary rbtn" type='button'>村</button>
+									<button id='river_picker' class="mui-btn mui-btn-primary rbtn" type='button'>河</button>
+								</div>
+							</div>
+							<ul id="list" class="mui-table-view">
+								
+								<!--<li class="mui-table-view-cell"><a class="link_open "   style="background: #000;color: #fff;"><div style="width: 25%;float: left;text-align: center;">日期</div><div style="width: 20%;float: left;text-align: center;">人员</div><div style="width: 40%;float: left;text-align: center;">设施</div><div style="width: 15%;float: left;text-align: center;">详情</div></a></li><li class="mui-table-view-cell">	<a class="link_open " href="../../operation_and_maintenance/operation/attendance_month_detail.html?date=2019-01-21&result=异常&user_id=55&user_name=王爱兴&state=异常" >		<div class="date_id" style="width: 25%;float: left;text-align: center;">2019-01-21</div>		<div style="width: 20%;float: left;text-align: center;">王爱兴</div>		<div style="width: 40%;float: left;text-align: center;">华新泵闸</div>		<div  style="width: 15%;float: left;text-align: center;color:#06f">查看</div>	</a></li><li class="mui-table-view-cell">	<a class="link_open " href="../../operation_and_maintenance/operation/attendance_month_detail.html?date=2019-01-21&result=异常&user_id=54&user_name=邬林根&state=异常" >		<div class="date_id" style="width: 25%;float: left;text-align: center;">2019-01-21</div>		<div style="width: 20%;float: left;text-align: center;">邬林根</div>		<div style="width: 40%;float: left;text-align: center;">朱泖河泵闸枢纽</div>		<div  style="width: 15%;float: left;text-align: center;color:#06f">查看</div>	</a></li>
+								 -->
+
+								 
+
+							</ul>
+						 
+							 
+							<div id="page_ended" class="page_loader">
+								列表已到最后
+							</div>
+							
+						</div>
+					</div><div class="mui-off-canvas-backdrop"></div>
+
+				</div>
+				
+			</div>
+			</div>
+ 
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js "></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+ 		var timer;
+		var company_id = app.getUrlParam('company_id');
+		var selectDateStart = document.getElementById('selectDateStart');
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var btn_date_range = document.getElementById('btn_date_range');
+		
+		var selectPerson = document.getElementById('selectPerson');
+		var all_facility_arr_data
+		var picker_arr_data
+		var town_picker
+		var village_picker_arr_data
+		var river_picker_arr_data
+		var river_picker = new mui.PopPicker();
+		var userPicker = new mui.PopPicker();
+		var all_facility_picker = new mui.PopPicker();
+		var town_picker = new mui.PopPicker();
+		var village_picker = new mui.PopPicker();
+		
+		
+ 		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+ 		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+		initDateRange();
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		var all_person_data ;
+		var person_data = [];
+		var post_data={};
+		var personPicker = new mui.PopPicker();
+		person_data.push({
+			value: "",
+			text: "全部"
+		})
+		personPicker.setData(person_data);
+		selectPerson.addEventListener('tap', function(event) {
+			personPicker.show(function(items) {
+			
+				selectPerson.innerText = items[0]["text"];
+				$('#selectPerson').attr('item_id', items[0]["value"]);
+			});
+		}, false);
+		
+		
+		
+		mui.ready(function() { 
+			mui(".mui-scroll-wrapper").scroll();
+			mui('body').on('tap', '.link_open', function() {
+				console.log($(this).attr('href'))
+				app.open($(this).attr('href'));
+			})
+			document.getElementById("query_search").addEventListener('input', function() {
+				var this_value = this.value
+				//				mui('#construction_detail_warp').scroll().scrollTo(0, 0);
+				input_search_facilty(this_value);
+				console.log("input")
+			});
+			document.getElementById("query_search").addEventListener('focus', function() {
+				console.log("focus")
+				$("#filter_warp").slideDown()
+			});
+			document.getElementById("query_search").addEventListener('blur', function() {
+				console.log("blur")
+ 
+			});
+			//滑动关闭键盘
+			$("#list").bind("tap swipeup touchmove", function() {
+				console.log("swipeup")
+				clearTimeout(slideUpTimer)
+				slideUpTimer = setTimeout(function(){
+					$("#filter_warp").slideUp()
+				},500)
+				
+				document.activeElement.blur();
+			})
+			$(".mui-icon-clear").on("tap", function() {
+				input_search_facilty("");
+			})
+			var slideUpTimer;
+			function input_search_facilty(this_value) {
+				clearTimeout(timer)
+				timer = setTimeout(function() {
+
+					$(".search_list").each(function() {
+						var that = $(this)
+
+						//			 			console.log(that.attr("facility_name"));
+						if(that.attr("facility_name").indexOf(this_value) == -1) {
+
+							that.hide()
+						} else {
+							//							console.log($(this).attr("facility_name").indexOf(this_value) == -1)
+							that.show()
+						}
+					})
+				}, 500)
+			}
+
+			function search_facilty() {
+				clearTimeout(timer)
+				timer = setTimeout(function() {
+
+					$(".search_list").each(function() {
+						var var_arr = [];
+						var that = $(this)
+						if(all_facility_button.innerHTML != "全")
+							var_arr.push({
+								attr: "facility_name",
+								id: "all_facility"
+							})
+						if(showUserPickerButton.innerHTML != "圩")
+							var_arr.push({
+								attr: "controlAreaName",
+								id: "showUserPicker"
+							})
+						if(town_picker_button.innerHTML != "镇")
+							var_arr.push({
+								attr: "townName",
+								id: "town_picker"
+							})
+
+						if(village_picker_button.innerHTML != "村")
+							var_arr.push({
+								attr: "villageName",
+								id: "village_picker"
+							})
+						if(river_picker_button.innerHTML != "河")
+							var_arr.push({
+								attr: "riverName",
+								id: "river_picker"
+							})
+
+						//						console.log(var_arr)
+						var flag = true
+						for(var i = 0; i < var_arr.length; i++) {
+							if(that.attr(var_arr[i]["attr"]).indexOf($("#" + var_arr[i]["id"]).html()) == -1) {
+								flag = false
+							}
+						}
+
+						if(flag) {
+							that.show()
+						} else {
+							that.hide()
+						}
+					})
+				}, 300)
+			}
+			//普通示例
+			
+			 all_facility_arr_data = [{
+				value: "全",
+				text: "全部",
+				id: ""
+			}]
+
+			var all_facility_button = document.getElementById('all_facility');
+
+			all_facility_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				all_facility_picker.show(function(items) {
+					search_facilty()
+					all_facility_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+				});
+			}, false);
+
+			//普通示例
+			
+			 picker_arr_data = [{
+				value: "圩",
+				text: "全部",
+				id: ""
+			}]
+
+			var showUserPickerButton = document.getElementById('showUserPicker');
+			var userResult = document.getElementById('userResult');
+			showUserPickerButton.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				userPicker.show(function(items) {
+					search_facilty(items[0]["value"], "facility_name")
+
+					showUserPickerButton.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+				});
+			}, false);
+			
+			 town_picker_arr_data = [{
+				value: "镇",
+				text: "全部",
+				id: ""
+			}]
+
+			var town_picker_button = document.getElementById('town_picker');
+
+			town_picker_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				town_picker.show(function(items) {
+					search_facilty(items[0]["value"], "townName")
+					town_picker_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					console.log(items[0]["value"])
+					if(items[0]["value"] != "镇") {
+						var street_name = items[0]["value"]
+						app.ajax(app.url("query/street_water_gate_list"), {
+							street_name: street_name
+						}, function(ret) {
+
+							if(ret.code == 0) {
+
+								village_picker_arr_data = [{
+									value: "村",
+									text: "全部",
+
+								}]
+								if(ret.data[0]["villages"]) {
+									var data = ret.data[0].villages
+									for(var i = 0; i < data.length; i++) {
+
+										village_picker_arr_data.push({
+											value: data[i]["name"],
+											text: data[i]["name"]
+										})
+									}
+								}
+
+								village_picker_button.innerHTML = "村"
+								village_picker.setData(village_picker_arr_data);
+							} else {
+								mui.toast(ret.error)
+							}
+						})
+					}
+				});
+			}, false);
+			
+			
+			 village_picker_arr_data = [{
+				value: "村",
+				text: "全部",
+				id: ""
+			}]
+
+			var village_picker_button = document.getElementById('village_picker');
+
+			village_picker_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				village_picker.show(function(items) {
+					search_facilty(items[0]["value"], "villageName")
+					village_picker_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+				});
+			}, false);
+			
+			 river_picker_arr_data = [{
+				value: "河",
+				text: "全部",
+				id: ""
+			}]
+
+			var river_picker_button = document.getElementById('river_picker');
+
+			river_picker_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				river_picker.show(function(items) {
+					search_facilty(items[0]["value"], "riverName")
+					river_picker_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+				});
+			}, false);
+			loadData()
+		})
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+		// 时间范围
+		var arrDateRanges = [{
+				text: '本日',
+				value: '本日'
+			},
+			{
+				text: '本周',
+				value: '本周'
+			},
+			{
+				text: '本月',
+				value: '本月'
+			},
+			{
+				text: '本季度',
+				value: '本季度'
+			},
+			{
+				text: '本年',
+				value: '本年'
+			}
+		];
+
+		var pickerDateRanges = new mui.PopPicker();
+		pickerDateRanges.setData(arrDateRanges);
+		btn_date_range.addEventListener('tap', function() {
+			pickerDateRanges.show(function(items) {
+			
+				btn_date_range.innerText = items[0].text;
+				initDateRange();
+				loadData()
+			});
+		})
+
+		//选择时间
+		
+		selectDateStart.addEventListener('tap', function() {　　
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateStart.innerHTML = items.value;
+				loadData();
+			})
+		})
+		
+	 
+		selectDateEnd.addEventListener('tap', function() {　　
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateEnd.innerHTML = items.value;
+				loadData();
+			})
+		})
+		var g_person_data_arr = []
+		function loadData() {
+			post_data = {}
+			if($('#selectPerson').html() != '全部') {
+				post_data["user_id"] = $('#selectPerson').attr('item_id');
+			}
+			post_data["company_id"] = company_id;
+			post_data["begin_date"] = selectDateStart.innerHTML + ' 00:00:00'
+			post_data["end_date"] = selectDateEnd.innerHTML + ' 23:59:59'
+			
+			console.log(JSON.stringify(post_data))
+			app.ajax(app.url('query/history/attendance_record_detail'), post_data, function(ret) {
+				console.log(JSON.stringify(ret))
+				if(ret.code == 0) {
+					var data = ret.data
+					var list = data.list
+					
+				 	var var_controlAreaName_arr = [];
+					var var_all_facility_arr = [];
+					var var_town_arr = [];
+					var var_village_arr = [];
+					var var_river_arr = [];
+					
+					var html = ""
+					 
+					html += '<li class="mui-table-view-cell">'
+					html += '<a class="link_open "   style="background: #000;color: #fff;">'
+					html += '<div style="width: 25%;float: left;text-align: center;">日期</div>'
+					html += '<div style="width: 20%;float: left;text-align: center;">人员</div>'
+					html += '<div style="width: 40%;float: left;text-align: center;">设施</div>'
+					html += '<div style="width: 15%;float: left;text-align: center;">结果</div>'
+					html += '</a>'
+					html += '</li>'
+					for (var i = 0; i < list.length; i++) {
+					 
+						html += '<li   controlAreaName="' + (list[i]["control_area"] ? list[i]["control_area"] : "") + '"  facility_name="' + (list[i]["facility_name"] ? list[i]["facility_name"] : "") + '"   townName="' + (list[i]["street_name"] ? list[i]["street_name"] : "") + '" villageName="' + (list[i]["village"] ? list[i]["village"] : "") + '"  riverName="' + (list[i]["river"] ? list[i]["river"] : "") + '" class="mui-table-view-cell search_list">'
+						html += '	<a class="link_open " href="../../operation_and_maintenance/operation/attendance_month_detail.html?date='+list[i]["date"].split(" ")[0]+'&result='+list[i]["result"]+'&user_id='+list[i]["user_id"]+'&user_name='+$.trim(list[i]["user_name"])+'&state='+list[i]["result"]+'" >'
+//						console.log('../../operation_and_maintenance/operation/attendance_month_detail.html?date='+abnormal_attendance[i]["date"].split(" ")[0]+'&result='+abnormal_attendance[i]["result"]+'&user_id='+abnormal_attendance[i]["user_id"]+'&user_name='+abnormal_attendance[i]["user_name"]+'')
+						
+						html += '		<div class="date_id" style="width: 25%;float: left;text-align: center;">'+list[i]["date"].split(" ")[0]+'</div>'
+						html += '		<div style="width: 20%;float: left;text-align: center;">'
+						if(html[i]["user_type"]=="监理员"){
+							html += ('<span style="color:red">'+list[i]["user_name"]+'</span>')
+						}else{
+							html += list[i]["user_name"]
+						}
+						
+						
+						html +='</div>' 
+						html += '		<div class="mui-ellipsis" style="width: 40%;float: left;text-align: center;">'+list[i]["facility_name"]+'</div>'
+						html += '		<div  style="width: 15%;float: left;text-align: center"><span style="color:red">'+list[i]["result"]+'</span></div>'
+						html += '	</a>'
+						html += '</li>'
+						if(g_person_data_arr.indexOf(list[i]["user_id"])==-1){
+							person_data.push({
+								value: list[i]["user_id"],
+								text: list[i]["user_name"]
+							})
+							g_person_data_arr.push(list[i]["user_id"])
+						}
+						var_all_facility_arr.push(list[i]["facility_name"])
+						var_controlAreaName_arr.push(list[i]["control_area"])
+						var_town_arr.push(list[i]["street_name"])
+						var_village_arr.push(list[i]["village"])
+						var_river_arr.push(list[i]["river"])
+						
+					}
+					
+					var_all_facility_arr = uniq(var_all_facility_arr);
+					var_all_facility_arr.forEach(function(item) {
+						if(item) {
+							all_facility_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					all_facility_picker.setData(all_facility_arr_data);
+
+					var_controlAreaName_arr = uniq(var_controlAreaName_arr);
+					var_controlAreaName_arr.forEach(function(item) {
+						if(item) {
+							picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					userPicker.setData(picker_arr_data);
+
+					var_town_arr = uniq(var_town_arr);
+					var_town_arr.forEach(function(item) {
+						if(item) {
+							town_picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					town_picker.setData(town_picker_arr_data);
+
+					var_village_arr = uniq(var_village_arr);
+					var_village_arr.forEach(function(item) {
+						if(item) {
+							village_picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+
+					village_picker.setData(village_picker_arr_data);
+
+					river_picker.setData(river_picker_arr_data);
+					var_river_arr = uniq(var_river_arr);
+					var_river_arr.forEach(function(item) {
+						if(item) {
+							river_picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					river_picker.setData(river_picker_arr_data);
+					personPicker.setData(person_data);
+//					console.log(html)
+					$("#list").html(html)
+					
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+		}
+		function uniq(array) {
+			var temp = []; //一个新的临时数组
+			for(var i = 0; i < array.length; i++) {
+				if(temp.indexOf(array[i]) == -1) {
+					temp.push(array[i]);
+				}
+			}
+			return temp;
+		}
+		
+
+		function clickOk() {
+			offCanvasWrapper.offCanvas('close');
+			
+			loadData()
+			
+		}
+		function clickReset() {
+			
+			$('#selectPerson').html('全部')
+			$('#selectPerson').attr('item_id',"");
+			
+		 
+			
+		}
+		function initDateRange() {
+			if(btn_date_range.innerText == '本日') {
+				selectDateStart.innerText = app.getDay();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本周') {
+				selectDateStart.innerText = app.getWeekBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本月') {
+				selectDateStart.innerText = app.getMonthBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本季度') {
+				selectDateStart.innerText = app.getSeasonBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本年') {
+				selectDateStart.innerText = app.getYearBegin();
+				selectDateEnd.innerText = app.getDay();
+			}
+		}
+	</script>
+
+</html>

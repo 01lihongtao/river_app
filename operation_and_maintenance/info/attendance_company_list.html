@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../asset/css/mui.min.css">
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">巡查排班</h1>
+		</header>
+		<div class="mui-content">
+		<ul id="list" class="mui-table-view">
+			 
+			<!--<li  class="mui-table-view-cell">
+				<a class="link_open mui-navigate-right"  href="personal_detail.html">
+					龚联
+				</a>
+			</li>
+			 
+			<li dt="201802" class="mui-table-view-cell">
+				<a class="link_open mui-navigate-right" href="personal_detail.html">
+					李兵杰
+					
+				</a>
+			</li>-->
+			 
+		</ul>
+		
+		<div id="page_loading" class="page_loader">
+			<img src="../../asset/images/loading.gif"> 加载中...
+		</div>
+		<div id="page_ended" class="page_loader">
+			列表已到最后
+		</div>
+	</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		
+		mui.ready(function(){
+			$('#page_loading').show();
+			$('#page_ended').hide();
+			app.ajax(app.url('query/cover_company_list'), {}, function(ret) {
+				$('#page_loading').hide();
+				$('#page_ended').show();
+				if(ret.code == 0) {
+					var data = ret.data;
+					var html = "";
+					for (var i = 0; i < data.length; i++) {
+						
+					
+						html +='<li  class="mui-table-view-cell">'
+							html +='<a  class="link_open mui-navigate-right"  href="attendance_month_list.html?id='+data[i]["company_id"]+'&cp_name='+data[i]["company_name"]+'">'
+							html +=	data[i]["company_name"]
+							html +='</a>'
+						html +='</li>'
+					}
+					$("#list").html(html)
+//					app.open('main.html');
+ 
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+			mui('#list').on('tap', '.link_open', function() {
+				app.open($(this).attr('href'));
+			})
+
+		})
+		
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+		
+		 
+		
+	</script>
+
+</html>

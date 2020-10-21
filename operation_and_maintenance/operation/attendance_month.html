@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../asset/css/mui.min.css">
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			#list {
+				/*margin-top: 55px;*/
+			}
+			h4{
+				font-size: 18px !important;
+			}
+			  .mui-table-view-cell{
+					font-size: 16px !important;
+				}
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+			.h4_header{
+				 margin-top: 55px;
+				 background: #fff;
+				 font-size: 24px;
+				 padding: 10px;
+			}
+			.mui-preview-image.mui-fullscreen {
+				position: fixed;
+				z-index: 20;
+				background-color: #000;
+			}
+			.mui-preview-header,
+			.mui-preview-footer {
+				position: absolute;
+				width: 100%;
+				left: 0;
+				z-index: 10;
+			}
+			.mui-preview-header {
+				height: 44px;
+				top: 0;
+			}
+			.mui-preview-footer {
+				height: 50px;
+				bottom: 0px;
+			}
+			.mui-preview-header .mui-preview-indicator {
+				display: block;
+				line-height: 25px;
+				color: #fff;
+				text-align: center;
+				margin: 15px auto 4;
+				width: 70px;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 12px;
+				font-size: 16px;
+			}
+			.mui-preview-image {
+				display: none;
+				-webkit-animation-duration: 0.5s;
+				animation-duration: 0.5s;
+				-webkit-animation-fill-mode: both;
+				animation-fill-mode: both;
+			}
+			.mui-preview-image.mui-preview-in {
+				-webkit-animation-name: fadeIn;
+				animation-name: fadeIn;
+			}
+			.mui-preview-image.mui-preview-out {
+				background: none;
+				-webkit-animation-name: fadeOut;
+				animation-name: fadeOut;
+			}
+			.mui-preview-image.mui-preview-out .mui-preview-header,
+			.mui-preview-image.mui-preview-out .mui-preview-footer {
+				display: none;
+			}
+			.mui-zoom-scroller {
+				position: absolute;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				-webkit-backface-visibility: hidden;
+			}
+			.mui-zoom {
+				-webkit-transform-style: preserve-3d;
+				transform-style: preserve-3d;
+			}
+			.mui-slider .mui-slider-group .mui-slider-item img {
+				width: auto;
+				height: auto;
+				max-width: 100%;
+				max-height: 100%;
+			}
+			.mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+				width: 100%;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+				display: inline-table;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			.mui-preview-loading {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				display: none;
+			}
+			.mui-preview-loading.mui-active {
+				display: block;
+			}
+			.mui-preview-loading .mui-spinner-white {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-left: -25px;
+				margin-top: -25px;
+				height: 50px;
+				width: 50px;
+			}
+			.mui-preview-image img.mui-transitioning {
+				-webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+				transition: transform 0.5s ease, opacity 0.5s ease;
+			}
+			@-webkit-keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@-webkit-keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			@keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">本月签到统计</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<h4 class="h4_header"  >
+						<span id="current_month"></span>
+						<button id="trace" style="margin-top: -8px;background: #0066FF;color: #fff;border: 0;" >轨迹</button>
+						<button class="mui-pull-right name"  style="    margin-top: -8px;" ></button>
+					</h4>
+					<ul id="list" class="mui-table-view">
+						<!--<li class="mui-table-view-cell">
+							<a class="link_open "   style="background: #000;color: #fff;">
+								<div style="width: 25%;float: left;text-align: center;">日期</div>
+								<div style="width: 50%;float: left;text-align: center;">签到状况</div>
+								<div style="width: 25%;float: left;text-align: center;">详情</div>
+							</a>
+						</li>
+						<li class="mui-table-view-cell">
+							<a class="link_open " href="attendance_month_detail.html">
+								<div class="date_id" style="width: 25%;float: left;text-align: center;">01</div>
+								<div class="state" style="width: 50%;float: left;text-align: center;">合格</div>
+								<div  style="width: 25%;float: left;text-align: center;">查看</div>
+							</a>
+						</li>-->
+					</ul>
+
+					<div id="page_ended" class="page_loader">
+						列表已到最后
+					</div>
+					<div class="mui-off-canvas-backdrop"></div>
+				</div>
+			</div>
+		</div>
+			
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.zoom.js"></script>
+	<script src="../../asset/js/mui.previewimage.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		mui.previewImage();
+		var isJL = app.isJl();
+		var facility_id = app.getUrlParam('facility_id');
+ 		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		$("#current_month").html(new Date().format("yyyy年MM月"))
+		$(".name").html(user_data.user_name)
+		mui.ready(function() {
+			mui(".mui-scroll-wrapper").scroll();
+			mui('#list').on('tap', '.link_open', function() {
+				if($(this).attr('data-return')=="true"){
+					return false;
+				}
+				
+				app.open($(this).attr('href')+$(this).find(".state").html());
+			})
+			document.getElementById("trace").addEventListener("tap",function(){
+				app.open("../../report_trace.html?id="+user_data["id"])
+			})
+	 		if(isJL){
+	 			$("#trace").show()
+	 		}else{
+	 			$("#trace").hide()
+	 		}
+
+			app.ajax(app.url('query/history/attendance_record'), {
+				user_id: user_data["id"],
+// 				year:new Date().format("yyyy"),
+// 				month:new Date().format("MM")
+			}, function(ret) {
+				console.log(JSON.stringify(ret))
+				if(ret.code == 0) {
+					var data = ret.data
+					var html = "";
+					html += '<li class="mui-table-view-cell">'
+					html += '	<a class="link_open "   style="background: #000;color: #fff;">'
+					html += '		<div style="width: 30%;float: left;text-align: center;">日期</div>'
+						html += '		<div style="width: 55%;float: left;text-align: center;">签到设施</div>'
+					html += '		<div style="width: 15%;float: left;text-align: center;">照片</div>'
+					html += '	</a>'
+					html += '</li>'
+					var current_date = '';
+					for (var i = 0; i < data.length; i++) {
+						html += '<li class="mui-table-view-cell">'
+						html += '	<div    >';
+						var tmpDate = (data[i]["date"]?data[i]["date"].substr(5,11):"");
+						var tmpDate2 = '';
+						if(current_date != tmpDate.substr(0,5))
+						{
+							current_date = tmpDate.substr(0,5);
+							tmpDate2 = tmpDate;
+						}
+						else
+						{
+							tmpDate2 = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + tmpDate.substr(6,5);
+						}
+						html += '		<div class="date_id" style="width: 30%;float: left;text-align: center;">'+tmpDate2+'</div>'
+						html += '		<div class="mui-ellipsis "  style="width: 55%;float: left;text-align: center;">'+data[i]["facilityName"]+'</div>';
+						if(data[i]["clockinImage"]){
+							html += '		<div class="action_div show_img "    style="width: 15%;float: left;text-align: center;color:#06f;">' 
+							html += '<img class="mui-action-preview" data-preview-group="1" data-preview-src="'+app.prefix(data[i]["clockinImage"])+'" src="../../asset/images/chakan.png"  style="width:30px"  >'  
+							html += '</div>'
+						}
+						else{
+							html += '		<div class="action_div  "  style="width: 15%;float: left;text-align: center;color:#06f;">&nbsp;</div>'
+						}
+						html += '	</div>'
+						html += '</li>'
+					}
+					
+					$("#list").html(html)
+				} else {
+					mui.toast('获取数据失败：' + (ret.data || ret.error));
+				}
+			});
+		})
+
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		function initImgPreview() {
+			var imgs = document.querySelectorAll("img.mui-action-preview");
+			imgs = mui.slice.call(imgs);
+			if (imgs && imgs.length > 0) {
+				var slider = document.createElement("div");
+				slider.setAttribute("id", "__mui-imageview__");
+				slider.classList.add("mui-slider");
+				slider.classList.add("mui-fullscreen");
+				slider.style.display = "none";
+				slider.addEventListener("tap", function() {
+					slider.style.display = "none";
+				});
+				slider.addEventListener("touchmove", function(event) {
+					event.preventDefault();
+				})
+				var slider_group = document.createElement("div");
+				slider_group.setAttribute("id", "__mui-imageview__group");
+				slider_group.classList.add("mui-slider-group");
+				imgs.forEach(function(value, index, array) {
+					//给图片添加点击事件，触发预览显示；
+					value.addEventListener('tap', function() {
+						slider.style.display = "block";
+						_slider.refresh();
+						_slider.gotoItem(index, 0);
+					})
+					var item = document.createElement("div");
+					item.classList.add("mui-slider-item");
+					var a = document.createElement("a");
+					var img = document.createElement("img");
+					img.setAttribute("src", value.src);
+					a.appendChild(img)
+					item.appendChild(a);
+					slider_group.appendChild(item);
+				});
+				slider.appendChild(slider_group);
+				document.body.appendChild(slider);
+				var _slider = mui(slider).slider();
+			}
+		}
+		
+		function getDaysInOneMonth(year_month) {
+			var arr = year_month.split("-");
+			year = arr[0];
+			month = arr[1];
+			month = parseInt(month, 10);
+			var d = new Date(year, month, 0);
+			var return_arr = [];
+			for(var i = 1; i <= d.getDate(); i++) {
+				var ii = i;
+				if(ii < 10) {
+					ii = "0" + ii
+				}
+				return_arr.push(year_month + "-" + ii)
+			}
+			return return_arr;
+		}
+		
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+		
+		function init_html(year_mouth){
+			var data_arr = getDaysInOneMonth(year_mouth);
+			var html = "";
+			html += '<li class="mui-table-view-cell">'
+			html += '	<a class="link_open "   style="background: #000;color: #fff;">'
+			html += '		<div style="width: 25%;float: left;text-align: center;">日期</div>'
+			if(isJL)
+				html += '		<div style="width: 50%;float: left;text-align: center;">签到设施</div>'
+			else
+				html += '		<div style="width: 50%;float: left;text-align: center;">签到状况</div>'
+			html += '		<div style="width: 25%;float: left;text-align: center;">详情</div>'
+			html += '	</a>'
+			html += '</li>'
+			for(var i = 0; i < data_arr.length; i++) {
+				html += '<li class="mui-table-view-cell">'
+				html += '	<a class="link_open date'+data_arr[i]+'" data-return="true" href="attendance_month_detail.html?date='+data_arr[i]+'&state=">'
+				html += '		<div class="date_id" style="width: 25%;float: left;text-align: center;">'+data_arr[i]+'</div>'
+				if(isJL)
+					html += '		<div class="mui-ellipsis state '+data_arr[i]+'"  style="width: 50%;float: left;text-align: center;">&nbsp;</div>';
+				else
+					html += '		<div class=" mui-ellipsis state '+data_arr[i]+'"  style="width: 50%;float: left;text-align: center;">无排班</div>'
+					
+				html += '		<div class="action_div hide'+data_arr[i]+'"  style="width: 25%;float: left;text-align: center;color:#06f;display:none;">查看</div>'
+				html += '	</a>'
+				html += '</li>'
+			}
+			$("#list").html(html)
+		}
+	</script>
+</html>

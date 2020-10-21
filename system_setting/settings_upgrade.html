@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../asset/css/mui.min.css">
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			.mui-views,
+			.mui-view,
+			.mui-pages,
+			.mui-page,
+			.mui-page-content {
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				width: 100%;
+				height: 100%;
+				background-color: #efeff4;
+			}
+			.mui-pages {
+				top: 46px;
+				height: auto;
+			}
+			.mui-scroll-wrapper,
+			.mui-scroll {
+				background-color: #efeff4;
+			}
+			.mui-page.mui-transitioning {
+				-webkit-transition: -webkit-transform 300ms ease;
+				transition: transform 300ms ease;
+			}
+			.mui-page-left {
+				-webkit-transform: translate3d(0, 0, 0);
+				transform: translate3d(0, 0, 0);
+			}
+			.mui-ios .mui-page-left {
+				-webkit-transform: translate3d(-20%, 0, 0);
+				transform: translate3d(-20%, 0, 0);
+			}
+			.mui-navbar {
+				position: fixed;
+				right: 0;
+				left: 0;
+				z-index: 10;
+				height: 44px;
+				background-color: #f7f7f8;
+			}
+			.mui-navbar .mui-bar {
+				position: absolute;
+				background: transparent;
+				text-align: center;
+			}
+			.mui-android .mui-navbar-inner.mui-navbar-left {
+				opacity: 0;
+			}
+			.mui-ios .mui-navbar-left .mui-left,
+			.mui-ios .mui-navbar-left .mui-center,
+			.mui-ios .mui-navbar-left .mui-right {
+				opacity: 0;
+			}
+			.mui-navbar .mui-btn-nav {
+				-webkit-transition: none;
+				transition: none;
+				-webkit-transition-duration: .0s;
+				transition-duration: .0s;
+			}
+			.mui-navbar .mui-bar .mui-title {
+				display: inline-block;
+				width: auto;
+			}
+			.mui-page-shadow {
+				position: absolute;
+				right: 100%;
+				top: 0;
+				width: 16px;
+				height: 100%;
+				z-index: -1;
+				content: '';
+			}
+			.mui-page-shadow {
+				background: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .01) 50%, rgba(0, 0, 0, .2) 100%);
+				background: linear-gradient(to right, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .01) 50%, rgba(0, 0, 0, .2) 100%);
+			}
+			.mui-navbar-inner.mui-transitioning,
+			.mui-navbar-inner .mui-transitioning {
+				-webkit-transition: opacity 300ms ease, -webkit-transform 300ms ease;
+				transition: opacity 300ms ease, transform 300ms ease;
+			}
+			.mui-page {
+				display: none;
+			}
+			.mui-pages .mui-page {
+				display: block;
+			}
+			.mui-page .mui-table-view:first-child {
+				margin-top: 15px;
+			}
+			.mui-page .mui-table-view:last-child {
+				margin-bottom: 30px;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			.mui-table-view-divider {
+				background-color: #efeff4;
+				font-size: 14px;
+			}
+			.mui-table-view-divider:before,
+			.mui-table-view-divider:after {
+				height: 0;
+			}
+			.head {
+				height: 40px;
+			}
+			#head {
+				line-height: 40px;
+			}
+			.head-img {
+				width: 40px;
+				height: 40px;
+			}
+			#head-img1 {
+				position: absolute;
+				bottom: 10px;
+				right: 40px;
+				width: 40px;
+				height: 40px;
+			}
+			.update {
+				font-style: normal;
+				color: #999999;
+				margin-right: -25px;
+				font-size: 15px
+			}
+			.mui-fullscreen {
+				position: fixed;
+				z-index: 20;
+				background-color: #000;
+			}
+			.mui-ios .mui-navbar .mui-bar .mui-title {
+				position: static;
+			}
+			.title {
+			    margin: 20px 15px 7px;
+			    color: #6d6d72;
+			    font-size: 15px;
+			}
+			
+			.mui-table-view-cell>.mui-numbox {
+			    position: absolute;
+			    top: 50%;
+			    right: 15px;
+			    -webkit-transform: translateY(-50%);
+			    transform: translateY(-50%);
+			}
+			
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">系统升级</h1>
+		</header>
+		<div class="mui-content">
+			<br>
+			<div style="text-align: left; margin-left:60px;">
+				<span style="color: gray;">当前系统版本：</span>
+				<span id="ver_current"></span></div>
+			<br>
+			<div style="text-align: left; margin-left:60px;">
+				<span style="color: gray;">最新下载版本：</span>
+				<span id="ver_online"></span></div>
+			<br>
+		    <div class="mui-content-padded">
+		        <button id='btn_upgrade' type="button" class="mui-btn mui-btn-primary mui-btn-block mui-disabled">升级</button>
+		    </div>
+		</div>
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../asset/js/mui.min.js "></script>
+	<script src="../asset/js/app.js "></script>
+	<script>
+		var url_version = '';
+		var btn_upgrade = document.getElementById('btn_upgrade');
+		mui.init();
+		mui.plusReady(function() {
+			btn_upgrade.addEventListener('tap', function(){
+            //	console.log('tap');
+				plus.runtime.openURL(url_version)
+			})
+			initCtrls();
+		});
+		function initCtrls() {
+			var strVerOnline = '';
+			app.ajax(app.url("appcfg/upgrade"),{},function(ret){
+				console.log("升级下载数据--->"+JSON.stringify(ret));
+				if(ret.code==0){
+					if(mui.os.ios)
+					{
+						strVerOnline = ret.data.verIOS;
+						url_version = ret.data.urlIOS;
+					}
+					else
+					{
+						strVerOnline = ret.data.verAndroid;
+						url_version = ret.data.urlAndroid;
+					}
+					strVerOnline = strVerOnline.replace("v","")
+					console.log("strVerOnline:"+strVerOnline)
+					document.getElementById('ver_online').innerText = strVerOnline;
+					console.log(app.compare(strVerOnline,app.getSetting('app_ver')))
+					if(app.compare(strVerOnline,app.getSetting('app_ver')))
+					{
+						btn_upgrade.classList.remove('mui-disabled');
+					}
+				}else{
+					mui.toast("系统升级接口出错")
+				}
+			})
+			document.getElementById('ver_current').innerText = app.getSetting('app_ver');
+		}
+	</script>
+</html>

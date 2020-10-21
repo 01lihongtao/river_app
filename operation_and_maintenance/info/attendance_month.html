@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../asset/css/mui.min.css">
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			#list {
+				/*margin-top: 55px;*/
+			}
+			
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+			h4{
+				font-size: 18px !important;
+			}
+			  .mui-table-view-cell{
+					font-size: 16px !important;
+				}
+			.h4_header{
+				 margin-top: 55px;
+				 background: #fff;
+				 font-size: 24px;
+				 padding: 10px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+
+	 
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="close" class="mui-btn mui-btn-link mui-pull-right">关闭</a>
+					<h1 class="mui-title">本月签到统计</h1>
+
+				</header>
+				<div class="mui-content">
+					<div class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							
+							<h4 class="h4_header"  >
+								<span id="current_month">异常考勤记录</span>
+								<button id="filter" class="mui-pull-right   iconfont icon-xiasanjiao"  style=" border: #007AFF;   margin-top: -8px;transform:rotate(180deg)" > </button>
+							</h4>
+							<ul id="list" class="mui-table-view">
+								<!--<li class="mui-table-view-cell">
+									<a class="link_open "   style="background: #000;color: #fff;">
+										<div style="width: 25%;float: left;text-align: center;">日期</div>
+										<div style="width: 50%;float: left;text-align: center;">签到状况</div>
+										<div style="width: 25%;float: left;text-align: center;">详情</div>
+									</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a class="link_open " href="attendance_month_detail.html">
+										<div class="date_id" style="width: 25%;float: left;text-align: center;">01</div>
+										<div class="state" style="width: 50%;float: left;text-align: center;">合格</div>
+										<div  style="width: 25%;float: left;text-align: center;">查看</div>
+									</a>
+								</li>-->
+								
+								 
+
+							</ul>
+							<h4 class="h4_header" style=" margin-top: 15px;" >
+								<span id="current_month">人员考勤详细</span>
+								<!--<button class="mui-pull-right name iconfont icon-icon_filter"  style="    margin-top: -4px;" > </button>-->
+							</h4>
+							<ul id="person_list"  class="mui-table-view">
+								
+								 
+
+							</ul>
+							<div id="page_ended" class="page_loader">
+								列表已到最后
+							</div>
+							<div class="mui-off-canvas-backdrop"></div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+ 
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		var company_id = app.getUrlParam('company_id');
+		var year = app.getUrlParam('year');
+		var month = app.getUrlParam('month');
+		console.log(company_id)
+		console.log(year)
+		console.log(month) 
+ 		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		mui.ready(function() {
+			
+			document.getElementById("close").addEventListener('tap', function() {
+				app.ajaxBack()
+			})
+			mui(".mui-scroll-wrapper").scroll();
+ 
+			mui('#list').on('tap', '.link_open', function() {
+				
+				app.open($(this).attr('href')+$(this).find(".state").html());
+			})
+	 
+			app.ajax(app.url('query/daily_duty_record/company_month_detail'), {
+				company_id: company_id,
+				year:year,
+				month:month
+			}, function(ret) {
+				console.log(JSON.stringify(ret))
+				if(ret.code == 0) {
+					var data = ret.data
+				 
+					init_html(data)
+ 
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+			document.getElementById("filter").addEventListener("tap",function(){
+				if($("#list").is(':hidden')){
+					$("#list").show()
+					
+					$("#filter").css("transform","rotate(180deg)");
+				}else{
+					$("#list").hide()
+					$("#filter").css("transform","rotate(0deg)");
+				}
+			})
+			mui('body').on('tap', '.open_detail', function() {
+				console.log($(this).attr("href"))
+				app.open($(this).attr('href'));
+			})
+			
+		})
+		
+		  
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+		
+		function init_html(data){
+			var person_list = data.person_list
+		 	var data = data.abnormal_list
+			var html = "";
+			html += '<li class="mui-table-view-cell">'
+			html += '	<a class="link_open "   style="background: #000;color: #fff;">'
+			html += '		<div style="width:35%;float: left;text-align: center;">日期</div>'
+			html += '		<div style="width: 35%;float: left;text-align: center;">姓名</div>'
+			html += '		<div style="width: 30%;float: left;text-align: center;">异常结果</div>'
+			html += '	</a>'
+			html += '</li>'
+			for(var i = 0; i < data.length; i++) {
+			 
+				
+				html += '<li class="mui-table-view-cell">'
+//				html += '	<a class="link_open " href="attendance_month_detail.html?date='+data[i]["date"]+'&state=">'
+				html += '		<div class="date_id" style="width: 35%;float: left;text-align: center;">'+data[i]["date"].split(" ")[0]+'</div>'
+				html += '		<div class="state "  style="width: 35%;float: left;text-align: center;">'+(data[i]["user_name"]?data[i]["user_name"]:"&nbsp;")+'</div>'
+				html += '		<div  style="width: 30%;float: left;text-align: center;color:#06f">'+data[i]["abnormal"]+'</div>'
+//				html += '	</a>'
+				html += '</li>'
+			}
+			$("#list").html(html)
+			var html = ""
+			
+ 
+			person_list.forEach(function(item){
+				html += '<li class="mui-table-view-cell">'
+				html += '	<a class="open_detail  mui-navigate-right" href="attendance_month_detail.html?user_id='+item["user_id"]+'&year='+year+'&month='+month+'">'
+		 		html += item["user_name"]
+				html += '	</a>'
+				html += '</li>'
+			})
+			$("#person_list").html(html)
+			 
+		}
+	</script>
+
+</html>

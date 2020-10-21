@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+    		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			.right_warp {
+				width: 130px;
+				height: 100%;
+				margin-right: 10px;
+			}
+			
+			.mui-bar {
+				height: 100px;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 100px;
+			}
+			
+			.div_warp {
+				height: 42px;
+				line-height: 42px;
+				font-size: 16px;
+				font-weight: bold;
+			}
+			
+			.text-red {
+				color: red;
+			}
+			
+			.text-blue {
+				color: blue;
+			}
+			.rbtn {
+				width: 33px;
+				overflow: hidden;
+				letter-spacing: 800px;
+				margin: 11px 4%;
+				border-radius: 24px;
+				text-indent: -3.5px;
+			}
+			#filter_warp{
+				display: none;
+			}
+			
+			@media screen and (max-width: 321px) {
+				.div_warp {
+					font-size: 14px;
+				}
+				.right_warp {
+					width: 120px;
+				}
+				.rbtn{
+					margin: 11px 3%;
+				}
+			}
+			
+			.mui-ellipsis {
+				color: #000000;
+			}
+			
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!-- 菜单容器 -->
+			<aside class="mui-off-canvas-right" id="offCanvasSideScroll" style="background: #fff;">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<h6 style="padding:5px;">过滤</h6>
+						<ul id="list-option" class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<i class="iconfont icon-xiugai"></i> 责任单位
+								<span id="selectCompany" style="    max-width: 100px;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 时间</span>
+								<span id='selectDate' data-options='{"type":"month"}' style="    max-width: 100px;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+							 
+
+						</ul>
+						<div class="mui-content-padded" style="text-align: right;">
+							<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+							重置
+						</button>
+							<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+							确认
+						</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right selecting_hide">过滤</a>
+
+					<h1 id="facility_title" class="mui-title">日常巡检记录表</h1>
+					<div>
+						
+						<div class="mui-input-row mui-search">
+
+							<input type="search" id="query_search" class="mui-input-clear" placeholder="输入搜索内容">
+						</div>
+						<div id="filter_warp" style="text-align: center;">
+							<button id='all_facility' class="mui-btn mui-btn-primary rbtn" type='button'>全</button>
+							<button id='showUserPicker' class="mui-btn mui-btn-primary rbtn" type='button'>圩</button>
+							<button id='town_picker' class="mui-btn mui-btn-primary rbtn" type='button'>镇</button>
+							<button id='village_picker' class="mui-btn mui-btn-primary rbtn" type='button'>村</button>
+							<button id='river_picker' class="mui-btn mui-btn-primary rbtn" type='button'>河</button>
+						</div>
+					</div>
+				</header>
+
+				<div id="offCanvasContentScroll" class="mui-content  mui-slider-group mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul class="mui-table-view" id="list">
+
+							<!--<li class="mui-table-view-cell mui-media">
+
+					<a class="link_open mui-navigate-right" href="facilities_detail.html">
+						<img class="mui-media-object mui-pull-left" src="../asset/images/evid1.png">
+						<div class="mui-media-body div_warp">
+							东金泾港水闸
+						</div>
+						<p class='mui-ellipsis'>行政所属：<span class="clr_red">设备断线</span></p>
+						<p class='mui-ellipsis'>圩区所属：<span class="clr_red">内闸位仪001</span></p>
+						<p class='mui-ellipsis'>河流所属：<span class="clr_red">待维护</span></p>
+						<p class='mui-ellipsis'>单位所属：<span class="clr_red">待维护</span></p>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<a class="link_open mui-navigate-right" href="facilities_detail.html">
+						<img class="mui-media-object mui-pull-left" src="../asset/images/evid1.png">
+						<div class="mui-media-body div_warp">
+							洋泾港泵闸
+							<div class='mui-pull-right right_warp'><span class="text-red">泵闸</span>-<span class="text-blue">洋泾港</span></div>
+						</div>
+					</a>
+				</li>-->
+
+							<!--<li class="mui-table-view-cell mui-media">
+					<a class="link_open mui-navigate-right" href="facilities_detail.html">
+						<img class="mui-media-object mui-pull-left" src="../asset/images/evid1.png">
+						<div class="mui-media-body div_warp">
+							新开河水闸
+							<div class='mui-pull-right right_warp'><span class="text-red">泵闸</span>-<span class="text-blue">长浜新开河</span></div>
+						</div>
+					</a>
+				</li>-->
+						</ul>
+						<!--<div id="page_loading" class="page_loader">
+							<img src="../asset/images/loading.gif"> 加载中...
+						</div>-->
+						<div id="page_ended" class="page_loader">
+							列表已到最后
+						</div>
+					</div>
+					
+				</div><div class="mui-off-canvas-backdrop"></div>
+			</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		var facility_title = app.getUrlParam('facility_title');
+		var inspectionType = app.getUrlParam('inspectionType');
+
+		$("#facility_title").html(facility_title)
+		var selectDate = document.getElementById('selectDate');
+		var selectCompany = document.getElementById('selectCompany');
+		selectDate.addEventListener('tap', function() {
+			app.pickDate(this, false);
+		}, false);
+		
+		var current_date = new Date().format("yyyy-MM")
+		selectDate.innerText = current_date
+		console.log(selectDate.innerHTML)
+		var timer;
+		var g_facility_name;
+		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		var cp_id = user_data.company_id
+		var type = app.getUrlParam('type');
+		
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+		var g_data = {}
+		var var_controlAreaName_arr = [];
+		var var_all_facility_arr = [];
+		var var_town_arr = [];
+		var var_village_arr = [];
+		var var_river_arr = [];
+		var currentPage = 0;
+		var maxPage = 1;
+		var countPageItems = 10;
+		var isLoading = false;
+		var domainId = ""
+		
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		document.getElementById('offCanvasContentScroll').addEventListener('scroll', function(e) {
+			if(isLoading)
+				return;
+//			console.log(mui('#offCanvasContentScroll').scroll().y - mui('#offCanvasContentScroll').scroll().maxScrollY)
+			if((mui('#offCanvasContentScroll').scroll().y - mui('#offCanvasContentScroll').scroll().maxScrollY) < 20) {
+				if(currentPage != maxPage) {
+					init_html(false)
+				}
+			}
+		});
+		//普通示例
+			var all_facility_picker = new mui.PopPicker();
+			var all_facility_arr_data = [{
+				value: "全",
+				text: "全部",
+				id: ""
+			}]
+
+			var all_facility_button = document.getElementById('all_facility');
+
+			all_facility_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				all_facility_picker.show(function(items) {
+					search_facilty()
+					all_facility_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+				});
+			}, false);
+
+			//普通示例
+			var userPicker = new mui.PopPicker({
+				layer: 2
+			});
+			var picker_arr_data = [{
+				value: "圩",
+				text: "全部",
+				id: ""
+			}]
+
+			var showUserPickerButton = document.getElementById('showUserPicker');
+			var userResult = document.getElementById('userResult');
+			showUserPickerButton.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				userPicker.show(function(items) {
+					// search_facilty(items[0]["value"], "facility_name")
+					if(items[1]["value"]){
+						domainId = (items[1]["text"] ? items[1]["text"] : "")
+						showUserPickerButton.innerHTML = (items[1]["text"] ? items[1]["text"] : "")
+					}else{
+						domainId = (items[0]["text"] ? items[0]["text"] : "")
+						showUserPickerButton.innerHTML = (items[0]["text"] ? items[0]["text"] : "")
+					}
+					
+					if (domainId == "全部") {
+						domainId = ""
+					}
+					console.log(domainId)
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+					init_html(true)
+				});
+			}, false);
+
+			var town_picker = new mui.PopPicker();
+			var town_picker_arr_data = [{
+				value: "镇",
+				text: "全部",
+				id: ""
+			}]
+
+			var town_picker_button = document.getElementById('town_picker');
+
+			town_picker_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				town_picker.show(function(items) {
+					search_facilty(items[0]["value"], "townName")
+					town_picker_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					console.log(items[0]["value"])
+					if(items[0]["value"] != "镇") {
+						var street_name = items[0]["value"]
+						app.ajax(app.url("query/street_water_gate_list"), {
+							street_name: street_name
+						}, function(ret) {
+
+							if(ret.code == 0) {
+
+								village_picker_arr_data = [{
+									value: "村",
+									text: "全部",
+
+								}]
+								if(ret.data[0]["villages"]) {
+									var data = ret.data[0].villages
+									for(var i = 0; i < data.length; i++) {
+
+										village_picker_arr_data.push({
+											value: data[i]["name"],
+											text: data[i]["name"]
+										})
+									}
+								}
+
+								village_picker_button.innerHTML = "村"
+								village_picker.setData(village_picker_arr_data);
+							} else {
+								mui.toast(ret.error)
+							}
+						})
+					}
+				});
+			}, false);
+
+			var village_picker = new mui.PopPicker();
+			var village_picker_arr_data = [{
+				value: "村",
+				text: "全部",
+				id: ""
+			}]
+
+			var village_picker_button = document.getElementById('village_picker');
+
+			village_picker_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				village_picker.show(function(items) {
+					search_facilty(items[0]["value"], "villageName")
+					village_picker_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+				});
+			}, false);
+			var river_picker = new mui.PopPicker();
+			var river_picker_arr_data = [{
+				value: "河",
+				text: "全部",
+				id: ""
+			}]
+
+			var river_picker_button = document.getElementById('river_picker');
+
+			river_picker_button.addEventListener('tap', function(event) {
+				document.activeElement.blur();
+				river_picker.show(function(items) {
+					search_facilty(items[0]["value"], "riverName")
+					river_picker_button.innerHTML = (items[0]["value"] ? items[0]["value"] : "")
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+				});
+			}, false);
+		
+		
+		mui.ready(function() {
+			init_control_area_list();
+			$('#page_loading').show();
+			$('#page_ended').hide();
+			document.getElementById("query_search").addEventListener('input', function() {
+				var this_value = this.value
+				//				mui('#construction_detail_warp').scroll().scrollTo(0, 0);
+//				input_search_facilty(this_value); 
+				
+				g_facility_name = this_value
+				init_html(true)
+				console.log("input")
+			});
+			document.getElementById("query_search").addEventListener('focus', function() {
+//				console.log("focus")
+				$("#filter_warp").slideDown()
+				
+				$("header").height("138px")
+				$("#offCanvasContentScroll").css("padding-top", "140px")
+			});
+			document.getElementById("query_search").addEventListener('blur', function() {
+				console.log("blur")
+
+			});
+			$(".mui-icon-clear").on("tap", function() {
+				input_search_facilty("");
+			})
+			app.ajax(app.url('query/cover_company_list'), {}, function(ret) {
+				 
+				if(ret.code == 0) {
+					var data = ret.data;
+					var namePicker = new mui.PopPicker();
+					var company_name_data = [];
+					company_name_data.push({
+						value: "",
+						text: "全部"
+					})
+					for(var i = 0; i < data.length; i++) {
+						company_name_data.push({
+							value: data[i]["company_id"],
+							text: data[i]["company_name"]
+						})
+					}
+				
+ 					namePicker.setData(company_name_data);
+					selectCompany.addEventListener('tap', function(event) {
+						namePicker.show(function(items) {
+							selectCompany.innerText = items[0]["text"];
+							$(selectCompany).attr('item_id', items[0]["value"]);
+						});
+					}, false);
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+			
+			
+			
+			//滑动关闭键盘
+			$("#list").bind("tap swipeup touchmove", function() {
+//				console.log("swipeup")
+				clearTimeout(slideUpTimer)
+				slideUpTimer = setTimeout(function() {
+					$("#filter_warp").slideUp()
+					console.log("list slideUp")
+					$("header").height("100px")
+					$("#offCanvasContentScroll").css("padding-top", "105px")
+				}, 500)
+				//				app.open("history_water_detail.html")
+				
+				document.activeElement.blur();
+			})
+	
+			var slideUpTimer;
+
+			$('#page_ended').hide();
+			mui('body').on('tap', '.link_open', function() {
+				
+				var string_href = ""
+				var facility_id = this.getAttribute("href")
+				var facility_name = this.getAttribute("facility_name")
+				console.log(string_href)
+				if(facility_title=="日常巡检记录表" || facility_title=="维护巡检记录表"){
+					string_href = ("../account/facility_schedule_detail.html?id="+facility_id+"&facility_name="+facility_name+"&current_date="+selectDate.innerHTML+"&inspectionType="+inspectionType)
+				}else if(facility_title=="水利整改汇总表" || facility_title=="维护整改汇总表"){
+					string_href = ("../account/facility_rectification_detail.html?id="+facility_id+"&facility_name="+facility_name+"&current_date="+selectDate.innerHTML+"&inspectionType="+inspectionType)
+				}else if(facility_title=="水利整改记录表" || facility_title=="维护整改记录表"){
+					string_href = ("../account/facility_rectification_record.html?id="+facility_id+"&facility_name="+facility_name+"&current_date="+selectDate.innerHTML+"&inspectionType="+inspectionType)
+				}else if(facility_title=="汛前讯后养护记录表" || facility_title=="维护作业记录表"){
+					string_href = ("../account/facility_maintenance_record.html?id="+facility_id+"&facility_name="+facility_name+"&current_date="+selectDate.innerHTML+"&inspectionType="+inspectionType)
+				}
+				app.setSetting("ins_record_data",JSON.stringify(g_data[facility_id]))
+//				var ins_record_data = JSON.parse(app.getSetting("ins_record_data") || "[]")
+//		
+//	 			console.log("ins_record_data:"+JSON.stringify(ins_record_data))
+				
+				
+				console.log(string_href)
+				app.open(string_href);
+				return false;
+			});
+
+			mui('body').on('tap', '.map_navigate', function() {
+
+				facility_id = this.getAttribute("facility_id")
+				if(type == "map") {
+					app.setSetting("var_map_facility_id", facility_id)
+					var parentViewer = mui.currentWebview.opener();
+					mui.fire(parentViewer, 'wga_init_facility');
+					app.ajaxBack()
+				} else {
+					app.open("../../map.html?facility_id=" + facility_id)
+				}
+
+				event.stopPropagation();
+				return false
+			})
+
+			
+
+			function input_search_facilty(this_value) {
+				clearTimeout(timer)
+				timer = setTimeout(function() {
+					console.log(this_value);
+					
+					$(".search_list").each(function() {
+
+						if($(this).attr("facility_name").indexOf(this_value) == -1) {
+
+							$(this).hide()
+						} else {
+							//							console.log($(this).attr("facility_name").indexOf(this_value) == -1)
+							$(this).show()
+						}
+					})
+				}, 500)
+			}
+		})
+		
+		function search_facilty() {
+			console.log("search_facilty")
+				clearTimeout(timer)
+				timer = setTimeout(function() {
+
+					$(".search_list").each(function() {
+						var var_arr = [];
+						var that = $(this)
+						if(all_facility_button.innerHTML != "全")
+							var_arr.push({
+								attr: "facility_name",
+								id: "all_facility"
+							})
+						// if(showUserPickerButton.innerHTML != "圩")
+						// 	var_arr.push({
+						// 		attr: "controlAreaName",
+						// 		id: "showUserPicker"
+						// 	})
+						if(town_picker_button.innerHTML != "镇")
+							var_arr.push({
+								attr: "townName",
+								id: "town_picker"
+							})
+
+						if(village_picker_button.innerHTML != "村")
+							var_arr.push({
+								attr: "villageName",
+								id: "village_picker"
+							})
+						if(river_picker_button.innerHTML != "河")
+							var_arr.push({
+								attr: "riverName",
+								id: "river_picker"
+							})
+
+						//						console.log(var_arr)
+						var flag = true
+						for(var i = 0; i < var_arr.length; i++) {
+							if(that.attr(var_arr[i]["attr"]).indexOf($("#" + var_arr[i]["id"]).html()) == -1) {
+								flag = false
+							}
+						}
+
+						if(flag) {
+							that.show()
+						} else {
+							that.hide()
+						}
+					})
+				}, 300)
+			}
+		var init_all_list_flag = true;
+
+		function init_html(load_flag) {
+			console.log("init_html")
+			if(!init_all_list_flag) {
+				return;
+			}
+			init_all_list_flag = false;
+			if(load_flag) {
+				currentPage = 0;
+			}
+			currentPage = currentPage + 1
+			var wDlg = plus.nativeUI.showWaiting("加载中...");
+			
+			if($("#selectCompany").attr('item_id')){
+				cp_id = $("#selectCompany").attr('item_id')
+			}
+			
+			var post_data =  {
+				// company_id: cp_id,
+				page_no: currentPage,
+				page_size: countPageItems
+			}
+			if(g_facility_name){
+				post_data["facility_name"] = g_facility_name
+			}
+			if (domainId) {
+				post_data["control_area"] = domainId
+			}
+			post_data["uid"] = app.getUserId()
+			post_data["inspectionType"] = inspectionType
+			console.log(JSON.stringify(post_data))
+			
+			app.ajax(app.url('query/facility_list'), post_data, function(ret) {
+				wDlg.close();
+				// console.log(JSON.stringify(ret))
+				//				$('#page_loading').hide();
+				$('#page_ended').show();
+				if(ret.code == 0) {
+					currentPage = ret.data.page_no
+					maxPage = ret.data.page_count
+					var data = ret.data.items
+					var html = ""
+
+					for(var i = 0; i < data.length; i++) {
+						g_data[data[i]["id"]] = data[i]
+						html += '<li class="mui-table-view-cell mui-media search_list"   controlAreaName="' + (data[i]["control_area"] ? data[i]["control_area"] : "") + '"  facility_name="' + (data[i]["name"] ? data[i]["name"] : "") + '"   townName="' + (data[i]["street"] ? data[i]["street"] : "") + '" villageName="' + (data[i]["village"] ? data[i]["village"] : "") + '"  riverName="' + (data[i]["river"] ? data[i]["river"] : "") + '" >'
+						html += '	<a class="link_open mui-navigate-right"   href="' + data[i]["id"] + '" facility_name="'+data[i]["name"]+'">'
+
+						html += '<div class="mui-media-body div_warp">'
+						html += data[i]["name"]
+						if(data[i]["lon"] && data[i]["lat"])
+							html += '<span class="map_navigate iconfont icon-dingwei mui-pull-right" facility_id="' + data[i]["id"] + '"  style="color: red;font-size: 22px;"></span>'
+						html += '		</div>'
+
+						//html+='			<div class="mui-pull-right right_warp"><span class="text-red">'+data[i]["type"]+'</span>-<span class="text-blue">'+data[i]["river"]+'</span></div>'
+//						html += '<p class="mui-ellipsis">行政所属：<span class="clr_red">' + (data[i]["street"]?data[i]["street"]:"") + "/" + (data[i]["village"]?data[i]["village"]:"") + '</span></p>'
+//						html += '<p class="mui-ellipsis">圩区所属：<span class="clr_red">' + (data[i]["control_area"]?data[i]["control_area"]:"") + '</span></p>'
+//						html += '<p class="mui-ellipsis">河流所属：<span class="clr_red">' + (data[i]["river"]?data[i]["river"]:"") + '</span></p>'
+						html += '<p class="mui-ellipsis"> &nbsp;</p>'
+						html += '<p class="mui-ellipsis">责任单位：' + (data[i]["company_name"]?data[i]["company_name"]:"") + '</p>'
+						
+
+						html += '	</a>'
+						html += '</li>'
+						var_all_facility_arr.push(data[i]["name"])
+						var_controlAreaName_arr.push(data[i]["control_area"])
+						var_town_arr.push(data[i]["street"])
+						var_village_arr.push(data[i]["village"])
+						var_river_arr.push(data[i]["river"])
+					}
+					all_facility_arr_data = [{
+						value: "全",
+						text: "全部",
+						id: ""
+					}]
+					
+					village_picker_arr_data = [{
+						value: "村",
+						text: "全部",
+						id: ""
+					}]
+					river_picker_arr_data = [{
+						value: "河",
+						text: "全部",
+						id: ""
+					}]
+					var_all_facility_arr = uniq(var_all_facility_arr);
+					
+					var_all_facility_arr.forEach(function(item) {
+						if(item) {
+							all_facility_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					all_facility_picker.setData(all_facility_arr_data);
+
+//					console.log("var_town_arr:"+var_town_arr)
+					var_town_arr = uniq(var_town_arr);
+//					console.log("var_town_arr:"+var_town_arr)
+					var_town_arr.forEach(function(item) {
+						if(item) {
+							town_picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					town_picker.setData(town_picker_arr_data);
+					
+					var_village_arr = uniq(var_village_arr);
+					var_village_arr.forEach(function(item) {
+						if(item) {
+							village_picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+
+					village_picker.setData(village_picker_arr_data);
+
+					river_picker.setData(river_picker_arr_data);
+					var_river_arr = uniq(var_river_arr);
+					var_river_arr.forEach(function(item) {
+						if(item) {
+							river_picker_arr_data.push({
+								value: item,
+								text: item
+							})
+						}
+
+					})
+					river_picker.setData(river_picker_arr_data);
+					if(load_flag) {
+
+						mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+						$("#list").html(html);
+
+					} else {
+						console.log(".append(html)")
+						$("#list").append(html);
+					}
+					
+				} else {
+					mui.toast(ret.error);
+				}
+				init_all_list_flag = true
+			});
+			
+			
+		}
+		
+		function init_control_area_list() {
+			console.log("init_control_area_list")
+			app.ajax(app.url1('monitoring/damShowTree3'), {}, function(ret3) {
+				// console.log(JSON.stringify(ret3))
+				if (ret3.code == 200) {
+					var data = ret3.data.children
+					var arr = []
+					var koumeng_arr = []
+					arr.push({
+						value: "圩",
+						text: "全部"
+					})
+					for (var item in data) {
+						if (data[item]["children"]) {
+							if(data[item]["title"].indexOf("商榻") != -1){
+								continue;
+							}
+							var children = []
+							children.push({
+								value: data[item]["id"],
+								text: data[item]["title"]
+							})
+							var data_children = data[item]["children"]
+							for (var item1 in data_children) {
+								if (data_children[item1]["title"] && data_children[item1]["title"].indexOf("闸") == -1) {
+									if(data_children[item1]["title"].indexOf("康家") == -1){
+										children.push({
+											value: data_children[item1]["id"],
+											text: data_children[item1]["title"]
+										})
+									}
+								}
+							}
+							if (data[item]["title"] && data[item]["title"].indexOf("闸") == -1) {
+								arr.push({
+									value: data[item]["id"],
+									text: data[item]["title"],
+									children: children
+								})
+							}
+						} else {
+							if (data[item]["title"] && data[item]["title"].indexOf("闸") == -1) {
+								arr.push({
+									value: data[item]["id"],
+									text: data[item]["title"]
+								})
+							}
+						}
+					}
+					console.log(JSON.stringify(arr))
+					userPicker.setData(arr)
+					
+				}
+			})
+		}
+		
+		
+		
+		function clickOk() {
+			
+			offCanvasWrapper.offCanvas('close');
+			init_html(true)
+		}
+		function clickReset() {
+
+			selectCompany.innerText = '全部';
+			$(selectCompany).attr('item_id', "");
+			selectDate.innerHTML = current_date;
+			
+		}
+		function uniq(array) {
+			var temp = []; //一个新的临时数组
+			for(var i = 0; i < array.length; i++) {
+				if(temp.indexOf(array[i]) == -1) {
+					temp.push(array[i]);
+				}
+			}
+			return temp;
+		}
+		mui.plusReady(function() {
+			init_html(true)
+			plus.screen.lockOrientation("portrait-primary");
+		});
+	</script>
+
+</html>

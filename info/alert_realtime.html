@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../asset/css/mui.poppicker.css" rel="stylesheet" /> 
+		<link href="../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit;
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.clr_red {
+				color: red;
+			}
+			
+			#offCanvasSideScroll {
+				background: white;
+			}
+			
+			.mui-table-view p {
+				color: #333;
+				line-height: 24px;
+			}
+			
+			.mui-bar {
+				height: 100px;
+				box-shadow: 0 1px 6px #ccc !important;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 90px;
+			}
+			
+			.def_btn {
+				background-color: #007aff;
+				color: #fff;
+				font-size: 12px;
+				line-height: 15px;
+				padding: 3px 6px;
+				display: inline-block;
+				border-radius: 5px;
+				margin-left: 10px;
+				border: 0;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<!--侧滑菜单容器-->
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!--菜单部分-->
+			<aside id="offCanvasSide" class="mui-off-canvas-right ">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<h6 style="padding:5px;">过滤</h6>
+						<ul id="list-option" class="mui-table-view">
+							<!-- 设备类型报警 -->
+							<li id="device_alarm" class="mui-table-view-cell ">
+								<i class="iconfont icon-dituleiwanggequ"></i> 报警类型
+								<span id="select_alert_type" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<!-- 运行报警类型 -->
+							<li id="move_alarm" class="mui-table-view-cell ">
+								<i class="iconfont icon-dituleiwanggequ"></i> 报警类型
+								<span id="select_alert_type_move" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 开始时间</span>
+								<span id='selectDate' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 结束时间</span>
+								<span id='selectDate2' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+
+						</ul>
+						<div class="mui-content-padded" style="text-align: right;">
+							<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+								重置
+							</button>
+							<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+								确认
+							</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right  ">过滤</a>
+					<h1 class="mui-title">报警信息</h1>
+					<nav id="monitor_data" class="mui-bar-tab">
+						<a id="device" name="device" class="mui-tab-item mui-active" href="#">设备(<span id="device_count">0</span>)</a>
+						<a id="run" name="run" class="mui-tab-item" href="#">运行(<span id="run_count">0</span>)</a>
+					</nav>
+				</header>
+				<div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div class="mui-content">
+							<!-- 设备列表 -->
+							<ul id="device_list" class="mui-table-view ">
+
+							</ul>
+							<!-- 运行列表 -->
+							<ul id="run_list" class="mui-table-view " style="margin-top: 15px;display: none;">
+
+							</ul>
+							<ul id="person_list" class="mui-table-view " style="margin-top: 15px;display: none;">
+
+							</ul>
+							<div id="page_loading" class="page_loader">
+								<img src="../asset/images/loading.gif"> 加载中...
+							</div>
+							<div id="page_ended" class="page_loader">
+								列表已到最后
+							</div>
+						</div> 
+					</div>
+				</div>
+				<div class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+		<!--侧滑菜单容器-->
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/mui.picker.min.js"></script>
+	<script src="../asset/js/mui.poppicker.js"></script>
+	<script src="../asset/js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		// console.log("init_alert_list()")
+		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		var cp_id = user_data.company_id
+		// var select_facility = document.getElementById("select_facility")
+		var select_alert_type = document.getElementById("select_alert_type") //设备报警类型
+		var  select_alert_type_move=document.getElementById('select_alert_type_move')
+		var selectDate = document.getElementById('selectDate');
+		var selectDate2 = document.getElementById('selectDate2');
+
+		// button filter
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+		// var type_flag=1;
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		mui.ready(function() {
+			mui.init();
+			init_alert_list()
+			$('#page_loading').show();
+			$('#page_ended').hide();
+			$('#real_time_list').show();
+			$('#early_warning_list').hide();
+
+			$('#move_alarm').hide()
+			// 报警类型
+			var arr_alert_type = []
+			arr_alert_type.push({
+				text: '全部',
+				value: ''
+			});
+			var arr = JSON.parse(app.getSetting('type_dict') || '[]');
+
+			// console.log('报警类型' + JSON.stringify(arr))
+			for (var i = 0; i < arr.length; i++) {
+				if (arr[i]["category"] == "alarm_type") {
+
+					arr_alert_type.push({
+						text: arr[i]["typeName"],
+						value: arr[i]["typeCode"]
+					});
+				}
+			}
+			// 设备报警类型
+			var device_type = [{
+					text: '设备故障类',
+					value: 4101,
+				},
+				{
+					text: '数据异常报警',
+					value: 4105,
+				},
+			]
+			var alert_type_picker = new mui.PopPicker();
+			alert_type_picker.setData(device_type);
+
+			select_alert_type.addEventListener('tap', function(e) {
+				alert_type_picker.show(function(items) {
+					select_alert_type.innerText = items[0].text;
+					$(select_alert_type).attr('item_id', items[0].value);
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+				});
+			})
+			// 运行类型 select_alert_type_move
+			var device_type2 = [{
+					text: '设施运行类',
+					value: 4103,
+				},
+				
+			]
+			var alert_type_picker2 = new mui.PopPicker();
+			    alert_type_picker2.setData(device_type2);
+			
+			select_alert_type_move.addEventListener('tap', function(e) {
+				alert_type_picker2.show(function(items) {
+					select_alert_type_move.innerText = items[0].text;
+					// $(select_alert_type).attr('item_id', items[0].value);
+					//返回 false 可以阻止选择框的关闭
+					//return false;
+				});
+			})
+			
+
+			mui('#monitor_data').on('tap', '.mui-tab-item', function() {
+				current_tree_type = this.getAttribute("name");
+
+				if (current_tree_type == 'device') {
+					$('#device_list').show();
+					$('#run_list').hide();
+					// type_flag=1
+					$('#move_alarm').hide()
+					$("#device_alarm").show();
+					
+					init_alert_list()
+				} else if (current_tree_type == 'run') {
+					$('#device_list').hide();
+					$('#run_list').show();
+					$('#move_alarm').show()
+					$("#device_alarm").hide();
+					// type_flag=2;
+					
+					// init_alert_list(4103)
+				}
+				
+				mui('#offCanvasContentScroll').scroll().scrollTo(0, 0);
+			})
+
+			mui('body').on('tap', '.link_open', function() {
+
+				app.open(this.href);
+				return false;
+			});
+			mui('body').on('tap', '.real_alert_relieve', function() {
+				var alarm_id = $(this).attr("alarm_id")
+				var alarm_type = $(this).attr("alarm_type")
+
+				mui.confirm('确认报警解除吗？', '报警', ['否', '是'], function(e) {
+
+					if (e.index == 1) {
+						var ajax_url = ""
+						if (alarm_type == "4101" || alarm_type == "4105") {
+							ajax_url = app.prefixip("api/process/relieve")
+						} else if (alarm_type == "4103") {
+							ajax_url = app.prefixip("api/process/cancel")
+						}
+						// console.log("ajax_url--->"+ajax_url);
+
+						app.ajax(ajax_url, {
+							alarmId: alarm_id
+						}, function(ret) {
+							// console.log(JSON.stringify(ret))
+							if (ret.code == 200) {
+								mui.toast("报警解除成功")
+								init_alert_list()
+							} else {
+								mui.toast(ret.error)
+							}
+						})
+					} else {
+
+					}
+				})
+				return false;
+			});
+			mui('body').on('tap', '.warning_relieve', function() {
+				var warning_relieve_id = $(this).attr("id")
+				mui.confirm('确认报警解除吗？', '报警', ['否', '是'], function(e) {
+
+
+					if (e.index == 1) {
+						app.ajax(app.url("save/warning_relieve"), {
+							warning_id: warning_relieve_id
+						}, function(ret) {
+							if (ret.code == 0) {
+								mui.toast("报警解除成功")
+								init_warning_list()
+							} else {
+								mui.toast(ret.error)
+							}
+						})
+					} else {
+
+					}
+				})
+				return false;
+			});
+			mui('body').on('tap', '.confirm', function() {
+				var real_alert_relieve_id = $(this).attr("id")
+
+				mui.confirm('确认该问题已维护吗？', '维护', ['否', '是'], function(e) {
+					// console.log(e.index)
+					if (e.index == 1) {
+						app.ajax(app.url('/save/real_alert_confirm'), {
+							"alert_id": real_alert_relieve_id
+						}, function(ret) {
+							// console.log(JSON.stringify(ret))
+							mui.toast("确认成功")
+							mui.toast(ret.msg)
+							init_real_time_list()
+						})
+					} else {
+
+					}
+				})
+
+				return false;
+			});
+
+			selectDate.addEventListener('tap', function() {
+				app.pickDate(this, true);
+			}, false);
+
+			selectDate2.addEventListener('tap', function() {
+				app.pickDate(this, true);
+			}, false);
+
+		})
+
+		function clickReset() {
+			select_alert_type.innerText = '全部';
+			$(select_alert_type).attr('item_id', "");
+			selectDate.innerText = '请选择...';
+			selectDate2.innerText = '请选择...';
+		}
+		var post_data;
+
+		function clickOk() {
+			// post_data = {}
+			//需要考虑from_sta的状态 
+			//		from_sta = 0
+			offCanvasWrapper.offCanvas('close');
+			var begin_date = ""
+			var end_date = ""
+			var quyu=""
+			var quyu2=""
+			if (selectDate.innerText != '请选择...') {
+				begin_date = selectDate.innerText
+			}
+
+			if (selectDate2.innerText != '请选择...') {
+				end_date = selectDate2.innerText.slice(0,10)
+			}
+			if (select_alert_type.innerText != '请选择...') {
+				if(select_alert_type.innerText=='设备故障类'){
+					quyu = 4101
+				}else if(select_alert_type.innerText=='数据异常报警'){
+					quyu = 4105
+				}
+				
+			}
+			if (select_alert_type_move.innerText != '请选择...') {
+				quyu2 = select_alert_type_move.innerText
+			}
+			if(type_flag==1){
+				init_alert_list(quyu,begin_date,end_date)
+				
+			}else if(type_flag==2){
+				init_alert_list(quyu2,begin_date,end_date)
+				
+			}
+			$('#device_count').html($('#device_list .alert_item[is_show=1]').length);
+			$('#run_count').html($('#run_list .alert_item[is_show=1]').length);
+
+
+		}
+
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+
+		function init_alert_list(value,start,end) {
+			var param = {
+				alarmType: value?value:'',
+				startTime: start?start:'',
+				endTime: end?end:'',
+			}
+			app.ajax(app.url1('/facilityUnite/alarm/getAllAlarm'), param, function(ret) {
+				$('#page_loading').hide();
+				$('#page_ended').show();
+				  console.log('参数'+JSON.stringify(param))
+				if (ret.code == 200) {
+					 console.log('报警信息' + JSON.stringify(ret.data))
+					var data = ret.data;
+					var allDataList = [];
+					var allDataList_move=[];
+					// if (data) {
+						for (var i in data) {
+							var sonData = data[i].alarmList;
+							for (var j = 0; j < sonData.length; j++) {
+								if(sonData[j].alarmType==4103){
+									allDataList_move.push(sonData[j])
+								}else{
+									allDataList.push(sonData[j])
+								}
+							}
+						}
+					// }
+					// 报警信息 
+					var device_data = [];
+					var move_data = [];
+
+					var device_list_html = "";
+					var run_list_html = "";
+					
+					var device_count = 0
+					var run_count = 0;
+					var new_obj = {
+
+					}
+						for (var k = 0; k < allDataList.length; k++) {
+								// 这是设备
+								device_list_html+='<li class="mui-table-view-cell mui-media alert_item">'+
+								'<p style="width:100%;height:25px;">'+
+								'<span class="mui-pull-left">'+ allDataList[k].facilityName+'</span>'+
+								'<span style="color:red;" class="mui-pull-right">'+ allDataList[k].alarmTypeName+'</span>'+
+								'</p>'+
+								'<p>'+
+								'<span class="mui-pull-left">'+ allDataList[k].deviceTypeName+'</span>'+
+								'<span style="color:gray;" class="mui-pull-right">'+allDataList[k].gmtCreate+'</span>'+
+								'</p>'+
+								'</li>'
+						}
+					
+						
+						for(var z=0; z<allDataList_move.length;z++){
+							
+								// 这是运行
+								run_list_html+='<li class="mui-table-view-cell mui-media alert_item">'+
+								'<p style="width:100%;height:25px;">'+
+								'<span class="mui-pull-left">'+ allDataList_move[z].facilityName+'</span>'+
+								'<span style="color:red;" class="mui-pull-right">'+allDataList_move[z].alarmTypeName+'</span>'+
+								'</p>'+
+								'<p style="margin:5px 0px">'+
+								'<p class="mui-pull-left">'+allDataList_move[z].gmtCreate+'</p>'+
+								'<p  class="mui-pull-left">'+ allDataList_move[z].alarmSubTypeName+'</p>'+
+								'</p>'+
+								'</li>'
+					}
+					$('#device_list').html(device_list_html);
+					$('#device_count').html(allDataList.length)
+					$('#run_list').html(run_list_html);
+					$('#run_count').html(allDataList_move.length)						
+
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+		}
+
+		window.addEventListener('wga_refresh', function(event) {
+			init_real_time_list();
+
+		});
+	</script>
+
+</html>

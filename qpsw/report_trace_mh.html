@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/iconfont.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<link href="./css/mui.picker.min.css" rel="stylesheet" />
+		<link href="./css/mui.poppicker.css" rel="stylesheet" />
+		<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=3ed8362c31892daae272a71aa5e36d1e&callback=init"></script>
+		<script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+		<script src="css/iconfont.js"></script>
+		<script src="js/coordtransform.js"></script>
+		<style>
+			#offCanvasSideScroll {
+				background: white;
+			}
+			body {
+		overflow-y:hidden;
+	}
+	 
+    #container {
+    	width:100%;
+    	height:calc( 100vh - 45px);
+    	/* margin-top:45px; */
+    }
+    
+	#panel_controls {
+		position: absolute;
+		left:0px;
+		bottom: 0px;
+		width:100%;
+		height: 140px;
+		background-color: rgba(255,255,255,0.6);
+	}
+	
+	#panel_controls.panel-pack {
+		bottom: -90px;
+	}
+	
+	#btn_pack {
+		position: absolute;
+    	right: 5px;
+    	top: 5px;
+	}
+	
+	#bar_title {
+		position: relative;
+		text-align: center;
+	}
+	
+	#txt_time {
+		position: relative;
+		padding-top: 15px;
+		vertical-align: middle;
+	}
+	
+	.button-group {
+		position: relative;
+		text-align: center;
+		margin-top: 20px;
+	}
+	
+	#bar_ship_name {
+		position: relative;
+		margin-top: 15px;
+		text-align: center;
+	}
+	#list-option .mui-table-view-cell button {
+		position: relative;
+		right: inherit;
+		-webkit-transform: inherit;
+		transform: inherit;
+	}
+	.mui-table-view span.mui-pull-right {
+		color: #999;
+	}
+	
+	.has_filter {
+		color: red;
+	}
+	
+	.check_item {
+		width: 18px;
+		height: 18px;
+	}
+	
+	.page_loader {
+		text-align: center;
+		color: gray;
+		border-top: 1px solid #ccc;
+		padding-top: 15px;
+	}
+	#offCanvasWrapper3{
+		z-index: 99999;
+	}
+    </style>
+	</head>
+	<body onload="app.route()">
+		<div id="offCanvasWrapper2" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<aside id="offCanvasSide" class="mui-off-canvas-right">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<!-- 这是人员的侧栏 -->
+					<!-- 这是船舶的侧栏选择 -->
+					<div id="slideShip" class="mui-scroll">
+						<h6 style="padding:5px;">过滤</h6>
+						<ul id="list-option" class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 开始时间</span>
+								<span id='selectDate' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 结束时间</span>
+								<span id='selectDate2' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+						</ul>
+						<div class="mui-content-padded" style="text-align: right;">
+							<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+								重置
+							</button>
+							<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+								确认
+							</button>
+						</div>
+		
+					</div>
+				</div>
+			</aside>
+			<div class="mui-inner-wrap">
+				<header id="header" class="mui-bar mui-bar-nav">
+					<!-- 返回按钮 -->
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<span id="btn_filter" class="mui-btn mui-btn-link mui-pull-right selecting_hide">时间选择</span>
+					<h1 class="mui-title">轨迹回放</h1>
+					
+		
+				</header>
+				
+				<div class="mui-off-canvas-backdrop"></div>
+				
+				<!-- 这是回放部分 -->
+				<div id="container"></div>
+				<div id="panel_controls" class="panel-pack1">
+					<div id="bar_title">
+						<div id="txt_time">&nbsp;</div>
+						<button id="btn_pack"><i class="iconfont icon-xiangxia"></i></button>
+					</div>
+					<div class="mui-clearfix"></div>
+					<div class="button-group">
+						<button class="mui-btn" id="btn_previous_item"><i class="iconfont icon-shangyishou"></i></button>
+						<button class="mui-btn" id="btn_slower"><i class="iconfont icon-zhankaikuaitui"></i></button>
+						<button class="mui-btn" id="btn_start"><i class="iconfont icon-bofang"></i></button>
+						<button class="mui-btn" id="btn_stop"><i class="iconfont icon-tingzhi"></i></button>
+						<button class="mui-btn" id="btn_faster"><i class="iconfont icon-shouqikuaijin"></i></button>
+						<button class="mui-btn" id="btn_next_item"><i class="iconfont icon-kuaijin"></i></button>
+					</div>
+					<div id="bar_ship_name"><span id="span_ship_name">&nbsp;</span>(回放速度:<span id="span_speed">0</span>千米/小时)</div>
+				
+			</div>
+		</div>
+	</body>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/mui.min.js"></script>
+	<script src="./js/mui.picker.min.js"></script>
+	<script src="./js/mui.poppicker.js"></script>
+	<script src="js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		// 获取当前时间
+		function getNowTime(type, newDate) {
+			var date = newDate ? newDate : new Date();
+			var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+			var strDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+			if (type == 'start') {
+				var currentdate = date.getFullYear() + "-" + month + "-" + strDate + " 00" + ":" + "00" + ":" + "00";
+			} else {
+				var currentdate = date.getFullYear() + "-" + month + "-" + strDate + " 23" + ":" + "59" + ":" + "59";
+			}
+			return currentdate;
+		}
+		var _start = getNowTime('start');
+		var _end = getNowTime();
+	   var offCanvasWrapper = mui('#offCanvasWrapper3');
+		var map = null,
+			navg = null;
+		var marker, lineArr = [],
+			isMoving = false,
+			isStart = false,
+			speed = 1000,
+			lineIdx = 1;
+		var btn_pack = document.getElementById('btn_pack');
+		var panel_controls = document.getElementById('panel_controls');
+		var btn_start = document.getElementById('btn_start');
+		var btn_stop = document.getElementById('btn_stop');
+		var btn_faster = document.getElementById('btn_faster');
+		var btn_slower = document.getElementById('btn_slower');
+		var btn_previous_item = document.getElementById('btn_previous_item');
+		var btn_next_item = document.getElementById('btn_next_item');
+		var span_speed = document.getElementById('span_speed');
+		
+		var selectDate = document.getElementById('selectDate');
+		var selectDate2 = document.getElementById('selectDate2');
+
+		var currentType = 0;
+		var currentPathData = [];
+		var currentTimes = [];
+		var currentShipName = "";
+		var currentFirstTime = "";
+
+		var pathSimplifierIns = null;
+		var btn_filter = document.getElementById('btn_filter');
+
+		mui('#offCanvasSideScroll').scroll();
+		// 点击过滤确定接口
+		function clickOk(e) {
+			// console.log('确定+++=')
+			if (selectDate.innerText != '请选择...') {
+				_start = selectDate.innerText;
+			}
+			if (selectDate2.innerText != '请选择...') {
+				_end = selectDate2.innerText;
+			}
+			loadData()
+			mui('.mui-off-canvas-wrap').offCanvas('close'); //关闭弹窗
+		}
+		selectDate.addEventListener('tap', function() {
+			app.pickDate(this, true);
+		}, false);
+
+		selectDate2.addEventListener('tap', function() {
+			app.pickDate(this, true);
+		}, false);
+		btn_filter.addEventListener('tap', function() {
+			console.log('44')
+			//显示相关的地区  offCanvasSide
+			mui('.mui-off-canvas-wrap').offCanvas('show');
+			console.log('555')
+			// offCanvasWrapper.offCanvas().show();
+		});
+
+		mui.init();
+
+		mui.ready(function() {
+			btn_pack.addEventListener('tap', function() {
+				if (panel_controls.classList.contains('panel-pack')) {
+					$('#panel_controls').animate({
+						bottom: "0"
+					}, 400, function() {
+						panel_controls.classList.remove('panel-pack');
+						btn_pack.innerHTML = '<i class="iconfont icon-xiangxia"></i>';
+					})
+				} else {
+					$('#panel_controls').animate({
+						bottom: "-90px"
+					}, 400, function() {
+						panel_controls.classList.add('panel-pack');
+						btn_pack.innerHTML = '<i class="iconfont icon-xiangshang"></i>';
+					})
+				}
+			})
+
+			btn_start.addEventListener('tap', function() {
+				isMoving = !isMoving;
+				if (!isStart) {
+					isStart = true;
+					btn_start.innerHTML = '<i class="iconfont icon-zanting"></i>';
+					navg.start();
+				} else if (isMoving) {
+					btn_start.innerHTML = '<i class="iconfont icon-zanting"></i>';
+					navg.resume();
+				} else {
+					btn_start.innerHTML = '<i class="iconfont icon-bofang"></i>';
+					navg.pause();
+					isMoving = false;
+				}
+
+				span_speed.innerHTML = speed;
+			});
+
+			btn_stop.addEventListener('tap', function() {
+				navg.stop();
+			})
+
+			btn_faster.addEventListener('tap', function() {
+				speed += 100;
+				navg.setSpeed(speed);
+
+				span_speed.innerHTML = navg.getSpeed();
+			});
+
+			btn_slower.addEventListener('tap', function() {
+				speed -= 100;
+				if (speed < 1)
+					speed = 1;
+				navg.setSpeed(speed);
+
+				span_speed.innerHTML = navg.getSpeed();
+			})
+
+			loadData();
+		})
+
+		function loadData() {
+
+			// if(!app.isLogin())
+			// 	return;
+
+			var _id = app.getUrlParam('id');
+			currentType = app.getUrlParam('type'); // 0 person, 1 ship
+
+			console.log(_id);
+			console.log(currentType);
+
+			// var _start = app.formatUnixtime3(null, -1, true);
+			// var _end = app.formatUnixtime2(null, true);
+			//		console.log(_start);
+			//		console.log(_end);
+			app.showProgressBar();
+			var currentShipName = '';
+			// 1 ship
+			if (currentType == 1) {
+				// objectId:_id,startTime:'2019-09-01 00:00:00',endTime:'2020-10-31 23:59:59'
+				var params={
+					objectId: _id,
+					startTime: _start,
+					endTime: _end
+				}
+				app.ajax2(app.url('lbs/position/find/object/track/multi'), params, function(ret) {
+					console.log("看看船舶的值"+'参数'+JSON.stringify(params));
+					app.showProgressBar(false);
+					if (ret.code == 200) {
+						ret.data.lbsPositionVoList.forEach(function(item) {
+							// item.points.forEach(function(point){						
+							if (currentShipName == '')
+								currentShipName = item.objectName;
+
+							if (currentFirstTime == '')
+								currentFirstTime = item.locationTime + " 速度:" + item.speed;
+
+							currentTimes.push(item.locationTime + " 速度:" + item.speed);
+							// var newPos = coordtransform.wgs84togcj02(point.lon, point.lat);
+							var newPos = [item.lon, item.lat]
+							item.lon = newPos[0];
+							item.lat = newPos[1];
+
+							currentPathData.push([item.lon, item.lat]);
+						})
+						// })
+
+						$('#span_ship_name').text(currentShipName);
+						$('#txt_time').text(currentFirstTime);
+
+						setPathData();
+					}
+				})
+			}
+			// 0 person
+			else {
+				var params={
+					id: _id,
+					// startTime: '2020-10-01 00:00:00',
+					startTime:_start,
+					endTime: _end
+				}
+				app.ajax2(app.url('lbs/position/find/user/track'), params, function(ret) {
+					//				console.log(JSON.stringify(ret));
+					console.log("看看人员的值"+JSON.stringify(params));
+					app.showProgressBar(false);
+					if (ret.code == 200) {
+						ret.data && ret.data.lbsPositionVoList && ret.data.lbsPositionVoList.forEach(function(item) {
+							if (currentShipName == '')
+								currentShipName = item.objectName;
+
+							if (currentFirstTime == '')
+								currentFirstTime = item.locationTime + " 速度:" + item.speed;
+
+							currentTimes.push(item.locationTime + " 速度:" + item.speed);
+							// var newPos = coordtransform.wgs84togcj02(item.lon, item.lat);
+							var newPos = [item.lon, item.lat]
+							item.lon = newPos[0];
+							item.lat = newPos[1];
+							currentPathData.push([item.lon, item.lat]);
+						})
+
+						if (currentPathData.length == 0)
+							currentFirstTime += '(近1天无轨迹数据)';
+
+						$('#span_ship_name').text(currentShipName);
+						$('#txt_time').text(currentFirstTime);
+
+						setPathData();
+					}
+				})
+			}
+		}
+
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+
+		function convert16(length, value) {
+			var v = Math.abs(value);
+			var s = v.toString(16);
+			var len = length - s.length;
+			var tmp = "";
+			for (var i = 0; i < len; i++) {
+				tmp += "0";
+			}
+			return tmp + s;
+		}
+
+		function init() {
+			map = new AMap.Map("container", {
+				resizeEnable: true,
+				mapStyle: app.map_style,
+				zoom: 12
+			});
+			var wms = new AMap.TileLayer.WMTS({
+				url: 'http://t1.tianditu.gov.cn/vec_w/wmts',
+				blend: false,
+
+				params: {
+					tk: "81cca0203dceb81da1562a77c00bbe04",
+					LAYER: 'vec',
+					STYLE: "default",
+					VERSION: '1.0.0',
+					TILEMATRIXSET: "w",
+					FORMAT: 'tiles'
+				}
+			});
+
+			wms.setMap(map);
+			map.plugin(["AMap.ToolBar"], function() {
+				map.addControl(new AMap.ToolBar({
+					position: 'RT'
+				}));
+			});
+
+			var waterLayer = new AMap.TileLayer({
+				// 图块取图地址
+				//     tileUrl: 'http://mt{1,2,3,0}.google.cn/vt/lyrs=m@142&hl=zh-CN&gl=cn&x=[x]&y=[y]&z=[z]&s=Galil',
+				zIndex: 40,
+				getTileUrl: function(x, y, z) {
+					//	var z = this.map.getZoom();
+					//    var res = g_map.getResolution(z);
+					//      var x = parseInt((bounds.getCenterLonLat().lon - this.tileOrigin.lon) / (256 * res));
+					//      var y = parseInt((this.tileOrigin.lat - bounds.getCenterLonLat().lat) / (256 * res));
+					if (false) {
+						return "img/defmap.png";
+					} else {
+						x = 'C' + convert16(8, x);
+						y = 'R' + convert16(8, y);
+						z = 'L' + (z < 10 ? '0' + z : z);
+
+						// return 'http://221.181.88.134:8079/map/river/201801/' + z + '/' + y + '/' + x + '.' + 'png';
+					}
+				}
+			});
+			waterLayer.setMap(map);
+
+			loadMapUI();
+		}
+
+		function loadMapUI() {
+			AMapUI.loadUI(['overlay/SvgMarker'], function(SvgMarker) {
+				if (!SvgMarker.supportSvg) {
+					alert('当前环境不支持SVG');
+					return;
+				}
+
+				AMapUI.load(['ui/misc/PathSimplifier', 'lib/$'], function(PathSimplifier, $) {
+
+					if (!PathSimplifier.supportCanvas) {
+						alert('当前环境不支持 Canvas！');
+						return;
+					}
+
+					pathSimplifierIns = new PathSimplifier({
+						zIndex: 50,
+						//autoSetFitView:false,
+						map: map, //所属的地图实例
+
+						getPath: function(pathData, pathIndex) {
+							return pathData.path;
+						},
+						getHoverTitle: function(pathData, pathIndex, pointIndex) {
+
+							if (pointIndex >= 0) {
+								//point 
+								return pathData.name + '，点:' + pointIndex + '/' + pathData.path.length;
+							}
+
+							return pathData.name + '，点数量' + pathData.path.length;
+						},
+						renderOptions: {
+							pathLineStyle: {
+								dirArrowStyle: true
+							},
+							getPathStyle: function(pathItem, zoom) {
+
+								var color = "#dc3912",
+									lineWidth = Math.round(Math.pow(1.1, zoom - 3));
+
+								return {
+									pathLineStyle: {
+										strokeStyle: color,
+										lineWidth: lineWidth
+									},
+									pathLineSelectedStyle: {
+										lineWidth: lineWidth + 2
+									},
+									pathNavigatorStyle: {
+										fillStyle: color
+									}
+								}
+							}
+						}
+					});
+
+					setPathData();
+				});
+
+			})
+		}
+
+		function setPathData() {
+			if (!pathSimplifierIns || currentPathData.length == 0)
+				return;
+
+			var data = [{
+				name: '_name',
+				path: currentPathData
+			}];
+
+			pathSimplifierIns.setData(data);
+			pathSimplifierIns.setSelectedPathIndex(0);
+
+			navg = getNavg();
+
+			map.setFitView();
+
+			// get navi
+			function getNavg() {
+				//创建一个轨迹巡航器
+				var navgtr = pathSimplifierIns.createPathNavigator(0, {
+					speed: speed,
+				});
+
+				/*
+			        
+			        var strIcon = 'icon-chuan';
+			        var _offset = [-20, -43];
+			        var _size = 30;
+					// 1 ship
+					if(currentType == 1)
+					{
+						strIcon = 'icon-chuan';
+						_offset = [-15, -30];
+						_size = 30;
+					}
+					// 0 person
+					else
+					{
+						strIcon = 'icon-xingren';
+						_offset = [-20, -43];
+						_size = 40;
+					}
+			
+			        navgtr.marker = new SvgMarker(
+				            new SvgMarker.Shape.IconFont({
+				                symbolJs: 'css/iconfont.js',
+				                icon: strIcon,
+				                size: _size,
+				                offset: _offset,
+				                fillColor: '#007aff'
+				            }), {
+				                map: map,
+				                position: [116.397428,39.90923],
+				              showPositionPoint: {
+				                    color: '#f08f4e'
+				               },
+			//	               autoRotation: true
+				            }); */
+
+				navgtr.on('move', function(e) {
+					//            navgtr.marker.setPosition(navgtr.getPosition());
+					//            navgtr.marker.setRotation(navgtr.getCursorAngleRadians() * 180 / Math.PI - 90);
+					$('#txt_time').text(currentTimes[navgtr.getCursor().idx]);
+				});
+
+				navgtr.onDestroy(function() {
+					//         navgtr.marker.setMap(null);
+				});
+
+				navgtr.on('start resume', function() {
+					navgtr._startTime = Date.now();
+					navgtr._startDist = this.getMovedDistance();
+				});
+
+				navgtr.on('stop', function() {
+					btn_start.innerHTML = '<i class="iconfont icon-bofang"></i>';
+					isMoving = false;
+					isStart = false;
+
+					navgtr._movedTime = Date.now() - navgtr._startTime;
+					navgtr._movedDist = this.getMovedDistance() - navgtr._startDist;
+
+					navgtr._realSpeed = (navgtr._movedDist / navgtr._movedTime * 3600);
+
+					$('#txt_time').text(currentFirstTime);
+				});
+
+				return navgtr;
+			}
+		}
+	</script>
+</html>

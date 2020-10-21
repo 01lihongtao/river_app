@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../asset/css/mui.min.css">
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			.title {
+				padding: 10px;
+				color: #6d6d72;
+				font-size: 16px;
+			}
+			
+			.lv1 {
+				padding-left: 60px;
+			}
+			
+			.lv2 {
+				padding-left: 120px;
+			}
+			
+			.ok {
+				background-color: #0099CC;
+				color: white;
+				padding: 5px;
+				border-radius: 5px;
+				font-size: 13px;
+			}
+			
+			.err {
+				background-color: red;
+				color: white;
+				padding: 5px;
+				border-radius: 5px;
+				font-size: 13px;
+			}
+			
+			.all_vertical_line {
+				position: absolute;
+				width: 3px;
+				height: 44px;
+				background: #666;
+				top: 0;
+				color: #ccc;
+			}
+			
+			.half_vertical_line {
+				position: absolute;
+				width: 3px;
+				height: 22px;
+				background: #666;
+				top: 0;
+			}
+			
+			.all_vertical_line_lv1 {
+				position: absolute;
+				width: 3px;
+				height: 44px;
+				background: #666;
+				top: 0;
+				left: 60px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">设施覆盖详情</h1>
+		</header>
+		<div class="mui-content">
+			<ul id="list" class="mui-table-view">
+				 
+			</ul>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		var cp_id = app.getUrlParam('id');
+		var cp_name = app.getUrlParam('cp_name');
+		var facility_id = app.getUrlParam('facility_id');
+		var selectDate = app.getUrlParam('date');
+
+		//selectDate = '2018-10-31';
+
+		mui.ready(function() {
+			
+		 
+			console.log(JSON.stringify({
+				facilityId: facility_id,
+				startTime: selectDate,
+				endTime: selectDate
+			}));
+		 
+			app.ajax(app.url('query/cover_report_detail'), {
+				facilityId: facility_id,
+				startTime: selectDate,
+				endTime: selectDate
+			}, function(ret) {
+
+				console.log(JSON.stringify(ret))
+
+				if(ret.code == 0) {
+					var data = ret.data;
+					var html = "";
+					var has_err = false;
+					for(var i = 0; i < data.length; i++) {
+						var isAbnormal = data[i].targetIsAbnormal;
+						var target_class = '';
+						if(isAbnormal == '1') {
+							target_class = 'err';
+							has_err = true;
+						} else if(isAbnormal == '0') {
+							target_class = 'ok';
+						}
+
+						if(html == "") {
+							html +=
+								'<div class="title "> <span  id="facility_header">\
+							' + data[i].facilityName + '</span> \
+						</div>'
+						}
+
+						var subhtml = '';
+						for(var j = 0; j < data[i].details.length; j++) {
+							var name = data[i].details[j].name;
+							var result = data[i].details[j].result;
+							var result_class = '';
+							if(result == '0') {
+								result_class = 'ok';
+							} else if(result == '1') {
+								result_class = 'err';
+								has_err = true;
+							}
+							subhtml += '<li class="mui-table-view-cell lv2 "><span class="' + result_class + '">' + name + '</span></li>';
+						}
+						html +=
+							'<ul class="mui-table-view "> \
+							<li class="mui-table-view-cell lv1"><span class="' + target_class + '">' + data[i].targetName + '</span></li> ' + subhtml + ' \
+						</ul>';
+					}
+//					console.log(html)
+					$("#list").html(html)
+					if(has_err) {
+						$("#facility_header").addClass("err");
+					}
+					//					app.open('main.html');
+
+					$(".err,.ok").not("#facility_header").before('<div class="all_vertical_line"></div><span style="color:#666">➞</span>')
+			$(".all_vertical_line").each(function() {
+				if($(this).parent().next().length == 0) {
+					$(this).addClass("half_vertical_line").removeClass("all_vertical_line")
+				}
+			})
+			$(".lv1:last").find(".all_vertical_line").addClass("half_vertical_line").removeClass("all_vertical_line")
+			var lv1_length = 0
+			var fg = true
+			$(".lv1,.lv2").each(function(){
+//				console.log($(this).hasClass("lv1"))
+				if($(this).hasClass("lv1")){
+					lv1_length++
+				}
+				if(lv1_length==$(".lv1").length){
+					fg = false
+				}
+				if(fg){
+					$(this).prepend('<div class="all_vertical_line_lv1"></div>')
+				}
+			})
+			
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+			mui('#list').on('tap', '.link_open', function() {
+				app.open($(this).attr('href'));
+			})
+
+		})
+
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+	</script>
+
+</html>

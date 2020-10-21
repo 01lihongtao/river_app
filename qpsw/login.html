@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<style>
+			.ui-page-login,
+			body {
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+				background-color: white;
+			}
+			
+			.mui-content {
+				width: 100%;
+				background-color: white;
+			}
+			
+			.area {
+				margin: 20px auto 0px auto;
+			}
+			
+			.mui-input-group label {
+				width: 22%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			.link-area {
+				text-align: center;
+			}
+			
+			.flex-center-vertically {
+				display: flex;
+				align-items: center;
+			}
+			
+			#login-title {
+				height: inherit;
+				padding-top: 30px;
+				padding-bottom: 30px;
+				background-color: white; 
+			}
+			
+			.mui-input-group .mui-input-row {
+				height: inherit;
+			}
+			
+			#logo_title {
+				font-size: 0.6em;
+			}
+		</style>
+
+	</head>
+
+	<body class="flex-center-vertically">
+		<div class="mui-content ">
+			<form id='login-form' class="mui-input-group ">
+				<div id="login-title" class="mui-input-row">
+					<div><img src="./images/logo_320.png" style="width:180px;height:180px;margin-bottom: 40px;"></div>
+					<div id="logo_title">河道长效管理</div>
+				</div>
+				<div class="mui-input-row">
+					<label>账号</label>
+					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入账号">
+				</div>
+				<div class="mui-input-row">
+					<label>密码</label>
+					<input id='password' type="password" class="mui-input-clear mui-input" placeholder="请输入密码">
+				</div>
+
+				<div class="mui-input-row" id="server_ip_div">
+					<label>ip</label>
+					<input id='server_ip' type="text" class="mui-input" placeholder="请输入服务器地址" readonly>
+				</div>
+			</form>
+			<form class="mui-input-group">
+				<ul class="mui-table-view mui-table-view-chevron">
+					<li class="mui-table-view-cell">
+						记住密码
+						<div id="autoLogin" class="mui-switch">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</li>
+				</ul>
+			</form>
+			<div class="mui-content-padded">
+				<button id="btnLogin" class="mui-btn mui-btn-block mui-btn-primary">登录</button>
+			</div>
+			<!--
+			<div style="text-align: center;">
+				<button id="switch_ip"  ></button>
+			</div>-->
+
+		</div>
+
+	</body>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/mui.min.js"></script>
+	<script src="js/mui.enterfocus.js"></script>
+	<script src="js/app.js"></script>
+	
+	<script>
+		var count = 0;
+		var count_timer;
+		var is_test = false;//true: 测试环境   false:生产环境
+		var btnLogin = document.getElementById('btnLogin');
+		var accountBox = document.getElementById('account');
+	//	var switch_ip = document.getElementById('switch_ip');
+		var passwordBox = document.getElementById('password');
+		var autoLoginButton = document.getElementById("autoLogin");
+		var forgetButton = document.getElementById('forgetPassword');
+		var isLogining = false;
+		var intervalId = null;
+		init_test_env()
+		function init_test_env(){
+			if(is_test){
+				console.log("测试服")
+				// $("#server_ip").val("http://221.181.88.134:8079/qpvms/")
+				$("#server_ip").val("http://221.181.88.134:8082/qpvms/")
+				
+				$("#server_ip_div").show()
+			}else{
+				console.log("正式服")
+				$("#server_ip").val("http://116.228.75.54:8082/qpvms/")
+				$("#server_ip_div").hide()
+				app.setSetting("switch_ip", "http://116.228.75.54:8082/qpvms/")
+			}
+		}
+		$(function(){
+			$("#login-title img").on("tap",function(){
+				count++
+				console.log(count)
+				if(count==5){
+					is_test = !is_test
+					init_test_env()
+					count = 0
+				}
+				clearTimeout(count_timer)
+				count_timer = setTimeout(function(){
+					count = 0
+					console.log("count 重置为0")
+				},5000)
+			})
+			
+			
+			
+			$("#server_ip").click(function(){
+				setTimeout(function() {
+					mui.prompt('请输入ip修改密码：', '', 'ip修改', ['取消', '确定'], function(e) {
+						if (e.index == 1) {
+							console.log(e.value)
+							if(e.value=="34637600"){
+								$("#server_ip").unbind("click")
+								$("#server_ip").attr("readonly",false)
+							}else{
+								mui.toast("密码错误")
+							}
+						} else {
+
+						}
+					})
+				}, 500)
+			})
+			 
+		})
+		mui.init();
+		
+		initCtrls();
+		logout();
+
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+
+			app.removeSetting('play_audio_flag');
+			// close splash
+			setTimeout(function() {
+				//关闭 splash
+				plus.navigator.closeSplashscreen();
+			}, 600);
+			//检查 "登录状态/锁屏状态" 结束
+			/*
+			switch_ip.addEventListener('tap', function(event) {
+				mui.confirm('确定切换服务器吗？', '切换服务器', ['否', '是'], function(e) {
+					if(e.index == 1) {
+						if(app.getSetting("switch_ip")=="http://221.181.88.134:8079/qpvms/"){
+							app.setSetting("switch_ip", "http://116.228.75.54:8082/qpvms/")
+							switch_ip.innerHTML = "水利局服务器"
+						}else{
+							app.setSetting("switch_ip", "http://221.181.88.134:8079/qpvms/")
+							switch_ip.innerHTML = "普适服务器"
+						}
+						mui.alert('切换成功')
+
+					} else {
+
+					}
+				})
+			});*/
+			btnLogin.addEventListener('tap', function(event) {
+				login(accountBox.value, passwordBox.value, autoLoginButton.classList.contains('mui-active'));
+			});
+			//					forgetButton.addEventListener('tap',function(event){
+			//
+			//					})
+
+			//					$.enterfocus('#login-form input', function() {
+			//						$.trigger(loginButton, 'tap');
+			//					});
+
+			// back button
+			var backButtonPress = 0;
+			mui.back = function(event) {
+				backButtonPress++;
+				if(backButtonPress > 1) {
+					// plus.runtime.quit();
+					app.open('../fuse.html')
+				} else {
+					plus.nativeUI.toast('再按一次退到选择应用页面');
+				}
+				setTimeout(function() {
+					backButtonPress = 0;
+				}, 1000);
+				return false;
+			};
+			
+			mui.getJSON("manifest.json",null,function(ret){
+				app.setSetting("app_ver", ret.version.name)
+			});
+		});
+
+		function login(_user_name, _user_pwd, _remember_me) {
+			if(is_test){
+				if($.trim($("#server_ip").val())){
+					app.setSetting("switch_ip", $.trim($("#server_ip").val()))
+				}else{
+					mui.toast('服务器地址不为空');
+					return;
+				}
+			}
+			// console.log($.trim($("#server_ip").val()))
+			var device_uuid = app.getSetting('device_uuid');
+			console.log(plus.device.uuid)
+			if(!device_uuid) {
+				if(plus.device.uuid){
+					app.setSetting('device_uuid', plus.device.uuid);
+				}else{
+					plus.device.getInfo({
+						success: function(e) {
+							app.setSetting('device_uuid', e.uuid);
+						},
+						fail: function(e) {
+							
+						}
+					});
+				}
+			}
+			console.log($.trim($("#server_ip").val()))
+			console.log(app.getSetting('device_uuid'))
+			if(!app.getSetting('device_uuid')){
+				return;
+			}
+			
+			document.activeElement.blur();
+			if(isLogining)
+				return;
+
+			if(_user_name == "" || _user_pwd == "") {
+				mui.toast('用户名或密码不能为空');
+				return;
+			}
+
+			if(plus && plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
+				mui.toast('无网络');
+				return;
+			}
+
+			resetSettings();
+
+
+			isLogining = true;
+
+			//	mui.toast("_remember_me" + _remember_me);
+			if(!_remember_me) {
+				app.removeSetting("remember_me");
+				app.removeSetting("user_name");
+				app.removeSetting("user_pwd");
+			} else {
+				app.setSetting("remember_me", _remember_me);
+				app.setSetting("user_name", _user_name);
+				app.setSetting("user_pwd", _user_pwd);
+			}
+
+			var arrInfo = {
+				username: _user_name,
+				password: _user_pwd,
+				clientId: app.getSetting('device_uuid') 
+			}
+
+			app.setSetting('login_time', (new Date()).getTime());
+
+			mui('#btnLogin').button('loading');
+			console.log(app.url('api/user/login')) 
+			app.ajax(app.url('api/user/login'), arrInfo, function(ret) {
+				console.log('登录返回值'+JSON.stringify(ret))
+				if(ret.code == 0) {
+
+
+					var main = plus.webview.getWebviewById( "index.html" );
+					// main.hide()
+					plus.webview.close(main)
+
+					app.setSetting('user_data', JSON.stringify(ret.data));
+					app.setSetting('login_name', _user_name);
+					
+					//这是成功时跳到主页面
+					app.open('main.html');
+
+					setTimeout(function() {
+						mui('#btnLogin').button('reset');
+						isLogining = false;
+					}, 3000);
+				} else {
+					mui.toast(ret.desc);
+					mui('#btnLogin').button('reset');
+					isLogining = false;
+				}
+			});
+		}
+
+		function initCtrls() {
+			var remember_me = app.getSetting('remember_me');
+			if(remember_me && remember_me == "true") {
+				var user_name = app.getSetting('user_name');
+				var user_pwd = app.getSetting('user_pwd');
+				accountBox.value = user_name;
+				passwordBox.value = user_pwd;
+				//				login(user_name,user_pwd,true);
+
+				autoLoginButton.classList.add('mui-active')
+			} else {
+				autoLoginButton.classList.remove('mui-active')
+
+				accountBox.value = '';
+				passwordBox.value = '';
+			}
+		}
+		
+		function startServiceLocation(strStart)
+		{
+			return;
+			if(mui.os.android)
+			{
+				var mainActivity = plus.android.runtimeMainActivity();
+				var Intent = plus.android.importClass('android.content.Intent');
+				var intent = new Intent();
+			//	intent.setPackage("com.navi.NaviDemo");
+			//	intent.setAction("android.intent.action.START_LOCATION_SERVICE");
+			//	intent.setClassName(mainActivity,"com.navi.NaviDemo.LocationService")
+				var Uri = plus.android.importClass("android.net.Uri");
+				// var uri = Uri.parse("csd://pull.csd.demo/cyn?type=110");
+				var uriParse = Uri.parse("ubinavi://" + app.getSetting('server_ip')  + "/api/app/user/login?type=" + app.getSetting('server_port') + "," + app.getSetting('user_name') + "," + app.getSetting('user_pwd')+','+strStart);
+				intent.setData(uriParse);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				mainActivity.startActivity(intent);
+			}
+		}
+
+		function logout() {
+			if(!app.isLogin())
+				return;
+
+			app.ajax(app.url('api/user/logout'), {}, function(ret) {
+				if(mui.os.android) {
+					//	var myObj =  plus.android.importClass('com.navi.NaviDemo.MainActivity');
+					//plus.android.currentWebview().getContext().getApplication()
+				//	var Context = plus.android.invoke( plus.android.currentWebview(), 'getContext' );
+				//	var application = plus.android.invoke( Context, 'getApplication' );
+
+					//var myObj = plus.android.newObject('com.jcc.water.MyAoolication');
+					//var application = myObj.getApplication()
+					//alert(plus.device.uuid)
+				//	plus.android.invoke(application, 'stopLocation')
+				}
+			})
+		}
+
+		function resetSettings() {
+			app.setSetting('wake_lock', 'false');
+			plus.device.setWakelock(false);
+			app.setSetting('jx_mode', 'false');
+
+			app.setSetting('switch_ship', 'true');
+			app.setSetting('switch_person', 'true');
+			app.setSetting('switch_inclosure', 'true');
+			app.setSetting('switch_map', 'true');
+		}
+
+		// refresh
+		window.addEventListener('qpsw_refresh', function(event) {
+			initCtrls();
+			logout();
+		});
+	</script>
+
+</html>

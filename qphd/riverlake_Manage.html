@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<link href="../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../asset/css/style.css" rel="stylesheet" />
+		<link href="../asset/css/mui.min.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				height: 100%;
+			}
+			
+			body {
+				background: #FFFFFF;
+				width: 100%;
+				margin: 0px;
+				padding: 0px;
+			}
+			
+			.mui-bar {
+				border: none;
+				background: white;
+				box-shadow: none;
+			}
+			
+			
+			.mui-title {
+				font-size: 16px;
+				font-weight: 700;
+			}
+			
+			#content {
+				width: 100%;
+				overflow: auto;
+				top: 72px;
+				position: absolute;
+				z-index: 10;
+				bottom: 328px;
+			}
+			
+			#cityCenter,
+			#villages {
+				margin: 0 auto;
+			}
+			
+			.title {
+				display: flex;
+				justify-content: space-around;
+				font-size: 16px;
+			}
+			
+			#footer {
+				position: absolute;
+				z-index: 200;
+				bottom: 0;
+				width: 100%;
+				padding: 0px 15px 20px 15px;
+				height: 328px;
+			}
+			
+			.footer {
+				border: 1px solid #555;
+				border-radius: 10px;
+				position: relative;
+				padding: 10px;
+			}
+			
+			.buttons {
+				position: absolute;
+				bottom: 20px;
+				width: 100%;
+			}
+			
+			.button {
+				float: left;
+				width: 33.33%;
+				text-align: center;
+			}
+			
+			.f_title {
+				font-size: 26px;
+				text-align: center;
+				color: #555555;
+				font-weight: 500;
+			}
+			#c_con{
+				display: flex;
+				flex-direction: column;
+				margin: 0 auto;
+							
+			}
+			
+			.mui-bar {
+				width: 100%;
+				height: 44px;
+				line-height: 44px;
+				position: absolute;
+				z-index: 5;
+				top: 0;
+				
+			}
+			.lag{
+				font-size: 18px;
+			}
+			.canvas{
+				display: flex;
+			}
+			.titlecontow{
+				
+				position: relative;
+				top:3px
+			}
+			
+			#list{
+				position: absolute;
+				right: 10px;
+				top: 20px;
+				border: none;
+			}
+			#pop{
+				position: absolute;
+				width: 100%;
+				top: 72px;
+				z-index: 11;
+				opacity: 0;
+			}
+			#popcon{
+				width:90%;
+				margin: 0 auto;
+								
+			}
+			.pop_butttons{
+				position: relative;
+				top: -20px;
+				
+			}
+			.pop_butttons a{
+				display: block;
+				float: left;
+				width: 50%;
+				
+			}
+			.popul{
+				float: left;
+				width: 50%;
+				
+			}
+			.popul  ul {
+				padding: 0;
+				margin: 0;
+				
+			}
+			.popul:nth-child(1){
+				border-right: 1px solid #555555;
+			}
+			.popul li{
+				list-style: none;
+				display: flex;
+				justify-content: space-around;
+			}
+			
+			.uls{
+				border: 1px solid red;
+				overflow:hidden;
+				border-radius: 5px;
+				border-color: #555555;
+				background: whitesmoke;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<!--河湖管理页面-->
+		<div id="box">
+		<div id="pop">
+			<div id="popcon">
+			<div class="pop_butttons">
+				<a>今日最优河流</a>
+				<a>今日最差河流</a>
+				
+				<div class="uls">
+				<div class="popul">
+					<ul>
+						<li>
+						<span>1</span>
+						<span>定浦河</span>
+						<span>优</span>
+						</li>
+						<li>
+						<span>1</span>
+						<span>定浦河</span>
+						<span>优</span>
+						</li>
+						<li>
+						<span>1</span>
+						<span>定浦河</span>
+						<span>优</span>
+						</li>
+						<li>
+						<span>1</span>
+						<span>定浦河</span>
+						<span>优</span>
+						</li>
+						<li>
+						<span>1</span>
+						<span>定浦河</span>
+						<span>优</span>
+						</li>
+					</ul>
+				</div>
+				<div class="popul">
+					<ul>
+						<li>
+						<span>1</span>
+						<span>定浦河</span>
+						<span>优</span>
+						</li>
+						<li>
+						<span>1</span>
+						<span>定浦河</span>
+						<span>优</span>
+						</li>
+						<li>
+						<span>1</span>
+						<span>定浦河</span>
+						<span>优</span>
+						</li>
+						<li>
+						<span>1</span>
+						<span>定浦河</span>
+						<span>优</span>
+						</li>
+						<li>
+						<span>1</span>
+						<span>定浦河</span>
+						<span>优</span>
+						</li>
+					</ul>
+				</div>
+				
+				
+			</div>
+			</div>
+				
+			</div>
+		
+		
+		</div>
+			<header class="mui-bar mui-bar-nav header">
+				<a class="mui-icon  mui-icon-back mui-action-back">
+				</a>
+				<h1 class="mui-title">河湖管护情况</h1>
+				<a id="list">今日最优与最差</a>
+			</header>
+
+			<div id="content">
+				
+				<div id="c_con">
+					
+				
+				<div class="tu">
+					
+					<div class="canvas">
+					<canvas id="cityCenter"></canvas>
+					</div>
+					<div class="title">
+						<span class="titlecon"> 
+			<span class="mui-icon mui-icon-info"></span>
+						<span class="lag">85个</span>新发现问题
+						</span>
+						<span class="titlecon titlecontow">
+						<span class="lag">85%</span>总整改率
+						</span>
+						<span class="titlecon"> 
+			<span class="mui-icon mui-icon-info"></span>
+						<span class="lag">90个</span>新整改问题
+						</span>
+
+					</div>
+				</div>
+				<div class="tu">
+						<div class="canvas">
+				<canvas id="villages"></canvas>
+				</div>
+				<div class="title">
+					<span class="titlecon"> 
+			<span class="mui-icon mui-icon-info"></span>
+					<span>85个</span>新发现问题
+					</span>
+					<span class="titlecon  titlecontow">
+						
+						<span>85%</span>总整改率
+					</span>
+					<span class="titlecon"> 
+			<span class="mui-icon mui-icon-info"></span>
+					<span>90个</span>新整改问题
+					</span>
+
+				</div>
+			
+				</div>
+				
+				</div>
+				</div>
+
+			<div id="footer">
+				<footer class="footer">
+					<h1 class="f_title">近五日河道管护评价曲线</h1>
+					<div id="main" style="width: 100%px;height:250px;"></div>
+					<div class="buttons">
+						<div id="dianji" class="button">
+							全部
+
+						</div>
+						<div id="cunzhen" class="button">
+							村镇
+
+						</div>
+						<div id="chengshi" class="button">
+							城市
+
+						</div>
+					</div>
+				</footer>
+			</div>
+
+		</div>
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/echarts-all.js"></script>
+
+	<script>
+		quanbu(1)
+		$("#dianji").click(function() {
+			quanbu(1)
+
+		})
+		$("#cunzhen").click(function() {
+			quanbu(3)
+		})
+		$("#chengshi").click(function() {
+			quanbu(2)
+		})
+		$("#list").click(function(event){
+			 event.stopPropagation();  
+			 $("#pop").animate({opacity:'1'},300);
+		})
+		
+		$("html").click(function(){
+			 $("#pop").animate({opacity:'0'},300);
+		})
+		
+		biaoge("green", 80, "cityCenter")
+		biaoge("red", 30, "villages")
+
+		function biaoge(color, ps, ele) {
+
+			var canvas = document.getElementById(ele), //获取canvas元素
+				context = canvas.getContext('2d'), //获取画图环境，指明为2d
+				centerX = canvas.width / 2, //Canvas中心点x轴坐标
+				centerY = canvas.height / 2, //Canvas中心点y轴坐标
+				rad = Math.PI * 2 / 100, //将360度分成100份，那么每一份就是rad度
+				speed = 5; //加载的快慢就靠它了 
+
+			//绘制5像素宽的运动外圈
+			function blueCircle(n, color) {
+				context.save();
+				context.strokeStyle = color; //设置描边样式
+				context.lineWidth = 10; //设置线宽
+				context.beginPath(); //路径开始
+				context.arc(centerX, centerY, 70, Math.PI / 1.4, Math.PI / 2 + n * rad, false); //用于绘制圆弧context.arc(x坐标，y坐标，半径，起始角度，终止角度，顺时针/逆时针)
+				context.stroke(); //绘制
+				context.closePath(); //路径结束
+				context.restore();
+			}
+			//绘制白色外圈
+			function whiteCircle() {
+				context.save();
+				context.beginPath();
+				context.lineWidth = 10; //设置线宽
+				context.strokeStyle = "gainsboro";
+				context.arc(centerX, centerY, 70, Math.PI / 1.4, Math.PI / 3.5, false);
+				context.stroke();
+				context.closePath();
+				context.restore();
+			}
+			//百分比文字绘制
+			function text(n, color) {
+				context.fillText("市区管", centerX, centerY);
+
+				context.font = "30px bold 黑体";
+				// 设置颜色
+				context.fillStyle = color;
+				// 设置水平对齐方式
+				context.textAlign = "center";
+				// 设置垂直对齐方式
+				context.textBaseline = "middle";
+				// 绘制文字（参数：要写的字，x坐标，y坐标）
+
+				context.fillText("优", centerX, centerY + 30);
+				var gradient = context.createLinearGradient(0, 0, canvas.width, 0);
+				gradient.addColorStop("0", "black");
+				gradient.addColorStop("1.0", "black");
+				// 用渐变填色
+				context.fillStyle = gradient;
+				context.font = "20px bold 黑体"
+
+			}
+			//动画循环
+			function drawFrame() {
+				if(speed <= ps) {
+					window.requestAnimationFrame(drawFrame);
+					context.clearRect(0, 0, canvas.width, canvas.height);
+					whiteCircle();
+					text(speed, color);
+					blueCircle(speed, color);
+					speed += 3;
+					console.log(speed)
+				}
+
+			};
+
+			drawFrame()
+		}
+
+		// 基于准备好的dom，初始化echarts实例
+
+		function quanbu(n) {
+
+			var myChart = echarts.init(document.getElementById('main'));
+			if(myChart.getOption() && myChart.getOption().series.length > 0) {
+				console.log(111)
+				//				for(var i = 0; i < option.series.length; i++) {
+				//					option.series[i].data = [];
+				//					option.series[i].name = "";
+				//				}
+
+				option = {}
+				myChart.setOption(option, true);
+			}
+
+			if(n == 1) {
+				option = {
+					xAxis: {
+						type: 'category',
+						data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+						show: false
+					},
+					legend: {
+						data: ['市区管', '村镇管']
+					},
+					yAxis: {
+						type: 'value'
+					},
+					series: [{
+							name: '市区管',
+							type: 'bar',
+							barWidth: 20,
+							itemStyle: {
+								normal: {
+									color: '#4ad2ff'
+								}
+							},
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [320, 302, 301, 334, 390]
+						},
+						{
+							name: '村镇管',
+							type: 'bar',
+							barWidth: 20,
+							itemStyle: {
+								normal: {
+									color: 'red'
+								}
+							},
+							barGap: '0',
+							label: {
+								normal: {
+									show: true,
+									position: 'insideRight'
+								}
+							},
+							data: [120, 132, 101, 134, 90]
+						},
+
+					]
+				};
+			} else if(n == 2) {
+				option = {
+					xAxis: {
+						type: 'category',
+						data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+						show: false
+					},
+					legend: {
+						data: ['市区管']
+					},
+					yAxis: {
+						type: 'value'
+					},
+					series: [{
+							name: '市区管',
+							type: 'bar',
+							barWidth: 20,
+							itemStyle: {
+								normal: {
+									color: '#4ad2ff'
+								}
+							},
+
+							label: {
+								normal: {
+									show: true,
+								}
+							},
+							data: [320, 302, 301, 334, 390]
+						},
+
+					]
+				};
+			} else if(n == 3) {
+				option = {
+					xAxis: {
+						type: 'category',
+						data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+						show: false
+					},
+					legend: {
+						data: ['村镇管']
+					},
+					yAxis: {
+						type: 'value'
+					},
+					series: [{
+							name: '村镇管',
+							type: 'bar',
+							barWidth: 20,
+							itemStyle: {
+								normal: {
+									color: 'red'
+								}
+							},
+							label: {
+								normal: {
+									show: true,
+								}
+							},
+							data: [320, 302, 301, 334, 390]
+						},
+
+					]
+				};
+			}
+			myChart.setOption(option)
+			window.onresize = myChart.resize;
+		}
+	</script>
+
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit;
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.clr_red {
+				color: red;
+			}
+			
+			.mui-table-view p {
+				color: #333;
+				line-height: 24px;
+			}
+			
+			.def_btn {
+				background-color: #007aff;
+				color: #fff;
+				font-size: 12px;
+				line-height: 15px;
+				padding: 3px 6px;
+				display: inline-block;
+				border-radius: 5px;
+				margin-left: 10px;
+				border: 0;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<!--<a id="btn_year" class="mui-btn mui-btn-link mui-pull-right">新增</a>-->
+			<h1 class="mui-title">排班表</h1>
+
+		</header>
+		<div class="mui-content">
+			<ul id="real_time_list" class="mui-table-view ">
+				<!--<li class="mui-table-view-cell mui-media">
+					<a class="  link_open mui-navigate-right" href="personal_detail.html">
+						<div class="mui-media-body">
+							普适第<span class="clr_red">28</span>周排班表
+
+							<button class="def_btn mui-pull-right  ">修改</button>
+							<p class='mui-ellipsis'>状态：<span class="clr_red">汛期</span></p>
+							<p class='mui-ellipsis'>时间：2018-07-30 ~ 2018-08-05</p>
+
+						</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<a class="  link_open mui-navigate-right" href="personal_detail.html">
+						<div class="mui-media-body">
+							普适第<span class="clr_red">27</span>周排班表
+
+							<button class="def_btn mui-pull-right  ">修改</button>
+							<br>
+							<br>
+
+							<p class='mui-ellipsis'>时间：2018-07-30 ~ 2018-08-05</p>
+
+						</div>
+					</a>
+				</li>-->
+
+			</ul>
+			<div id="page_loading" class="page_loader">
+				<img src="../../asset/images/loading.gif"> 加载中...
+			</div>
+			<div id="page_ended" class="page_loader">
+				列表已到最后
+			</div>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var cp_name = app.getUrlParam('cp_name');
+		var id = app.getUrlParam('id');
+		cp_name = cp_name.replace("上海", "").replace("有限公司", "")
+		console.log(cp_name)
+		console.log(id)
+		mui.init();
+
+		mui.ready(function() {
+			
+
+			mui('body').on('tap', '.link_open', function() {
+				app.open(this.href);
+				return false;
+			});
+		})
+		$(function(){
+			$('#page_loading').show();
+			$('#page_ended').hide();
+			init_html()
+		})
+		function init_html() {
+			var html = ""
+			for(var i = 0; i < 6; i++) {
+				var date_obj = getWeekOfYear(i)
+				html += '<li class="mui-table-view-cell  mui-media">'
+				html += '		<a class="  link_open mui-navigate-right" href="patrol_schedule_detail.html?zhou=' + date_obj.zhou + '&first=' + date_obj.first + '&last=' + date_obj.last + '&id='+id+'">'
+				html += '			<div class="mui-media-body">'
+				html += '				' + cp_name + '第<span class="clr_red">' + date_obj.zhou + '</span>周排班表'
+				//				html += '			<button class="def_btn mui-pull-right  ">修改</button>'
+				//				html += '				<br>'
+				//				html += '				<br>'
+				html += '				<p class="mui-ellipsis ">时间：' + date_obj.first + ' ~ ' + date_obj.last + '</p>'
+				html += '			</div>'
+				html += '		</a>'
+				html += '	</li>'
+			}
+			$("#real_time_list").html(html);
+			$('#page_loading').hide();
+			$('#page_ended').show();
+		}
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+
+		function getWeekOfYear(i) { 
+
+			var today = new Date(new Date().getTime() + i * 7 * 24 * 3600 * 1000);
+			var firstDay = new Date(today.getFullYear(), 0, 1); 
+
+			var dayOfWeek = firstDay.getDay();  
+
+			var spendDay = 1; 
+			if(dayOfWeek != 0) {  
+				spendDay = 7 - dayOfWeek + 1; 
+			} 
+
+			firstDay = new Date(today.getFullYear(), 0, 1 + spendDay); 
+
+			var d = Math.ceil((today.valueOf() - firstDay.valueOf()) / 86400000); 
+
+			var result = Math.ceil(d / 7); 
+			return {
+				zhou: result + 1,
+				first: getWeekDate(today, 0),
+				last: getWeekDate(today, -6),
+			}
+
+		};
+
+		function getWeekDate(now, n) {
+
+			var year = now.getFullYear();
+			//因为月份是从0开始的,所以获取这个月的月份数要加1才行
+			var month = now.getMonth() + 1;
+			var date = now.getDate();
+			var day = now.getDay();
+
+			//判断是否为周日,如果不是的话,就让今天的day-1(例如星期二就是2-1)
+			if(day !== 0) {
+				n = n + (day - 1);
+			} else {
+				n = n + day;
+			}
+			if(day) {
+				//这个判断是为了解决跨年的问题
+				if(month > 1) {
+					month = month;
+				}
+				//这个判断是为了解决跨年的问题,月份是从0开始的
+				else {
+					year = year - 1;
+					month = 12;
+				}
+			}
+			now.setDate(now.getDate() - n);
+			year = now.getFullYear();
+			month = now.getMonth() + 1;
+			date = now.getDate();
+
+			s = year + "-" + (month < 10 ? ('0' + month) : month) + "-" + (date < 10 ? ('0' + date) : date) + "";
+			return s;
+		}
+	</script>
+
+</html>

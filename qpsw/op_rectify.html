@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/iconfont.css" rel="stylesheet"/>
+    <link href="./css/mui.picker.min.css" rel="stylesheet" />
+    <link href="./css/mui.poppicker.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet"/> 
+    <style>
+		#list-option .mui-table-view-cell button{
+			position: relative;
+			right: inherit;
+    		-webkit-transform: inherit;
+    		transform: inherit;
+		}
+		
+		.mui-table-view span.mui-pull-right {
+		    color: #999;
+		}
+		
+		.img-selected {
+			width:80px;
+			height:80px;
+			margin-top: 10px;
+		}
+		
+		#header .btn_item {
+			margin-left: 20px;
+		}
+    </style>
+</head>
+<body onload="app.route()">
+	<header id='header' class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<a id='btn_upload' class="btn_item mui-btn mui-btn-link mui-pull-right" style="display:none">上传</a>
+		<a id='btn_submit' class="btn_item mui-btn mui-btn-link mui-pull-right">保存</a>
+		<h1 class="mui-title">整改</h1>
+	</header>
+	<div class="mui-content">
+		<ul id="list-option" class="mui-table-view">
+			<li class="mui-table-view-cell">
+				取证编号
+			 	<span id="evidNo" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">H180123J1</span>
+			</li>
+			<li class="mui-table-view-cell">
+				<p>整改描述</p>
+				<textarea id="correctDesc" rows="3" placeholder="请填写整改过程的描述信息"></textarea>
+			</li>
+			<li class="mui-table-view-cell">
+				<p>取证照片 (最多<span id="max_photos">3</span>张) (长按显示操作菜单)
+					<button onclick="add_img()" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-right">
+						<i class="iconfont icon-add"></i>
+					</button>
+				</p>
+				<div id="img_list">
+					<!--
+					<img src="images/evid1.png" class="img-selected">
+					<img src="images/evid1.png" class="img-selected">
+					<img src="images/evid1.png" class="img-selected">
+					-->
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+	<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a onclick="getImage()">拍照</a>
+			</li>
+			<li class="mui-table-view-cell">
+				<a onclick="galleryImgsMaximum()">选取现有的</a>
+			</li>
+		</ul>
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a href="#picture"><b>取消</b></a>
+			</li>
+		</ul>
+	</div>
+	
+	<div id="img_action_list" class="mui-popover mui-popover-action mui-popover-bottom">
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a onclick="del_img()">删除</a>
+			</li>
+		</ul>
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<a href="#img_action_list"><b>取消</b></a>
+			</li>
+		</ul>
+	</div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/mui.min.js"></script>
+<script src="./js/mui.picker.min.js"></script>
+<script src="./js/mui.poppicker.js"></script>
+<script src="js/app.js"></script>
+<script type="text/javascript" charset="utf-8">
+	var currentUserId = app.getUserId();
+	
+	var item_id = app.getUrlParam('item_id');
+	var item_no = app.getUrlParam('item_no');
+	var time_id = app.getUrlParam('time_id');
+	var item_type = app.getUrlParam('type');
+	var img_list = document.getElementById('img_list');
+	var _correctDesc = document.getElementById('correctDesc');
+	var currentImgItem = null;
+	
+	var timerCheckUpload = 0;
+	var timerExpired = 0;
+	var waiterUpload = 0;
+	
+	var bIsSaving = false;
+	
+	document.getElementById('evidNo').innerText = item_no;
+	document.getElementById('max_photos').innerText = app.max_count_photos;
+	
+	if(time_id)
+		$('#btn_upload').show();
+
+	mui.init({
+	  gestureConfig:{
+	    longtap: true
+	   }
+	});
+	
+	mui.ready(function(){
+		addEventLongTap();
+		
+		$("#btn_submit").click(function(){
+			if(bIsSaving)
+				return;
+			
+			saveData();
+			return false;
+		})
+		
+		$('#btn_upload').click(function(){
+			if(bIsSaving)
+				return;
+			
+			var btnArray = ['取消', '上传'];
+			mui.confirm('是否真的上传？', '上传', btnArray, function(e) {
+				if (e.index == 1) {
+					saveData(true);
+				}
+			})
+
+			return false;
+		})
+	})
+
+	mui.plusReady(function() {
+		plus.screen.lockOrientation("portrait-primary");
+		
+		loadData();
+	});
+	
+	function addEventLongTap() {
+		var arrItems = document.querySelectorAll('.img-selected');
+		
+		[].forEach.call(arrItems,function(item){
+			item.addEventListener('longtap',function(){
+				currentImgItem = this;
+				mui('#img_action_list').popover('toggle');
+			})　
+		});
+	}
+	
+	function add_img() {		
+		if(document.querySelectorAll('.img-selected').length >= app.max_count_photos)
+		{
+			mui.toast('取证照片已至最大数量');
+			return;
+		}
+		
+		mui('#picture').popover('toggle');
+	}
+	
+	function del_img() {
+		if(currentImgItem)
+		{
+			currentImgItem.parentNode.removeChild(currentImgItem);
+			currentImgItem = null;
+		}
+		
+		mui('#img_action_list').popover('toggle');
+	}
+	
+	function getImage() {
+//		console.log('getImage');
+		var cmr = plus.camera.getCamera();
+		cmr.captureImage(function(path) {
+			plus.gallery.save(path, function(event) {
+				addImg(event.file);
+			}, function(e) {
+//				console.log('保存失败: ' + JSON.stringify(e));
+			});
+		}, function(e) {
+		}, {
+			filename: '_doc/gallery/',
+			index: 1
+		});
+		
+		mui('#picture').popover('toggle');
+	}
+	
+	function addImg(strSrc) {
+		// comparess image
+		var nPtPos = strSrc.lastIndexOf('.');
+		var strDst = '';
+		if(nPtPos > 0)
+		{
+			strDst = strSrc.substr(0,nPtPos) + '_s50' + strSrc.substr(nPtPos);
+		}
+		else
+		{
+			strDst = strSrc + '_s50';
+		}
+//		console.log('dist ' + strDst);
+		
+		// compress image
+		var wUI = plus.nativeUI.showWaiting('压缩中...');
+		plus.zip.compressImage({src: strSrc, dst: strDst, overwrite: true, width: '100%', height: '100%', quality: 80},
+			function(e){
+				wUI.close();
+				
+				// add image
+//				console.log('compress size: ' + e.size);
+				
+//				console.log(e.target);
+				var newImg = document.createElement('img');
+				newImg.src = e.target;
+				newImg.classList.add("img-selected");
+				
+				newImg.addEventListener('longtap',function(){
+					currentImgItem = this;
+					mui('#img_action_list').popover('toggle');
+				})　
+				
+				img_list.appendChild(newImg);
+			},function(e){
+				wUI.close();
+				mui.toast('压缩文件失败：' + e.message);
+		})
+	}
+	
+	function galleryImgsMaximum() {
+		var maxValue = app.max_count_photos - document.querySelectorAll('.img-selected').length;
+		if(maxValue < 0)
+			maxValue = 0;
+			
+		if(maxValue == 0)
+		{
+			alert('取证图片已选至最大数量');
+			mui('#picture').popover('toggle');
+			return;
+		}
+		
+		// 从相册中选择图片
+		plus.gallery.pick(function(e) {
+			for(var i in e.files) {
+				addImg(e.files[i]);
+			}
+		}, function(e) {
+		//	outSet('取消选择图片');
+		}, {
+			filter: 'image',
+			multiple: true,
+			maximum: maxValue,
+			system: false,
+			onmaxed: function() {
+				plus.nativeUI.alert('最多只能选择' + maxValue + '张图片');
+			}
+		}); // 最多选择3张图片
+		
+		mui('#picture').popover('toggle');
+	}
+	
+	function saveData(bUpload)
+	{
+		var valCorrectDesc = $('#correctDesc').val();
+		if(valCorrectDesc == '')
+		{
+			mui.toast('"整改描述"不能为空');
+			return;
+		}
+		
+		bIsSaving = true;
+		
+		var arrImgs = new Array();
+		$(".img-selected").each(function(key,value){
+			arrImgs.push({path:$(value).attr('src'),result:0})
+		})
+		
+		// save
+		var _event_list = JSON.parse(app.getSetting('event_list') || "[]");
+		if(time_id == '')
+		{
+			var _user_id = app.getUserId();
+			var _user_name = app.getUserName();
+			
+			var mapData = {forensicsId: item_id,
+						forensicsNo: item_no,
+						type: item_type,
+						desc: valCorrectDesc,
+						username: _user_name,
+						userId: _user_id
+						};
+						
+			var utime = (new Date()).getTime();
+			
+			var mapEvent = {event_type:2,data:mapData,
+							time_id: utime,
+							userId: _user_id,
+							toUpload: 0,
+							imgs: arrImgs};
+			
+			_event_list.push(mapEvent);
+		}
+		else
+		{
+			for(var i = 0; i < _event_list.length; ++i){
+				var item = _event_list[i];
+				if(item.event_type == 2 && item.time_id == time_id)
+				{
+					_event_list[i].data.desc = valCorrectDesc;
+//					console.log(_event_list[i].data.desc);
+					_event_list[i].imgs = arrImgs;
+					
+					if(bUpload)
+					{
+						item.toUpload = 1;
+						item.try_times = 0;
+						item.to_upload_allow = 0;
+					}
+					break;
+				}
+			}
+		}
+
+		app.setSetting('event_list',JSON.stringify(_event_list));
+
+		// upload
+		if(bUpload)
+		{
+			waiterUpload = plus.nativeUI.showWaiting( "上传中..." );
+			
+			// check upload
+			timerCheckUpload = setInterval(function(){
+				var lst_events = JSON.parse(app.getSetting('event_list') || '[]');
+				
+				var bUpdated = false;
+				for(var i = 0; i < lst_events.length; ++i)
+				{
+					if(lst_events[i].time_id == time_id && lst_events[i].userId == currentUserId)
+					{
+						bUpdated = true;
+					}
+				}
+				
+				if(!bUpdated)
+				{
+					clearInterval(timerCheckUpload);
+					mui.toast('成功上传');
+					waiterUpload.close();
+					
+					var parentViewer = mui.currentWebview.opener();	
+					mui.fire(parentViewer,'qpsw_refresh');
+
+					mui.back();
+				}
+			},2000);
+			
+			// time out
+			timerExpired = setTimeout(function(){
+				clearInterval(timerCheckUpload);
+				
+				// stop upload
+				var lst_events = JSON.parse(app.getSetting('event_list') || '[]');
+				var bUpdated = false;
+				for(var i = 0; i < lst_events.length; ++i)
+				{
+					if(lst_events[i].time_id == time_id && lst_events[i].userId == currentUserId)
+					{
+						lst_events[i].toUpload = 0;
+						bUpdated = true;
+					}
+				}
+				
+				if(bUpdated)
+				{
+					app.setSetting('event_list', JSON.stringify(lst_events));					
+					mui.toast('上传超时');
+				}
+				else
+				{
+					mui.toast('成功上传');
+					
+					var parentViewer = mui.currentWebview.opener();	
+					mui.fire(parentViewer,'qpsw_refresh');
+
+					mui.back();
+				}
+				
+				waiterUpload.close();
+			}, 300000); // 5 minutes
+		}
+		// save
+		else
+		{
+			mui.toast('整改已保存，请至"信息流转/待上传"中查看，请手动提交服务器');
+			mui.back();
+		}
+		
+		bIsSaving = false;
+	}
+	
+	function loadData() {
+		if(time_id == '')
+			return;
+		
+		var event_list = JSON.parse(app.getSetting('event_list') || "[]");
+		
+		for(var i = 0; i < event_list.length; ++i){
+			var item = event_list[i];
+			if(item.event_type == 2 && item.time_id == time_id)
+			{
+//				console.log(item.data.forensicsId);
+				
+				$('#evidNo').text(item.data.forensicsId);
+				$('#correctDesc').val(item.data.desc);
+
+				item.imgs.forEach(function(item2){
+					addImg(item2.path);
+				})
+				break;
+			}
+		}
+	}
+
+</script>
+</html>

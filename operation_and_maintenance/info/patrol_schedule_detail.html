@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit;
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.h4_header {
+				/*margin-top: 55px;*/
+				background: #fff;
+				font-size: 20px;
+				padding: 10px;
+			}
+			
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+			#patrol_schedule_my{
+				background: #06f;
+			    color: #fff;
+			    border: #008000;
+			    margin-top: -4px;
+			    position: fixed;
+			    top: 58px;
+			    right: 10px;
+			    z-index: 999;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+
+			<h1 id="title" class="mui-title">排班表</h1>
+
+			<a class="mui-btn mui-btn-link mui-pull-right" id="next">下一页</a>
+			<a class="mui-btn mui-btn-link mui-pull-right" id="prep">上一页</a>
+
+		</header>
+		<button class="mui-pull-right name" id="patrol_schedule_my" style="" >我的排班 </button>
+		<div id="list" class="mui-content" style="    min-height: 95px; background: #fff;">
+			<!--<h4 class="h4_header">
+				<span id="current_month">07-30  星期一</span>
+
+			</h4>
+			
+			<ul  class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<h4>火星水闸（12人）</h4>
+				</li>
+				<li class="mui-table-view-cell">
+					<a style="background: #000;color: #fff;">
+						<div style="width: 25%;float: left;text-align: center;">巡检人员</div>
+						<div style="width: 75%;float: left;text-align: center;">工作时间</div>
+
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+
+					<div class="date_id" style="width: 25%;float: left;text-align: center;">王大海</div>
+					<div class="state" style="width: 75%;float: left;text-align: center;">08：30 ~ 16：30</div>
+
+				</li>
+				<li class="mui-table-view-cell">
+
+					<div class="date_id" style="width: 25%;float: left;text-align: center;">王大海</div>
+					<div class="state" style="width: 75%;float: left;text-align: center;">08：30 ~ 16：30</div>
+
+				</li>
+				-->
+			</ul>
+		</div>
+		<div id="page_loading" class="page_loader">
+			<img src="../../asset/images/loading.gif"> 加载中...
+		</div>
+		<div id="page_ended" class="page_loader">
+			列表已到最后
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var zhou = app.getUrlParam('zhou');
+		var first = app.getUrlParam('first');
+		var last = app.getUrlParam('last');
+		var id = app.getUrlParam('id');
+		console.log(zhou)
+		console.log(first)
+		console.log(last)
+		$("#title").html("第" + zhou + "周排班表")
+		mui.ready(function() {
+			mui.init();
+			init_html()
+			$('#page_loading').show();
+			$('#page_ended').hide();
+			mui('body').on('tap', '#patrol_schedule_my', function() {
+				app.open('patrol_schedule_my.html?zhou=' + zhou + '&first=' + first + '&last=' + last + '');
+				return false;
+			});
+		})
+		console.log(JSON.stringify({
+				company_id: id,
+				startDate: first + " 00:00:00",
+				endDate: last + " 23:59:59"
+			}))
+		function init_html() {
+			app.ajax(app.url("query/schedule_table_company_detail"), {
+				company_id: id,
+				startDate: first + " 00:00:00",
+				endDate: last + " 23:59:59"
+			}, function(ret) {
+				$('#page_loading').hide();
+				$('#page_ended').show();
+				if(ret.code == 0) {
+					console.log(JSON.stringify(ret))
+					var data = ret.data
+					var html = ""
+
+					for(var i = 0; i < data.length; i++) {
+
+						html += '<div class="list_warp">'
+						html += '<h4 class="h4_header">'
+						html += '<span id="current_month">' + data[i]["scheduleDate"].split(" ")[0] + '  ' + getMyDay(new Date(data[i]["scheduleDate"].split(" ")[0])) + '</span>'
+
+					 
+
+						html += '</h4>'
+
+						for(var j = 0; j < data[i]["schedule"].length; j++) {
+							html += '<ul  class="mui-table-view">'
+							html += '	<li class="mui-table-view-cell">'
+							html += '		<h4>' + data[i]["schedule"][j]["conservancyName"] + '（' + (data[i]["schedule"][j]["inspectorCount"] ? data[i]["schedule"][j]["inspectorCount"] : 0) + '人）</h4>'
+							html += '	</li>'
+							html += '	<li class="mui-table-view-cell">'
+							html += '		<a style="background: #000;color: #fff;">'
+							html += '			<div style="width: 25%;float: left;text-align: center;">巡检人员</div>'
+							html += '			<div style="width: 75%;float: left;text-align: center;">工作时间</div>'
+							html += '		</a>'
+							html += '	</li>'
+
+							for(var k = 0; k < data[i]["schedule"][j]["floodSchedule"].length; k++) {
+								var item = data[i]["schedule"][j]["floodSchedule"][k]
+								html += '	<li class="mui-table-view-cell">'
+								html += '		<div class="date_id" style="width: 25%;float: left;text-align: center;">' + item["userName"] + '</div>'
+								html += '		<div class="state" style="width: 75%;float: left;text-align: center;">' + item["beginTime"].split(" ")[1] + ' ~ ' + item["endTime"].split(" ")[1] + '</div>'
+								html += '	</li>'
+							}
+
+							html += '</ul>'
+						}
+						html += '</div>'
+					}
+					$("#list").html(html)
+					$(".list_warp").hide()
+					$(".list_warp").eq(0).show()
+					current_obj = $(".list_warp").eq(0)
+				} else {
+					mui.toast(ret.error)
+				}
+			})
+
+		}
+		var current_obj;
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+
+		function getMyDay(date) {
+			var week;
+			if(date.getDay() == 0) week = "周日"
+			if(date.getDay() == 1) week = "周一"
+			if(date.getDay() == 2) week = "周二"
+			if(date.getDay() == 3) week = "周三"
+			if(date.getDay() == 4) week = "周四"
+			if(date.getDay() == 5) week = "周五"
+			if(date.getDay() == 6) week = "周六"
+			return week;
+		}
+
+		$("#prep").click(function() {
+			console.log("prep")
+			$(".list_warp").hide()
+			if(current_obj.prev().length > 0) {
+				current_obj = current_obj.prev()
+
+			} else {
+				current_obj = $(".list_warp").eq($(".list_warp").length - 1)
+			}
+			current_obj.show()
+		})
+
+		$("#next").click(function() {
+			console.log("next")
+			$(".list_warp").hide()
+			if(current_obj.next().length > 0) {
+				current_obj = current_obj.next()
+			} else {
+				current_obj = $(".list_warp").eq(0)
+			}
+			current_obj.show()
+		})
+	</script>
+
+</html>

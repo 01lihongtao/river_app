@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+ 
+      <link href="css/mui.min.css" rel="stylesheet" />
+      <link href="css/iconfont.css" rel="stylesheet" />
+      <link href="./css/mui.picker.min.css" rel="stylesheet" />
+      <link href="./css/mui.poppicker.css" rel="stylesheet" />
+      <link href="css/style.css" rel="stylesheet" />
+        <style>
+            html,
+            body {
+                background-color: #efeff4;
+            }
+            
+            .operation_item {
+                margin-top: 5px;
+                margin-bottom: 10px;
+                clear: both;
+            }
+            
+            .action_left {
+                text-align: center;
+                width:40%;
+                position: relative;
+                float: left;
+                padding-left:5px;
+                padding-right:5px;
+            }
+            
+            .action_right {
+                font-size:14px;
+                display: inline-block;
+                width:60%;
+                padding-left:15px;
+                color: gray;
+            }
+            .page_loader {
+                text-align: center;
+                color: gray;
+                border-top: 1px solid #ccc;
+                padding-top: 5px;
+            }
+        </style>
+    </head>
+ 
+    <body onload="app.route()">
+        <header class="mui-bar mui-bar-nav">
+            <a  class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <h1 class="mui-title">公告查看</h1>
+        </header>
+        
+        <div class="mui-content">
+            <div class="mui-input-row mui-search" style="margin: 0 15px;">
+                <input type="search" id="query_search" class="mui-input-clear" placeholder="输入公告标题" style=" margin-bottom: 0;">
+            </div>
+            <ul id="list-option" class="mui-table-view">
+                
+            </ul>
+        </div>
+        <div id="page_loading" class="page_loader">
+            <img src="../asset/images/loading.gif"> 加载中...
+        </div>
+        <div id="page_ended" class="page_loader">
+            列表已到最后
+        </div>
+    </body>
+ <script src="js/jquery-3.3.1.min.js"></script>
+ <script src="js/mui.min.js"></script>
+ <script src="./js/mui.picker.min.js"></script>
+ <script src="./js/mui.poppicker.js"></script>
+ <script src="js/app.js"></script>
+    <script>
+        mui.init();
+        
+        mui.ready(function(){
+            $('#page_loading').show();
+            $('#page_ended').hide();
+        })
+        document.getElementById("query_search").addEventListener('input', function() {
+            var this_value = this.value
+            console.log('Input的值'+JSON.stringify(this_value))
+            polder_areas(this_value);
+            
+        });
+        
+        // 数据请求
+        function polder_areas(name){
+            var param={
+                title:name?name:''
+            }
+           app.ajax2(app.url('/selectAnnouncement'), param, function(ret) {
+                $('#page_loading').hide();
+                $('#page_ended').show();
+                if(ret.code==200){
+                    console.log('参考222'+JSON.stringify(ret.data))
+                    var data=ret.data;
+                    var html='';
+                    if(data){
+                        for(var i=0;i<data.length;i++){
+							var itemList=data[i];
+                           html += '<li item_id="' + itemList.id+ '" class="mui-table-view-cell">' +'<a class="has_nav mui-navigate-right link_open"  href="announcement_detail.html?strTitle=' +itemList.title +'&&strContent=' + itemList.content+ '&&strAlarmType=' + itemList.subEventTypeStr+ '&&strPublisher=' + itemList.publisher+'&&strgmtModified=' + itemList.gmtModified+'">' +
+                           	'<div class="mui-media-body">' +
+                           	'<p class="mui-ellipsis">' + '公告标题:' +
+                           	'<span class="mui-pull-right" style="margin-right:20px">' + itemList.title + '</span>' +
+                           	'</p>' +
+                           	'<p class="mui-ellipsis">' + '公告时间:' + '<span class="mui-pull-right" style="margin-right:20px">' +
+                           	itemList.gmtModified + '</p>' +
+                           	'<p class="mui-ellipsis">' + '发布人员:' + '<span class="mui-pull-right" style="margin-right:20px">' +
+                           	itemList.publisher + '</p>' +
+							'<p class="mui-ellipsis">' + '公告内容' + '<span class="mui-pull-right" style="margin-right:20px">' + '</p>' +
+							'<p class="mui-ellipsis">'  + '<span class="mui-pull-left" >' +
+							itemList.content + '</p>' +
+							
+							
+                           	'</div>' +
+                           	'</a>' +
+                           	'</li>';
+                        }
+                        $("#list-option").html(html)
+                    }
+                    // console.log('圩区数据'+JSON.stringify(ret.data))
+                }
+            })
+            
+            
+        }
+        mui.plusReady(function() {
+            polder_areas()
+        });
+    </script>
+ 
+</html>

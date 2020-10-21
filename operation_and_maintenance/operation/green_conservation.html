@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#list-option .mui-table-view-cell button {
+				position: relative;
+				right: inherit;
+				-webkit-transform: inherit;
+				transform: inherit;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			
+			.img-selected {
+				width: 80px;
+				height: 80px;
+				margin-top: 10px;
+			}
+			
+			.mui-content>.mui-table-view:first-child {
+				margin-top: 0;
+			}
+			
+			.mui-table-view-cell.mui-active {
+				background: #FFFFFF;
+			}
+			
+			.problem_btn {
+				width: 100px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			
+			.problem_no {
+				font-size: 16px;
+			}
+			
+			@media screen and (max-width: 321px) {
+				.problem_btn {
+					width: 80px;
+					overflow: hidden;
+					font-size: 14px;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					padding: 6px 2px !important;
+				}
+				.problem_no {
+					font-size: 14px;
+				}
+				#add_conservation_type{
+					background: #06f;
+					color: #fff;
+					border: #0;
+					margin: auto;
+					width: 80%;
+					display: block;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a class="mui-btn mui-btn-link mui-pull-right btn_cancel">取消</a>
+			<a class="mui-btn mui-btn-link mui-pull-right btn_submit" onclick="saveData()">上传</a>
+			<a class="mui-btn mui-btn-link mui-pull-right" id="save_btn">保存</a>
+			<h1 class="mui-title">绿化养护</h1>
+		</header>
+		<div class="mui-content">
+			<ul id="list-option" class="mui-table-view">
+				<li class="mui-table-view-cell">
+					设施名称
+					<!--<span style="color:red">*</span>-->
+					<span id="selectName" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				</li>
+				<li class="mui-table-view-cell">
+					养护年月
+					<!--<span style="color:red">*</span>-->
+					<span id="selectDate" data-options='{"type":"date"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				</li>
+				<li class="mui-table-view-cell">
+					养护类别
+					 
+					<span id="selectDevice" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+				
+				</li>
+				 
+				<li class="mui-table-view-cell">
+					计划数量
+					<span class="mui-pull-right">&nbsp;㎡</span>
+					<input id="selectDevice" style="max-width: 40%;" class="mui-pull-right mui-ellipsis"></input>
+				</li>
+				<li class="mui-table-view-cell">
+					完成数量
+					<span class="mui-pull-right">&nbsp;㎡</span>
+					<input id="selectDevice" style="max-width: 40%;" class="mui-pull-right mui-ellipsis"></input>
+				</li>
+				
+
+				<li class="mui-table-view-cell">备注<br><br>
+
+					<textarea id="textarea" rows="3" placeholder="请输入描述信息"></textarea>
+
+				</li>
+				
+				
+				<li class="mui-table-view-cell" id="inspection_pic">
+					照片（养护前）
+				 
+						<button onclick="add_img()" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-right">
+                    <i class="iconfont icon-add"></i>
+                </button>
+					 
+					<br>
+					<br>
+				 
+					<div id="img_list">
+						 
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                
+					</div>
+				</li>
+				<li class="mui-table-view-cell">状况描述（养护前）<br><br>
+
+					<textarea id="textarea" rows="1" placeholder="请输入描述信息"></textarea>
+
+				</li>
+				
+				<li class="mui-table-view-cell" id="inspection_pic">
+					照片（养护中）
+				 
+						<button onclick="add_img()" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-right">
+                    <i class="iconfont icon-add"></i>
+                </button>
+					 
+					<br>
+					<br>
+				 
+					<div id="img_list">
+						 
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                
+					</div>
+				</li>
+				<li class="mui-table-view-cell">状况描述（养护中）<br><br>
+
+					<textarea id="textarea" rows="1" placeholder="请输入描述信息"></textarea>
+
+				</li>
+				
+				<li class="mui-table-view-cell" id="inspection_pic">
+					照片（养护后）
+				 
+						<button onclick="add_img()" class="mui-btn mui-btn-primary mui-btn-outlined mui-pull-right">
+                    <i class="iconfont icon-add"></i>
+                </button>
+					 
+					<br>
+					<br>
+				 
+					<div id="img_list">
+						 
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                
+					</div>
+				</li>
+				<li class="mui-table-view-cell">状况描述（养护后）<br><br>
+
+					<textarea id="textarea" rows="1" placeholder="请输入描述信息"></textarea>
+
+				</li>
+				 <br>
+				<button id="add_conservation_type" >新增养护类别</button>
+			 
+				<br>
+			</ul>
+
+		</div>
+		<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a onclick="getImage()">拍照</a>
+				</li>
+				<!--<li class="mui-table-view-cell">
+					<a onclick="galleryImgsMaximum()">选取现有的</a>
+				</li>-->
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#picture"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+
+		<div id="img_action_list" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a onclick="del_img()">删除</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#img_action_list"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var uuid = app.getUrlParam('uuid');
+		var require_detail = ""
+		var level1_id = "";
+		var level2_id = "";
+		var level3_id = "";
+		var level1_name = "";
+		var level2_name = "";
+		var level3_name = "";
+		var gb_img = '';
+		var init_level2_data_arr = [];
+		var init_level2_data_check_item_item_obj = {};
+		var save_time = ""
+	 
+
+		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		var cp_id = user_data.company_id
+
+		mui.init({
+			gestureConfig: {
+				longtap: true
+			}
+		});
+		var current_problem;
+		mui.ready(function() {
+
+//			selectDate.addEventListener('tap', function() {
+//				app.pickDate(this, true);
+//			}, false);
+			//普通示例
+			var namePicker = new mui.PopPicker();
+
+			var facility_name_data = [];
+
+			app.ajax(app.url('query/facility_list'), {
+				uid:app.getUserId(),
+				// company_id: cp_id
+			}, function(ret) {
+
+				console.log('query/facility_list ->ret' + JSON.stringify(ret))
+				if(ret.code == 0) {
+					var data = ret.data.items;
+					var check_item_obj = {}
+					//					console.log(JSON.stringify(data))
+					for(var i = 0; i < data.length; i++) {
+						facility_name_data.push({
+							value: data[i]["id"],
+							text: data[i]["name"]
+						})
+
+						check_item_obj[data[i]["id"]] = data[i]["check_items"]
+					}
+
+					namePicker.setData(facility_name_data);
+					selectName.addEventListener('tap', function(event) {
+						namePicker.show(function(items) {
+							if(items[0]["text"])
+							selectName.innerText = items[0]["text"];
+							else
+							selectName.innerText = ""
+							
+							if(items[0]["value"])
+							$('#selectName').attr('item_id', items[0]["value"]);
+							
+							level1_id = items[0]["value"]?items[0]["value"]:""
+							level1_name = items[0]["text"]?items[0]["text"]:""
+							
+							level2_id = ""
+							selectDevice.innerText = "请选择..."
+							
+							level3_id = ""
+							$("#err_list").html("")
+							$("#pb_upload").html("")
+							
+							
+
+							//							console.log(check_item_obj[items[0]["value"]])
+							var check_item = check_item_obj[items[0]["value"]]
+							var arr = []
+							var check_item_item_obj = {}
+							if(check_item){
+								
+							
+							for(var i = 0; i < check_item.length; i++) {
+								arr.push({
+									value: check_item[i]["id"],
+									text: check_item[i]["name"]
+								})
+								check_item_item_obj[check_item[i]["id"]] = check_item[i]["children"]
+							}
+							}
+							init_level2_data_arr = arr;
+							init_level2_data_check_item_item_obj = check_item_item_obj;
+							console.log(JSON.stringify(arr))
+							console.log(JSON.stringify(check_item_item_obj))
+							init_level2_data(arr, check_item_item_obj);
+							
+						});
+					}, false);
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+
+			var err_checkeds = document.getElementsByClassName('err_checked');
+			mui(".mui-table-view-cell").on('change', ".err_checked", function(event) {
+				err_checked_change()
+			})
+
+			mui('#pb_upload').on('tap', '.problem_reporting', function() {
+				$(".problem_no").each(function() {
+					if($(this).html() == "") {
+						$(this).remove()
+					}
+				})
+				current_problem = $('<a  class="mui-pull-right link_open as_button problem_no" style="clear:both"></a>')
+				$(this).after(current_problem)
+				current_problem.attr("item_id", $(this).attr("item_id"))
+				current_problem.attr("item_name", $(this).attr("item_name"))
+				current_problem.hide()
+				level3_id = $(this).attr("item_id")
+				level3_name = $(this).attr("item_name")
+				console.log("problem_reporting.html?level1_id=" + level1_id + "&level1_name=" + level1_name + "&level2_id=" + level2_id + "&level2_name=" + level2_name + "&level3_id=" + level3_id + "&level3_name=" + level3_name + "")
+				app.open("problem_reporting.html?level1_id=" + level1_id + "&level1_name=" + level1_name + "&level2_id=" + level2_id + "&level2_name=" + level2_name + "&level3_id=" + level3_id + "&level3_name=" + level3_name + "");
+			})
+
+			$("#save_btn").click(function() {
+
+				var data_obj = check_param()
+				if(!data_obj) {
+					return false
+				}
+				console.log("data_obj:" + data_obj)
+
+				var arr;
+
+//				app.setSetting("inspection_info", JSON.stringify([]));
+
+				if(app.getSetting("inspection_info") == "") {
+					arr = [];
+				} else {
+					arr = JSON.parse(app.getSetting("inspection_info") || "[]")
+				}
+				var err_checked_arr = []
+				$(".err_checked").each(function() {
+
+					if($(this).prop("checked") && $(this).attr("err_type") == 1) {
+
+						err_checked_arr.push($(this).attr("item_id"))
+					}
+
+				})
+				var var_uuid = uuid ? uuid : new Date().format("yyyyMMddhhmmssS")
+				for(var i = 0; i < arr.length; i++) {
+					if(arr[i]["list_info"]["uuid"] == var_uuid) {
+						arr.remove(arr[i])
+					}
+
+				}
+				var arr_imgs = new Array();
+				$(".img-selected").each(function(key, value) {
+					arr_imgs.push($(value).attr('src'))
+				})
+				console.log(arr_imgs)
+				arr.push({
+					list_info: {
+						id: level1_id,
+						name: level1_name,
+						uuid: var_uuid,
+						time: data_obj.time_save,
+						user_name: user_data.user_name
+					},
+					post_json: data_obj,
+					data: {
+						html: $(".mui-content").html(),
+						level1_id: level1_id,
+						level2_id: level2_id,
+						level3_id: level3_id,
+						level1_name: level1_name,
+						level2_name: level2_name,
+						level3_name: level3_name,
+						require_detail: require_detail,
+						init_level2_data_arr: init_level2_data_arr,
+						init_level2_data_check_item_item_obj: init_level2_data_check_item_item_obj,
+						err_checked_arr: err_checked_arr
+					},
+					arr_imgs: arr_imgs
+				})
+
+				console.log(JSON.stringify(arr))
+				//				return;
+				app.setSetting("inspection_info", JSON.stringify(arr));
+
+				var parentViewer = mui.currentWebview.opener();
+				mui.fire(parentViewer, 'wga_refresh');
+				mui.toast('巡检登记已保存，请至"信息流转/巡检信息流转"中查看，请手动提交服务器');
+				app.ajaxBack();
+			})
+			addEventLongTap();
+		})
+		function err_checked_change(){
+			
+				var fg_err_checked = false;
+
+				$(".err_checked").each(function() {
+
+					if($(this).prop("checked") && $(this).attr("err_type") == 1) {
+
+						fg_err_checked = true;
+					}
+
+				})
+
+				if(fg_err_checked) {
+					$(".problem_upload").show()
+					$("#err_span").show()
+					//					$("#inspection_pic").hide()
+					$(".err_checked").each(function() {
+
+						if($(this).prop("checked") && $(this).attr("err_type") == 1) {
+
+							$(".problem_warp_" + $(this).attr("item_id")).show()
+
+						}
+						if($(this).prop("checked") && $(this).attr("err_type") == 0) {
+
+							$(".problem_warp_" + $(this).attr("item_id")).hide()
+
+						}
+					})
+				} else {
+					//					$("#inspection_pic").show()
+					$(".problem_upload").hide()
+					$("#err_span").hide()
+				}
+			
+		}
+		var devicePicker;
+		function init_level2_data(arr, check_item_item_obj) {
+			devicePicker = new mui.PopPicker();
+			devicePicker.setData(arr);
+
+			selectDevice.addEventListener('tap', function(event) {
+				devicePicker.show(function(items) {
+					selectDevice.innerText = items[0]["text"]?items[0]["text"]:"请选择...";
+					$('#selectDevice').attr('item_id', items[0]["value"]?items[0]["value"]:"");
+					level2_id = items[0]["value"]?items[0]["value"]:""
+					level2_name = items[0]["text"]?items[0]["text"]:"请选择..."
+					var check_item_item = check_item_item_obj[items[0]["value"]]
+					var err_list_html = ""
+				 
+					if(check_item_item){
+						for(var i = 0; i < check_item_item.length; i++) {
+
+							err_list_html += '<h5>'
+							err_list_html += '<button style="color: #999;"  >' + check_item_item[i]["name"] + '</button>'
+							err_list_html += '<span class="mui-pull-right as_button" >'
+	
+							err_list_html += '	<input class="err_checked" name="radio' + i + '"   err_type="1"  item_id="' + check_item_item[i]["id"] + '"  err_name="' + check_item_item[i]["name"] + '"    type="radio">'
+	
+							err_list_html += '	<label>异常</label>'
+							err_list_html += '</span>'
+							err_list_html += '<span class="mui-pull-right  as_button">'
+	
+							err_list_html += '	<input name="radio' + i + '" class="err_checked"   err_type="0"  item_id="' + check_item_item[i]["id"] + '"   err_name="' + check_item_item[i]["name"] + '"  checked="checked" type="radio">'
+							err_list_html += '	<label>正常</label>'
+							err_list_html += '</span> '
+							err_list_html += '</h5>'
+							require_detail += check_item_item[i]["name"] + ":" + check_item_item[i]["detail"].replace('\n', '') + "\n"
+						}
+					}
+					
+					$("#err_list").html(err_list_html)
+					var pb_html = "问题上报<br><br>"
+					$(".err_checked").each(function() {
+						if($(this).prop("checked")) {
+
+							pb_html += init_problem_html($(this).attr("err_name"), $(this).attr("item_id"))
+
+						}
+					})
+					$("#pb_upload").html(pb_html)
+
+				});
+			}, false);
+		}
+
+		function init_problem_html(item_name, item_id) {
+			var pb_html = ""
+			pb_html += '<div class="pb_warp problem_warp_' + item_id + '" style="clear: both;display:none;">'
+			pb_html += '<button class="problem_btn" style="color: #999;">' + item_name + '</button>'
+			pb_html += '<a  class="as_button_add problem_reporting " item_id="' + item_id + '" item_name="' + item_name + '" ><i class="iconfont icon-add"></i></a>'
+
+			pb_html += '</div>'
+			return pb_html;
+		}
+
+		function show_require_detail() {
+			if(require_detail == "") {
+				mui.alert("请先选择检查点")
+			} else {
+				mui.alert(require_detail)
+			}
+		}
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+
+		window.addEventListener('problem_refresh', function(event) {
+			var data = app.getSetting('problem_upload_fire_data');
+			data = JSON.parse(data)
+			current_problem.html(data.rectificationSerial)
+			current_problem.show()
+			current_problem.attr("problem_id", data.rectificationId)
+			current_problem.attr("problem_no", data.rectificationSerial)
+
+			app.setSetting('problem_upload_fire_data', "")
+		});
+
+		function addEventLongTap() {
+
+			var arrItems = document.querySelectorAll('.img-selected');
+
+			[].forEach.call(arrItems, function(item) {
+				item.addEventListener('longtap', function() {
+					currentImgItem = this;
+					mui('#img_action_list').popover('toggle');
+				})
+			});
+		}
+
+		function add_img() {
+			if(document.querySelectorAll('.img-selected').length >= app.max_count_photos) {
+				mui.toast('取证照片已至最大数量');
+				return;
+			}
+
+			mui('#picture').popover('toggle');
+		}
+
+		function del_img() {
+			if(currentImgItem) {
+				currentImgItem.parentNode.removeChild(currentImgItem);
+				currentImgItem = null;
+			}
+
+			mui('#img_action_list').popover('toggle');
+		}
+
+		function getImage() {
+			var cmr = plus.camera.getCamera();
+			cmr.captureImage(function(path) {
+				//				console.log('get image ' + path);
+				//				addImg(path);
+
+				plus.gallery.save(path, function(event) {
+					plus.io.resolveLocalFileSystemURL(path, function(entry) {
+						addImg("file://" + entry.fullPath);
+					}, function(e) {
+						console.log('路径解析失败: ' + JSON.stringify(e));
+					});
+				}, function(e) {
+					console.log('保存失败: ' + JSON.stringify(e));
+				});
+			}, function(e) {
+				//			console.log(JSON.stringify(e));
+			}, {
+				filename: '_doc/gallery/',
+				index: 1
+			});
+
+			mui('#picture').popover('toggle');
+		}
+
+		function addImg(strSrc) {
+			console.log(strSrc);
+
+			plus.io.resolveLocalFileSystemURL(strSrc, function(entry) {
+				//			console.log(entry);
+				entry.getMetadata(function(metadata) {
+					if(metadata.size > 1024 * 1024) // 1M
+					{
+						// comparess image
+						var nPtPos = strSrc.lastIndexOf('.');
+						var strDst = '';
+						if(nPtPos > 0) {
+							strDst = strSrc.substr(0, nPtPos) + '_s50' + strSrc.substr(nPtPos);
+						} else {
+							strDst = strSrc + '_s50';
+						}
+						//					console.log('dist ' + strDst);
+
+						// compress image
+						var wUI = plus.nativeUI.showWaiting('压缩中...');
+						plus.zip.compressImage({
+								src: strSrc,
+								dst: strDst,
+								overwrite: true,
+								width: '100%',
+								height: '100%',
+								quality: 80
+							},
+							function(e) {
+								wUI.close();
+
+								// add image
+								//							console.log('compress size: ' + e.size);
+
+								//							console.log(e.target);
+								var newImg = document.createElement('img');
+								newImg.src = e.target;
+								newImg.classList.add("img-selected");
+
+								newImg.addEventListener('longtap', function() {
+									currentImgItem = this;
+									mui('#img_action_list').popover('toggle');
+								})
+
+								img_list.appendChild(newImg);
+							},
+							function(e) {
+								wUI.close();
+								mui.toast('压缩文件失败：' + e.message);
+							})
+					} else {
+						var newImg = document.createElement('img');
+						newImg.src = strSrc;
+						newImg.classList.add("img-selected");
+
+						newImg.addEventListener('longtap', function() {
+							currentImgItem = this;
+							mui('#img_action_list').popover('toggle');
+						})
+
+						img_list.appendChild(newImg);
+					}
+				}, function(err) {
+					mui.toast('打开文件错误');
+				})
+			});
+		}
+
+		function galleryImgsMaximum() {
+			var maxValue = app.max_count_photos - document.querySelectorAll('.img-selected').length;
+			if(maxValue < 0)
+				maxValue = 0;
+
+			if(maxValue == 0) {
+				alert('取证图片已选至最大数量');
+				mui('#picture').popover('toggle');
+				return;
+			}
+
+			// 从相册中选择图片
+			plus.gallery.pick(function(e) {
+				for(var i in e.files) {
+					addImg(e.files[i]);
+				}
+			}, function(e) {
+				//	outSet('取消选择图片');
+			}, {
+				filter: 'image',
+				multiple: true,
+				maximum: maxValue,
+				system: false,
+				onmaxed: function() {
+					plus.nativeUI.alert('最多只能选择' + maxValue + '张图片');
+				}
+			}); // 最多选择3张图片
+
+			mui('#picture').popover('toggle');
+		}
+
+		function check_param() {
+			if(!$("#selectName").attr('item_id')) {
+				mui.toast('设施名称不为空');
+				return false;
+			}
+			if(!$("#selectDevice").attr('item_id')) {
+				mui.toast('巡检点不为空');
+				return false;
+			}
+			if($(".img-selected").length == 0) {
+				mui.toast('巡检照片不为空');
+				return false;
+			}
+			var vv_fg = true;
+			$(".pb_warp:visible").each(function() {
+				var fg1 = false;
+				$(this).find(".problem_no").each(function() {
+					if($(this).html() != "") {
+						fg1 = true;
+					}
+				})
+				console.log(fg1)
+				if(!fg1) {
+					vv_fg = false;
+				}
+			})
+			if(!vv_fg) {
+				mui.toast('问题上报 编号不为空');
+				return false;
+			}
+			var result_arr = [];
+			var data_obj = {}
+			data_obj["check_id"] = 0;
+			data_obj["facility_id"] = level1_id;
+			data_obj["date"] = selectDate.innerHTML;
+			data_obj["time_save"] = new Date().format("yyyy-MM-dd hh:mm:ss");
+			//				data_obj["check_point"] = $("#selectDevice").attr('item_id');
+			data_obj["check_point"] = level2_name;
+
+			data_obj["memo"] = $("#textarea").val();
+			var var_arr = [];
+			//所有选中的
+			$(".err_checked").each(function() {
+				//					&& $(this).attr("err_type") == 0
+				if($(this).prop("checked")) {
+					var_arr.push({
+						name: $(this).attr("err_name"),
+						id: $(this).attr("item_id"),
+						result: $(this).attr("err_type")
+					})
+
+				}
+			})
+			for(var i = 0; i < var_arr.length; i++) {
+				var flag = true;
+				var var_id = var_arr[i]["id"];
+				$(".problem_no:visible").each(function() {
+					//剔除problem里面有的id
+					if(var_id == $(this).attr("item_id")) {
+						flag = false;
+					}
+				})
+				if(flag) {
+					result_arr.push(var_arr[i])
+				}
+			}
+			$(".problem_no:visible").each(function() {
+				result_arr.push({
+					name: $(this).attr("item_name"),
+					id: $(this).attr("item_id"),
+					problem_id: $(this).attr("problem_id"),
+					serialNumber: $(this).attr("problem_no"),
+					result: 1
+				})
+			})
+
+			data_obj["result"] = JSON.stringify(result_arr);
+			return data_obj;
+		}
+		var upload;
+		var globle_post_data;
+
+		function saveData() {
+			$("#loading").show();
+			globle_post_data = check_param()
+			if(!globle_post_data) {
+				return false
+			}
+			var arrImgs = new Array();
+			$(".img-selected").each(function(key, value) {
+				arrImgs.push($(value).attr('src'))
+			})
+			console.log(arrImgs)
+
+			upload = plus.nativeUI.showWaiting('上传中...');
+			if(fg) {
+				getImgToBase64(arrImgs)
+
+				fg = false;
+			}
+
+		}
+
+		var count = 0;
+		var file_data_arr = [];
+		var fg = true;
+
+		function uploadImg() {
+			console.log("uploadImg")
+			var xhr = new XMLHttpRequest();
+			xhr.timeout = 120000;
+			xhr.ontimeout = function(e) { 
+				mui.toast('请求超时，请再网络状态良好的地方重试');
+				upload.close()
+			};
+			var formData = new FormData();
+
+			for(var i = 0; i < file_data_arr.length; i++) {
+
+				formData.append('files', file_data_arr[i]);
+
+			}
+			for(var item in globle_post_data) {
+				formData.append(item, globle_post_data[item]);
+			}
+			console.log(formData)
+			console.log(JSON.stringify(formData))
+
+			xhr.onreadystatechange = function(e) {
+				if(xhr.readyState == 4) {
+					console.log(xhr.responseText)
+					file_data_arr = [];
+					count = 0;
+					fg = true;
+					if(xhr.status == 200) {
+						var ret = JSON.parse(xhr.responseText);
+						if(ret.code == 0) {
+							mui.toast('上传成功');
+							var parentViewer = mui.currentWebview.opener();
+							console.log(ret.data)
+
+							var arr = JSON.parse(app.getSetting("inspection_info") || "[]")
+							var var_uuid = uuid ? uuid : new Date().format("yyyyMMddhhmmssS")
+							for(var i = 0; i < arr.length; i++) {
+								if(arr[i]["list_info"]["uuid"] == var_uuid) {
+									arr.remove(arr[i])
+								}
+
+							}
+							app.setSetting("inspection_info", JSON.stringify(arr));
+
+							mui.fire(parentViewer, 'wga_refresh');
+							app.ajaxBack();
+							
+						} else {
+							mui.toast(ret.desc);
+						}
+
+					} else {
+
+						mui.toast('保存失败，请重新保存');
+
+					}
+					upload.close()
+					return;
+				}
+			}
+
+			xhr.open('POST', app.url('save/check_register'), true);
+			xhr.send(formData);
+		}
+
+		//将图片转换为Base64
+		function getImgToBase64(arr) {
+//			console.log("getImgToBase64")
+			var canvas = document.createElement('canvas'),
+				ctx = canvas.getContext('2d'),
+				img = new Image;
+			img.crossOrigin = 'Anonymous';
+
+			img.onload = function() {
+				var originWidth = img.width;
+		        var originHeight = img.height;
+		        // 最大尺寸限制
+		        var maxWidth = app.maxWidth(), maxHeight = app.maxWidth();
+		        // 目标尺寸
+		        var targetWidth = originWidth, targetHeight = originHeight;
+		        // 图片尺寸超过1000x1000的限制
+		        if (originWidth > maxWidth || originHeight > maxHeight) {
+		            if (originWidth / originHeight > maxWidth / maxHeight) {
+		                targetWidth = maxWidth;
+		                targetHeight = Math.round(maxWidth * (originHeight / originWidth));
+		            } else {
+		                targetHeight = maxHeight;
+		                targetWidth = Math.round(maxHeight * (originWidth / originHeight));
+		            }
+		        }
+				
+				// canvas对图片进行缩放
+		        canvas.width = targetWidth;
+		        canvas.height = targetHeight;
+		    
+		        // 清除画布
+		        ctx.clearRect(0, 0, targetWidth, targetHeight);
+		        // 图片压缩
+		        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+			
+				ctx.font = targetWidth / 20 + "px microsoft yahei";
+				ctx.fillStyle = "rgba(255,128,0,1)";
+				var txt = save_time ? save_time : new Date().format("yyyy-MM-dd hh:mm:ss")
+				var pos_x = targetWidth - ctx.measureText(txt).width
+				var pos_y = targetHeight - targetWidth / 20
+			 
+				ctx.fillText(txt, pos_x, pos_y);
+				console.log(targetWidth,targetHeight)
+				var dataURL = canvas.toDataURL('image/jpeg');
+
+				file_data_arr.push(dataURLtoFile(dataURL, 'img' + count + '.jpg'))
+				//						console.log("====")
+				count++;
+				getImgToBase64(arr)
+
+				canvas = null;
+			};
+			img.src = arr[count];
+			if(file_data_arr.length == arr.length) {
+				uploadImg()
+			}
+		}
+		//将base64转换为文件
+		function dataURLtoFile(dataurl, filename) {
+			var arr = dataurl.split(','),
+				mime = arr[0].match(/:(.*?);/)[1],
+
+				bstr = atob(arr[1]),
+				n = bstr.length,
+				u8arr = new Uint8Array(n);
+			//					console.log(mime)
+			while(n--) {
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+			return new File([u8arr], filename, {
+				type: mime
+			});
+		}
+	</script>
+
+</html>

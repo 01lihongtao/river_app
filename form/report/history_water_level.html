@@ -1,0 +1,299 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-bar {
+				height: 100px;
+				border-bottom: 1px solid #ddd;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 100px;
+			}
+			
+			.page_loader {
+				text-align: center;
+				color:gray; 
+				border-top:1px solid #ccc;
+				padding-top:5px;
+			}
+			.init-html-h3{
+				text-align:left;
+				font-size: 18px;
+				font-weight:100;
+				margin-left: 13px;
+				line-height: 40px;
+			}
+			.mui-control-content {
+				background-color: white;
+				/*min-height: 215px;*/
+			}
+			.mui-control-content .mui-loading {
+				margin-top: 50px;
+			}
+		 
+			.div_warp {
+				margin: 0 ;
+				font-size: 14px;
+				/*border-bottom: 1px solid #ccc;*/
+			}
+			.left_warp{
+				width: 50%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+				padding: 8px 0;
+			}
+			.middle_warp{
+				width: 25%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+				padding: 8px 0;
+			}
+			
+			.l_warp{
+				width: 50%;
+				float: left;
+				text-align: center;
+				padding: 8px 0;
+			}
+			.m_warp{
+				width: 25%;
+				float: left;
+				text-align: center;
+				padding: 8px 0;
+			}
+ 
+			.sluice_open {
+				color: dodgerblue !important;
+			}
+			
+			.sluice_close {
+				color: red !important;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+	  
+			<!-- 主页面容器 -->
+			<div class="mui-inner-wrap">
+				<!-- 主页面标题 -->
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<!--<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right">过滤</a>-->
+					<h1 class="mui-title" id="name">水利设施</h1>
+					<div class="mui-bar-tab">
+						<button class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
+						<div class="" style="text-align: right">
+							<span class=" mui-icon mui-icon-search" id="search"></span>
+							<span id='selectDateStart' style="color: grey">开始时间</span> -
+							<span id='selectDateEnd' style="color: grey">结束时间</span>
+						</div>
+					</div>
+				 
+				</header>
+				
+				<div class="mui-content">
+			<div id="slider" class="mui-slider">
+				 
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-4"></div>
+				<div class="mui-slider-group">
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<!--<div class="div_warp">
+							<div class="left_warp" style="width: 60%;">时间</div>
+							<div class="middle_warp" style="width: 40%;">水位(m)</div>
+							
+							<div class="clear"></div>
+						</div>
+						<div class="div_warp">
+							<div class="l_warp" style="width: 60%;">2018-07-31 00:00:00</div>
+							<div class="m_warp" style="width: 40%;">2.74</div>
+							<div class="clear"></div>
+						</div>
+						<div class="div_warp">
+							<div class="l_warp" style="width: 60%;">2018-07-31 00:00:00</div>
+							<div class="m_warp" style="width: 40%;">2.74</div>
+							<div class="clear"></div>
+						</div>
+						<div class="div_warp">
+							<div class="l_warp" style="width: 60%;">2018-07-31 00:00:00</div>
+							<div class="m_warp" style="width: 40%;">2.74</div>
+							<div class="clear"></div>
+						</div>-->
+						 
+					</div>
+					 
+					
+				</div>
+			</div>
+
+			 
+
+		</div>
+				 
+			</div>
+	 
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js "></script>
+	<script src="../../asset/js/mui.picker.min.js "></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript ">
+		var id = app.getUrlParam('id');
+		var name = app.getUrlParam('name');
+		$("#name").html(name)
+		console.log(id)
+		var selectDateStart = document.getElementById('selectDateStart');
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var btn_date_range = document.getElementById('btn_date_range');
+		var currentCityType = 2;
+		var currentCityTypeName = '市区管';
+
+		mui.init();
+		//禁止左右滑动
+		mui('.mui-slider').slider().stopped = true;
+		initDateRange();
+		$(function(){
+			
+			
+		})
+		mui.plusReady(function() {
+			init_html();
+		});
+		
+		// 时间范围
+		var arrDateRanges = [{
+				text: '本日',
+				value: '本日'
+			},
+			{
+				text: '本周',
+				value: '本周'
+			},
+			{
+				text: '本月',
+				value: '本月'
+			},
+			{
+				text: '本季度',
+				value: '本季度'
+			},
+			{
+				text: '本年',
+				value: '本年'
+			}
+		];
+
+		var pickerDateRanges = new mui.PopPicker();
+		pickerDateRanges.setData(arrDateRanges);
+		btn_date_range.addEventListener('tap', function() {
+			pickerDateRanges.show(function(items) {
+				btn_date_range.innerText = items[0].text;
+				initDateRange();
+				init_html();
+				//返回 false 可以阻止选择框的关闭
+				//return false;
+			});
+		})
+
+		//选择时间
+		var selectDateStart = document.getElementById('selectDateStart');
+		selectDateStart.addEventListener('tap', function() {　　
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateStart.innerText = items.value;
+				init_html();
+			})
+		})
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var startTime = selectDateStart.innerText + '  00:00:00';
+		var endTime = selectDateEnd.innerText + ' 23:59:59';
+		selectDateEnd.addEventListener('tap', function() {　　
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateEnd.innerText = items.value;
+				init_html();
+			})
+		})
+	 
+		//读取数据
+		function init_html() {
+			var startTime = selectDateStart.innerText + ' 00:00:00';
+			var endTime = selectDateEnd.innerText + ' 23:59:59';
+
+			var mapData = {
+				checkpoint_id: id,
+				start_time: startTime,
+				end_time: endTime
+			};
+			
+			console.log(JSON.stringify(mapData));
+			app.showProgressBar();
+			
+			console.log('参数'+JSON.stringify(mapData))
+
+			app.ajax(app.url("query/history/checkpoint_detail"),mapData,function(ret){
+				app.showProgressBar(false);
+				console.log(JSON.stringify(ret))
+				console.log('数据'+JSON.stringify(ret))
+				if(ret.code=="0"){
+					var html = ""
+					html +='<div class="div_warp">'
+					html +='	<div class="left_warp" style="width: 60%;">时间</div>'
+					html +='	<div class="middle_warp" style="width: 40%;">水位(m)</div>'
+					html +='	<div class="clear"></div>'
+					html +='</div>'
+					for (var i = 0; i < ret.data.length; i++) {
+						
+						html +='<div class="div_warp">'
+						html +='	<div class="l_warp" style="width: 60%;">'+ret.data[i]["gmtCreate"]+'</div>'
+						html +='	<div class="m_warp" style="width: 40%;">'+ret.data[i]["waterLevel"].toFixed(2)+'</div>'
+						html +='	<div class="clear"></div>'
+						html +='</div>'
+					}
+					$("#item1mobile").html(html)
+					
+				}else{
+					mui.toast(ret.msg)
+				}
+			})
+		 
+		}
+		 
+		function initDateRange() {
+			if(btn_date_range.innerText == '本日') {
+				selectDateStart.innerText = app.getDay();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本周') {
+				selectDateStart.innerText = app.getWeekBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本月') {
+				selectDateStart.innerText = app.getMonthBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本季度') {
+				selectDateStart.innerText = app.getSeasonBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本年') {
+				selectDateStart.innerText = app.getYearBegin();
+				selectDateEnd.innerText = app.getDay();
+			}
+		}
+	</script>
+</html>

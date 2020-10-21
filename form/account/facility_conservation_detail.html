@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		
+		<link href="../../asset/css/mui.min.css" rel="stylesheet">
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+ 
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #fff;
+			}
+			
+			#list {
+				/*margin-top: 55px;*/
+			}
+			
+			h4 {
+				font-size: 18px !important;
+			}
+			
+			.mui-table-view-cell {
+				font-size: 16px !important;
+			}
+			
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+			
+			.list {
+				font-size: 14px;
+			}
+			#offCanvasSideScroll {
+				background: white;
+			}
+			.h4_header {
+				margin-top: 55px;
+				background: #fff;
+				font-size: 24px;
+				padding: 10px;
+			}
+			
+			.right_warp img {
+				max-width: 100%;
+			}
+			
+			.div_warp {
+				margin: 0 15px;
+				font-size: 14px;
+				border-bottom: 1px solid #ccc;
+			}
+			
+			.list .div_warp:first-child {
+				padding: 10px 0;
+			}
+			
+			.left_warp {
+				width: 35%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+				padding: 11px 15px;
+			}
+			
+			.right_warp {
+				width: 65%;
+				float: left;
+				text-align: center;
+				padding: 11px 15px;
+			}
+			
+			.clear {
+				clear: both;
+				height: 1px;
+			}
+			
+			@media screen and (max-width: 321px) {
+				.left_warp {
+					width: 40%;
+				}
+				.right_warp {
+					width: 60%;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<!--侧滑菜单容器-->
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!--菜单部分-->
+			<aside id="offCanvasSide" class="mui-off-canvas-right">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<h6 style="padding:5px;">过滤</h6>
+						<ul id="list-option" class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<i class="iconfont icon-chuan"></i> 设施
+								<span id="select_facility" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<i class="iconfont icon-dituleiwanggequ"></i> 报警类型
+								<span id="select_alert_type" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell mui-hidden">
+								<i class="iconfont icon-heliu"></i> 问题设备
+								<span id="select_problem_facility" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 开始时间</span>
+								<span id='selectDate' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 结束时间</span>
+								<span id='selectDate2' data-options='{"type":"datetime"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+
+						</ul>
+						<div class="mui-content-padded" style="text-align: right;">
+							<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+							重置
+						</button>
+							<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+							确认
+						</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right selecting_hide">过滤</a>
+					<h1 class="mui-title">设施养护详细</h1>
+
+				</header>
+				
+				<div  class="mui-content">
+					<div id="offCanvasContentScroll"  class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<h4 class="h4_header">
+						<span id="current_month">2018年07月</span>
+						<button class="mui-pull-right name"  style="    margin-top: -8px;" >火星水闸</button>
+ 					</h4>
+							<div class="list">
+								<div class="div_warp">
+							 
+									<button class="mui-pull-left">2018-07-27</button>
+									<div class="clear"></div>
+								</div>
+								<div class="div_warp">
+									<div class="left_warp">编号</div>
+									<div class="right_warp">NO.HX20180727A</div>
+									<div class="clear"></div>
+								</div>
+								<div class="div_warp">
+									<div class="left_warp">养护内容</div>
+									<div class="right_warp">添加灭火器箱、启闭杆防尘套，清理杂物，修复石栏杆。</div>
+									<div class="clear"></div>
+								</div>
+								<div class="div_warp">
+									<div class="left_warp">养护人</div>
+									<div class="right_warp">陈元盛</div>
+									<div class="clear"></div>
+								</div>
+								<div class="div_warp">
+									<div class="left_warp">备注</div>
+									<div class="right_warp">日常清扫</div>
+									<div class="clear"></div>
+								</div>
+		 
+							</div>
+							 
+						</div>
+					</div>
+
+				</div>
+				<div class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		var facility_id = app.getUrlParam('facility_id');
+		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		
+		
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		
+		
+		$(function(){
+			init_css()
+		})
+		function init_css(){
+			$(".right_warp").each(function(){
+				var height = $(this).height()
+				$(this).prev(".left_warp").height(height)
+				$(this).prev(".left_warp").css("line-height",height+"px")
+			})
+		}
+		mui.ready(function() {
+
+		  
+
+			app.ajax(app.url('query/attendance/check_in_statistics_month'), {
+				user_id: user_data["id"],
+				year: new Date().format("yyyy"),
+				month: new Date().format("MM")
+			}, function(ret) {
+				console.log(JSON.stringify(ret))
+				if(ret.code == 0) {
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+		})
+ 
+	 
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+ 
+	</script>
+
+</html>

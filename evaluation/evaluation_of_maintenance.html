@@ -1,0 +1,384 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../asset/css/style.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-bar {
+				height: 150px;
+				border-bottom: 1px solid #ddd;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 150px;
+			}
+			
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+			
+			.init-html-h3 {
+				text-align: center;
+				font-size: 18px;
+				font-weight: 100;
+				margin-left: 13px;
+				line-height: 30px;
+			}
+			
+			.kq-row {
+				padding: 15px;
+			}
+			
+			.kq-6 {
+				width: 50%;
+				float: left;
+			}
+			
+			.kq-6:last-child {
+				text-align: right;
+			}
+			
+			.kq-6 p {
+				font-size: 16px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<!-- 侧滑导航根容器 -->
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!-- 菜单容器 -->
+			<aside class="mui-off-canvas-right" >
+				<div id="offCanvasSideScroll"  class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<form class="mui-input-group" action="">
+							<div class="mui-input-row">
+								<label>管辖</label>
+							</div>
+
+							<div class="mui-input-row mui-radio">
+								<label>市区</label>
+								<input name="cityType" type="radio" value=1 checked="checked">
+							</div>
+							<div class="mui-input-row mui-radio">
+								<label>村镇</label>
+								<input name="cityType" type="radio" value=0>
+							</div>
+							<div class="mui-content-padded" style="text-align: right;">
+								<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+									重置
+								</button>
+								<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+									确认
+								</button>
+							</div>
+
+						</form>
+					</div>
+				</div>
+			</aside>
+			<!-- 主页面容器 -->
+			<div class="mui-inner-wrap">
+				<!-- 主页面标题 -->
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right">过滤</a>
+					<h1 class="mui-title">运维评价</h1>
+					<div class="mui-bar-tab">
+						<a class="mui-tab-item mui-active" href="#">
+							养护单位
+						</a>
+						<a class="mui-tab-item" href="#">
+							监理单位
+						</a>
+						<a class="mui-tab-item " href="#">
+							巡查单位
+						</a>
+						
+						
+					</div>
+
+					<button class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
+					<div class="" style="text-align: right">
+						<span class=" mui-icon mui-icon-search" id="search"></span>
+						<span id='selectDateStart' style="color: grey">开始时间</span> -
+						<span id='selectDateEnd' style="color: grey">结束时间</span>
+					</div>
+
+				</header>
+				    <div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">  
+				      <div class="mui-scroll">  
+				        <div class="mui-content" id="list">
+ 
+						</div>
+				      </div>  
+				    </div> 
+				
+				<div id="page_ended" class="page_loader">
+					列表已到最后
+				</div>
+				<div class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../asset/js/mui.min.js "></script>
+	<script src="../asset/js/mui.picker.min.js "></script>
+	<script src="../asset/js/app.js"></script>
+	<script type="text/javascript ">
+		var selectDateStart = document.getElementById('selectDateStart');
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var btn_date_range = document.getElementById('btn_date_range');
+		var currentUnitType = 3;
+		var currentUnitTypeName = '养护单位';
+		var currentCityType = 1;
+		var currentCityTypeName = '市区';
+
+		mui.init();
+		initDateRange();
+		mui('#offCanvasSideScroll').scroll();  
+		mui('#offCanvasContentScroll').scroll();  
+		mui.plusReady(function() {
+			loadData();
+		});
+
+		// button filter
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+
+		function clickReset() {
+			$('#rdo_all').prop('checked', true);
+		}
+
+		function clickOk() {
+			offCanvasWrapper.offCanvas('close');
+			_f_city_type = $("input[name='cityType']:checked").val();
+			currentCityType = _f_city_type
+			loadData();
+		}
+		mui('.mui-bar-tab').on('tap', 'a', function(e) {
+			if(currentUnitTypeName == this.innerText)
+				return;
+
+			if(this.innerText == '巡查单位') {
+				currentUnitType = 1;
+			} else if(this.innerText == '监理单位') {
+				currentUnitType = 2;
+			} else if(this.innerText == '养护单位') {
+				currentUnitType = 3;
+			}
+
+			currentUnitTypeName = this.innerText;
+			loadData();
+		})
+
+		// 时间范围
+		var arrDateRanges = [{
+				text: '本日',
+				value: '本日'
+			},
+			{
+				text: '本周',
+				value: '本周'
+			},
+			{
+				text: '本月',
+				value: '本月'
+			},
+			{
+				text: '本季度',
+				value: '本季度'
+			},
+			{
+				text: '本年',
+				value: '本年'
+			}
+		];
+
+		var pickerDateRanges = new mui.PopPicker();
+		pickerDateRanges.setData(arrDateRanges);
+		btn_date_range.addEventListener('tap', function() {
+			pickerDateRanges.show(function(items) {
+				btn_date_range.innerText = items[0].text;
+				initDateRange();
+				loadData();
+				//返回 false 可以阻止选择框的关闭
+				//return false;
+			});
+		})
+
+		//选择时间
+		var selectDateStart = document.getElementById('selectDateStart');
+		selectDateStart.addEventListener('tap', function() {　　
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateStart.innerText = items.value;
+				loadData();
+			})
+		})
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var startTime = selectDateStart.innerText + '  00:00:00';
+		var endTime = selectDateEnd.innerText + ' 23:59:59';
+		selectDateEnd.addEventListener('tap', function() {　　
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateEnd.innerText = items.value;
+				loadData();
+			})
+		})
+		//跳转
+		mui('#list').on('tap', '.mui-table-view-cell', function() {
+			return ;
+			var regionId = this.getAttribute('regionId');
+			var url = "report_sta_detail_alarm.html?regionId=" + regionId;
+			if(selectDateStart.innerText != '开始时间' && selectDateEnd.innerText != '结束时间') {
+				var startTime = selectDateStart.innerText;
+				var endTime = selectDateEnd.innerText;
+				url += '&start=' + startTime + '&end=' + endTime;
+			}
+			app.open(url);
+		})
+		function DateDiff(sDate1, sDate2) { //sDate1和sDate2是2002-12-18格式  
+			var aDate, oDate1, oDate2, iDays
+			aDate = sDate1.split("- ")
+			oDate1 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]) //转换为12-18-2002格式  
+			aDate = sDate2.split("- ")
+			oDate2 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0])
+			iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24) //把相差的毫秒数转换为天数  
+			return iDays + 1;
+		}
+		//读取数据
+		function loadData() {
+//			console.log(currentCityType)
+			var startTime = selectDateStart.innerText + ' 00:00:00';
+			var endTime = selectDateEnd.innerText + ' 23:59:59';
+//			currentUnitType = 2
+			var mapData = {
+				unitType: currentUnitType,
+				startTime: startTime,
+				endTime: endTime,
+				areaType: currentCityType
+			};
+			var diff_day = DateDiff(selectDateStart.innerText, selectDateEnd.innerText);
+//			console.log(JSON.stringify(mapData));
+//			app.showProgressBar();
+//			app.ajax(app.url("api/statistics2/work/profile"), mapData, function(result) {
+//
+////				console.log(JSON.stringify(result))
+//
+//				app.showProgressBar(false);
+//
+//				if(result.code == 200) {
+//					var datas = result.data;
+//					var html = '';
+//					html = init_html(datas, currentUnitType,diff_day);
+//
+//					document.getElementById("list").innerHTML = html;
+//				} else {
+//					mui.toast("加载数据错误:" + result.error);
+//				}
+//			})
+		}
+
+		function init_html(datas, unitType,diff_day) {
+//			diff_day = 1
+			var html = '';
+			for(i = 0; i < datas.length; i++) {
+				var gui_time = 0;
+				var gui_length = 0;
+				if(unitType==1){
+					gui_time = parseFloat(datas[i]["averageInspectTime"])
+					gui_length = parseFloat(datas[i]["averageInspectLength"])
+				}else if(unitType==2){
+					gui_time = parseFloat(datas[i]["averageSuperviTime"])
+					gui_length = parseFloat(datas[i]["averageSuperviLength"])
+				}else{
+					gui_time = parseFloat(datas[i]["averageConservTime"])
+					gui_length = parseFloat(datas[i]["averageConserveLength"])
+				}
+
+				if(unitType == 1 || unitType == 2) {
+					html += '<h3 class="init-html-h3">' + datas[i]["companyName"] + '</h3>';
+				} else {}
+ 
+ 
+ 
+				html += '<div class="mui-row kq-row">';
+				html += '<div class="kq-6">';
+				if(unitType == 1 || unitType == 2) {
+					html += '<p>时长完成率：' + parseFloat(datas[i]["workTime"]*100/gui_time ).toFixed(2) + '%</p>';
+					html += '<p>里程完成率：' + parseFloat(datas[i]["workDistance"]*100/gui_length ).toFixed(2) + '%</p>';
+				} else {
+					html += '<h3>&nbsp;</h3>';
+					html += '<h3>' + datas[i]["regionName"] + '</h3>';
+
+				}
+
+				html += '</div>';
+				html += '<div class="kq-6" >';
+				if(unitType == 1 || unitType == 2) {
+					html += '<p>&nbsp;</p>';
+					html += '<p>覆盖率：' + parseFloat(datas[i]["coverAverage"]).toFixed(2) + '%</p>';
+				} else {
+					html += '<p>时长完成率：' + parseFloat(datas[i]["workTime"]*100/gui_time ).toFixed(2) + '%</p>';
+					html += '<p>里程完成率：' + parseFloat(datas[i]["workDistance"]*100/gui_length ).toFixed(2) + '%</p>';
+					html += '<p>覆盖率：' + parseFloat(datas[i]["coverAverage"]).toFixed(2) + '%</p>';
+
+				}
+
+				html += '</div>';
+				html += '</div>';
+				html += '<ul class="mui-table-view" >';
+				html += '<li class="mui-table-view-cell" regionId=00|04>';
+				html += '<a class="">规定时长<span class="align" style="color:grey">' + parseFloat(gui_time).toFixed(2) + '小时</span></a>';
+				html += '</li>';
+				html += '<li class="mui-table-view-cell" regionId=00|02>';
+				html += '<a class="">规定里程<span class="align" style="color:grey">' + parseFloat(gui_length).toFixed(2) + '公里</span></a>';
+				html += '</li>';
+				html += '<li class="mui-table-view-cell" regionId=00|03>';
+				html += '<a class="">完成时长<span class="align" style="color:grey">' + parseFloat(datas[i]["workTime"]).toFixed(2) + '小时</span></a>';
+				html += '</li>';
+				html += '<li class="mui-table-view-cell" regionId=00|03>';
+				html += '<a class="">完成里程<span class="align" style="color:grey">' + parseFloat(datas[i]["workDistance"]).toFixed(2) + '公里</span></a>';
+				html += '</li>';
+				html += '</ul>';
+			}
+			return html;
+		}
+
+		function initDateRange() {
+			if(btn_date_range.innerText == '本日') {
+				selectDateStart.innerText = app.getDay();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本周') {
+				selectDateStart.innerText = app.getWeekBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本月') {
+				selectDateStart.innerText = app.getMonthBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本季度') {
+				selectDateStart.innerText = app.getSeasonBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if(btn_date_range.innerText == '本年') {
+				selectDateStart.innerText = app.getYearBegin();
+				selectDateEnd.innerText = app.getDay();
+			}
+		}
+	</script>
+
+</html>

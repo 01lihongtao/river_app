@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../asset/css/mui.min.css">
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			#list_attendancer {
+				font-size: 16px;
+			}
+			
+			#map_warp {
+				width: 100%;
+				height: 30vh;
+				/*background: red;*/
+				margin-top: 10px;
+			}
+			
+			#click_btn {
+				width: 25vh;
+				height: 25vh;
+				margin: 10px auto;
+				background-color: #8ccdff;
+				border-radius: 50%;
+				-moz-border-radius: 50%;
+				-webkit-border-radius: 50%;
+			}
+			
+			.mui-table-view-cell.mui-active {
+				background: #FFFFFF;
+			}
+			
+			.mui-popup-text {
+				text-align: center;
+			}
+			
+			#tb_checked_facilities {
+				margin: 0 auto;
+				color: gray;
+			}
+			
+			#tb_checked_facilities th,#tb_checked_facilities td {
+				padding: 5px;
+			}
+			
+			#span_review_today {
+				color: #007aff;
+			}
+			
+			#review_today_attendance_div {
+				/* display: none; */
+			}
+			.mui-popup-text{
+				height:400px !important;
+			}
+			.mui-popup{
+				width:80% !important;
+			}
+			
+			@media screen and (max-width: 321px) {
+				#list_attendancer {
+					font-size: 14px;
+				}
+				#map_warp {
+					height: 25vh;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a id="attendance_month" class="mui-btn mui-btn-link mui-pull-right">本月统计</a>
+			<h1 class="mui-title">签到考勤</h1>
+		</header>
+		<div class="mui-content">
+
+			<ul id="list_attendancer" class="mui-table-view">
+
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-time"></i> 系统时间
+
+					<span id='sys_time' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+						
+					</span>
+				</li>
+
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-leibieguanli"></i> 当前位置
+
+					<span id="selectAddress" style="max-width: 100%;display: none;" class="mui-pull-right mui-ellipsis">
+						请选择...
+					</span>
+					<div id="map_warp">
+
+					</div>
+				</li>
+				<!-- <li class="mui-table-view-cell">
+					<i class="iconfont icon-leibieguanli"></i> 排班
+					<span id="limited_time" style="max-width: 100%;font-size: 13px;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li> -->
+				<li class="mui-table-view-cell">
+					<div id="click_btn">
+						<div id="u16_text" style="border-width: 0px;padding-top: 10vh;text-align: center;width: 100%;word-wrap: break-word;">
+							<p style="font-size:24px;line-height: 30px;"><span style="color:#FFFFFF;">签到</span></p>
+							<p style="font-size:12px;line-height: 20px;"><span style="color:#FFFF00;" id="checked_times"></span></p>
+							<p style="font-size:12px;line-height: 12px;"><span style="color:#FFFF00;" id="state"></span></p>
+						</div>
+					</div> 
+					<!-- <div id="attendance_state_div">
+						<p>
+							<span>上班签到状态：<span id="clockinState" style="color: red;"></span></span>
+							<span class="mui-pull-right">下班签到状态：<span id="clockoutState"  style="color: red;"></span></span>
+						</p>
+					</div> -->
+					<div id="review_today_attendance_div" style="text-align: center;">
+						<span id='span_review_today'>查看今日已签到设施</span>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=231dea36dd38358b3fc4da76957a353b&plugin=AMap.Geocoder"></script>
+	<script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+	<script src="../../asset/js/coordtransform.js"></script>
+	<script>
+		mui.init();
+		var selectAddress = document.getElementById('selectAddress');
+		var currentLon;
+		var currentLat;
+		var user_data = app.getUserInfo();
+		var isJL = app.isJl();
+		var data_obj;
+		var timer;
+		var limited_time;
+		var can_click_flag = false;
+		var lst_checked_facilities = [];
+		
+		mui.ready(function() {
+			document.getElementById("attendance_month").addEventListener('tap', function() {
+				app.open("./attendance_month.html")
+			})
+			document.getElementById("click_btn").addEventListener('tap', function() {
+				// if(can_click_flag)
+					app.open("./attendance_upload.html")
+			})
+
+			
+		})
+
+		function initCtrls() {
+			console.log(JSON.stringify({
+				id: user_data["id"]
+			}));
+			var wDlg = plus.nativeUI.showWaiting("加载中...");
+			app.ajax(app.url("query/attendance/attendance_detail"), {
+				id: user_data["id"]
+			}, function(ret) {
+				wDlg.close();
+				
+				console.log(JSON.stringify(ret))
+				if(ret.code==0){
+					
+					lst_checked_facilities = ret["data"]["checked_facility"];
+					if(  ret["data"]["limited_time"]) {
+						$("#limited_time").html(ret["data"]["limited_time"])
+//						var limited_time = ret["data"]["limited_time"].split(" ~ ")
+//					 
+//						if(limited_time.length == 2) {
+//							if(time_str < limited_time[0]) {
+//								$("#limited_time").html(limited_time[0] + " 前")
+//							} else {
+//								$("#limited_time").html(limited_time[1] + " 后")
+//							}
+//						}
+					}
+// 					if(isJL || true)
+// 					{
+// 						$("#checked_times").html("已签到" + lst_checked_facilities.length + "座设施")
+// 					}
+// 					else
+// 					{
+// 						$("#checked_times").html("已签到" + ret["data"]["checked_times"] + "次")
+// 						$("#state").html(ret["data"]["state"])
+// 					}
+
+// 					$("#clockinState").html(ret["data"]["clockinState"])
+// 					$("#clockoutState").html(ret["data"]["clockoutState"])
+					var time_str = ret["data"]["time"]
+					if(time_str) {
+						
+						
+						$("#sys_time").html(time_str)
+						data_obj = new Date(time_str.replace(/-/g, "/"));
+						clearInterval(timer)
+						timer = setInterval(function() {
+							//						console.log("setInterval")
+							data_obj = new Date(data_obj.getTime() + 1000)
+							$("#sys_time").html(data_obj.format("yyyy-MM-dd hh:mm:ss"))
+	//						if(limited_time.length == 2) {
+	//							if(data_obj.format("yyyy-MM-dd hh:mm:ss")<=limited_time[0]){
+	//								var hour = Math.floor(data_obj.getTime() - new Date(limited_time[0].replace(/-/g, "/")).getTime()/3600000);
+	//          						var min = Math.floor(data_obj.getTime() - new Date(limited_time[0].replace(/-/g, "/")).getTime()/60000) % 60;
+	//          						var str = ""
+	//          						if(hour) str += hour+"小时"
+	//          						if(min) str += min+"分钟"
+	//          						
+	//								$("#memo").html("尚未签到，距离限定时间还剩"+str)
+	//							}else if(data_obj.format("yyyy-MM-dd hh:mm:ss")>limited_time[0] && data_obj.format("yyyy-MM-dd hh:mm:ss")<=limited_time[1]){
+	//
+	//								var hour = Math.floor((new Date(limited_time[1].replace(/-/g, "/") - data_obj.getTime() ).getTime())/3600000);
+	//          						var min = Math.floor((new Date(limited_time[1].replace(/-/g, "/")).getTime() - data_obj.getTime()  )/60000) % 60;
+	//          						var str = ""
+	//          						if(hour) str += hour+"小时"
+	//          						if(min) str += min+"分钟"
+	//								$("#memo").html("尚余1次，距离限定时间至少再过"+str)
+	//							}else if(data_obj.format("yyyy-MM-dd hh:mm:ss")>limited_time[0]){
+	//								$("#memo").html("本日考勤结束，请注意下一工作日的限定时间")
+	//							}else{
+	//								$("#memo").html("本日考勤结束，请注意下一工作日的限定时间")
+	//							}
+	//						}
+							
+						}, 1000)
+// 						if(ret["data"]["can_click"]) {
+// 							can_click_flag = true
+// 							$("#click_btn").css("opacity", "1")
+// 						} else {
+// 							$("#click_btn").css("opacity", "0.7")
+// 						}
+					}
+				}else{
+					console.log(JSON.stringify(ret) + user_data["id"]);
+					mui.toast('获取考勤详情失败:'+ret.error);
+				}
+			})
+			
+// 			$('#attendance_state_div').hide();
+// 			$('#review_today_attendance_div').show();
+		}
+		
+		function translatePoint(position) {   
+			console.log(JSON.stringify(position))
+			currentLon = position.coords.longitude;   
+			currentLat = position.coords.latitude;  
+			if(position.coordsType == "wgs84") {
+				//			console.log('wgs84 ' + currentLon + " " + currentLat);
+				var wgs84togcj02 = coordtransform.wgs84togcj02(currentLon, currentLat);
+				
+				currentLon = wgs84togcj02[0];
+				currentLat = wgs84togcj02[1];
+				currentLon = parseFloat(currentLon).toFixed(6);
+				currentLat = parseFloat(currentLat).toFixed(6);
+				//			console.log('wgs84 ' + currentLon + " " + currentLat);
+			} 
+			init_map_info();
+		}
+
+		mui.plusReady(function() {
+			var _options = {
+				provider: "system",
+				geocode: false,
+				enableHighAccuracy: true
+			};
+
+			if(mui.os.ios) {
+				_options = {
+					provider: "amap",
+					geocode: false,
+					enableHighAccuracy: true
+				};
+			}
+			plus.geolocation.getCurrentPosition(translatePoint, function(e) {               
+				mui.toast("异常:" + e.message);      
+			},_options);
+			plus.screen.lockOrientation("portrait-primary");
+			initCtrls()
+		});
+		
+		var addressPicker = new mui.PopPicker();
+
+		window.addEventListener('wga_refresh', function(event) {
+			initCtrls();
+		});
+		
+		var g_myMaker = null;
+		var g_map = null;
+		function addMarker(_map, _lon, _lat) {
+			g_myMaker = new AMap.Marker({
+		        position: [_lon,_lat],
+		        offset: new AMap.Pixel(-13, -30),
+		        map:_map
+		   });
+		}
+
+		function init_map_info() {
+			var cpoint = [parseFloat(parseFloat(currentLon).toFixed(6)), parseFloat(parseFloat(currentLat).toFixed(6))]; //中心点坐标 
+			console.log(cpoint);
+			AMap.service(["AMap.PlaceSearch"], function() {
+				var map = new AMap.Map("map_warp", {
+					resizeEnable: true,
+					zoom: 15,
+					center: cpoint,
+					showIndoorMap: false
+				});
+				
+				g_map = map;
+				
+				addMarker(map, cpoint[0], cpoint[1]);
+
+			});
+		}
+		
+		$('#span_review_today').click(function(){
+			console.log('#span_review_today')
+			app.ajax(app.url("query/attendance/check_in_detail"), {user_id: user_data["id"]}, function(ret){
+				var strInitTxt = '';
+				if(ret.code == 0)
+				{
+					var strHtml = '<div class="mui-scroll-wrapper" style="top: 45px;"> <div  class="mui-scroll">    '
+					
+					strHtml += '<table id="tb_checked_facilities" border="1"><tbody><tr><th>时间</th><th>签到设施</th></tr>';
+					for(var i = 0; i < ret.data.length; ++i)
+					{
+						strHtml += '<tr><td>' + ret.data[i].date + '</td><td>' + ret.data[i].facilityName + '</td></tr>'
+					}
+					strHtml += '</tbody></table></div></div>'
+					mui.alert(strInitTxt, '今日签到设施', function() {},'div');
+					
+					$('.mui-popup-text').html(strHtml);
+					
+					mui(".mui-scroll-wrapper").scroll();
+				}
+				else
+				{
+					mui.toast('获取签到错误: ' + (ret.error || ret.desc));
+				}
+				
+			})
+		})
+	</script>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../asset/css/style.css" rel="stylesheet" />
+		<style>
+			.img_item {
+				max-height: 200px;
+				max-width: 200px;
+			}
+			
+			.img-selected {
+				width: 80px;
+				height: 80px;
+				margin-top: 10px;
+			}
+			
+			.big_pic img {
+				max-width: 100%;
+			}
+			
+			.clr_red {
+				color: red;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+
+			<a class="mui-btn mui-btn-link mui-pull-right   post_btn" id="commit">提交结果</a>
+			<a class="mui-btn mui-btn-link mui-pull-right   post_btn" id="start">开始维护</a>
+			<a class="mui-btn mui-btn-link mui-pull-right   post_btn" id="confirm">确认</a>
+			<h1 class="mui-title">设备维护</h1>
+		</header>
+		<div class="mui-content">
+
+			<ul id="list-option" class="mui-table-view">
+
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-bianhao"></i> 维护编号
+					<span id="eq_no" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-baojingshijian"></i> 报警时间
+					<span id="eq_time" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-app_icons--"></i> 报警设施
+					<span id="eq_fac" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-baojingshebei-"></i> 报警设备
+					<span id="eq_eq" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-leibieguanli"></i> 报警类型
+					<span id="eq_type" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-zhamenkaidu"></i> 维护单位
+					<span id="eq_com" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-zhuangtai"></i> 维护状态
+					<span id="eq_state" style="max-width: 100%;" class="mui-pull-right mui-ellipsis clr_red">
+					</span>
+				</li>
+				<li class="mui-table-view-cell mui-hidden">
+					<i class="iconfont icon-shuliang"></i> 进程状态
+					<span id="eq_process" style="max-width: 100%;" class="mui-pull-right mui-ellipsis clr_red">
+					</span>
+				</li>
+				<li class="mui-table-view-cell mui-hidden">
+					<i class="iconfont icon-shijian"></i> 期限倒计时
+					<span id="eq_limit" style="max-width: 100%;" class="mui-pull-right mui-ellipsis clr_red">
+					</span>
+				</li>
+
+				<li class="mui-table-view-cell mui-hidden">
+					<i class="iconfont icon-xinxi"></i> 设备故障原因
+					<p id="eq_text">
+					</p>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="big_pic">
+						<i class="iconfont icon-wechaticon23"></i> 故障处照片
+						<br>
+						<br>
+						<div id="img_list" style="clear: both;">
+							<!--
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                <img src="images/evid1.png" class="img-selected">
+                -->
+						</div>
+					</div>
+
+				</li>
+
+			</ul>
+		</div>
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/app.js"></script>
+
+	<script src="../asset/js/mui.zoom.js"></script>
+	<script src="../asset/js/mui.previewimage.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var id = app.getUrlParam('id');
+		console.log(id)
+		mui.init();
+		mui.ready(function() {
+			init_html()
+		})
+		$("#commit").click(function() {
+			app.open("equipment_maintenance_details_add.html?id=" + id)
+		})
+		$("#start").click(function() {
+			app.open("equipment_maintenance_details_add.html?type=1&id=" + id)
+		})
+		$("#confirm").click(function() {
+			mui.confirm('确认该问题已维护吗？', '维护', ['否', '是'], function(e) {
+				console.log(e.index)
+				if(e.index == 1) {
+					app.ajax(app.url('/save/real_alert_confirm'), {
+						"alert_id": id
+					}, function(ret) {
+						console.log(JSON.stringify(ret))
+						var parentViewer = mui.currentWebview.opener();
+						mui.fire(parentViewer, 'wga_refresh');
+						mui.toast(ret.msg)
+						app.ajaxBack()
+					})
+				} else {
+
+				}
+			})
+		})
+
+		function init_html() {
+			console.log("init_html")
+			app.ajax(app.url('query/info/real_alert_list_detail'), {
+				id: id
+			}, function(ret) {
+
+				if(ret.code == 0) {
+					console.log(JSON.stringify(ret))
+					var data = ret.data;
+					$("#eq_no").html("")
+					$("#eq_no").parent().hide()
+					$("#eq_time").html(new Date((new Date(data.created_at).getTime()-14*3600*1000)).format("yyyy-MM-dd hh:mm:ss"))
+					$("#eq_fac").html(data.facility_name)
+					$("#eq_eq").html(data.equipment_name)
+					$("#eq_type").html(data.type)
+					$("#eq_com").html(data.maintain_company)
+					$("#eq_state").html(data.maintain_state?data.maintain_state:"待维护")
+					$("#eq_process").html(data.process_state)
+					$("#eq_limit").html(data.deadline_countdown)
+					$("#eq_text").html(data.fault_text)
+					var html = ""
+					for(var i = 0; i < data.fault_photo_list.length; i++) {
+
+						html += '<img src="' + app.prefix(data.fault_photo_list[i]["imgUrl"]) + '"  data-preview-src="' + app.prefix(data.fault_photo_list[i]["imgUrl"]) + '" data-preview-group="1"   class="img-selected">'
+					}
+					$("#img_list").html(html)
+
+					if(!data.maintain_state) {
+						$(".post_btn").hide()
+						$("#start").show()
+					} else if(data.maintain_state == "维护中") {
+						$(".post_btn").hide()
+						$("#commit").show()
+					} else if(data.maintain_state == "已维护") {
+						$(".post_btn").hide()
+						$("#confirm").show()
+					} else {
+						$(".post_btn").hide()
+					}
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+
+		}
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+		window.addEventListener('wga_refresh', function(event) {
+			init_html();
+			var parentViewer = mui.currentWebview.opener();
+			mui.fire(parentViewer, 'wga_refresh');
+		});
+	</script>
+
+</html>

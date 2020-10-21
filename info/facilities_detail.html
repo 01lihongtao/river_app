@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../asset/css/style.css" rel="stylesheet" />
+		<style>
+			.img_item {
+				max-height: 200px;
+				max-width: 200px;
+			}
+			
+			.big_pic img {
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+
+			<a id="btn_rectification_to_rectification" class="mui-btn mui-btn-link mui-pull-right">关注</a>
+			<h1 class="mui-title">水利设施信息</h1>
+		</header>
+		<div class="mui-content">
+
+			<ul id="list-option" class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<h4 id="name"></h4>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-weizhibiaoji"></i> 街镇
+					<span id="street" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-hedaoshuiwenzhan"></i> 行政村
+					<span id="village" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-heliu"></i> 所在河流：
+					<span id="river" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-date1"></i> 建造（改造）年月
+					<span id="build_date" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-zha"></i> 单 / 套闸
+					<span id="single_suite" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-chicuncanshu"></i> 闸孔尺寸
+					<span id="gate_hole_size" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-zhamenkaidu"></i> 闸门起闭方式
+					<span id="gate_door_open_method" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-leibieguanli"></i> 类型
+					<span id="type" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-shuliang"></i> 水泵数量
+					<span id="water_pump_count" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-tuceng"></i> 水泵①型号 / 流量
+					<span id="water_pump" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-dituleiwanggequ"></i> 所属控制区
+					<span id="control_area" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">
+					</span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-xinxi"></i> 备注
+					<p id="memo">
+					</p>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="big_pic">
+						<img id="url_img_thumb" src="">
+					</div>
+
+				</li>
+
+			</ul>
+		</div>
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var id = app.getUrlParam('id');
+		console.log(id)
+		var user_data = JSON.parse(app.getSetting('user_data') || '[]')
+		mui.init();
+		mui.ready(function() {
+
+			app.ajax(app.url('query/facility_detail'), {
+				facility_id: id,
+				inspectionType:"8501"
+			}, function(ret) {
+				console.log(JSON.stringify(ret))
+				if(ret.code == 0) {
+					
+					var data = ret.data.items;
+
+					$("#name").html(data.name)
+					//					if(data.street)
+					$("#street").html(data.street)
+					//					else
+					//					$("#street").parent().hide()
+
+					//					if(data.village)
+					$("#village").html(data.village)
+					//					else
+					//					$("#village").parent().hide()
+
+					$("#water_pump").parent().hide()
+
+					$("#river").html(data.river)
+					$("#build_date").html(data.build_date)
+					$("#single_suite").html(data.single_suit)
+					$("#gate_hole_size").html(data.gate_hole_size)
+					$("#gate_door_open_method").html(data.gate_door_open_method)
+					$("#type").html(data.type)
+					$("#water_pump_count").html(data.water_pump_count)
+					$("#control_area").html(data.control_area)
+					$("#memo").html(data.memo)
+					$("#url_img_thumb").attr("src", (data["url_img_thumb"] ? (app.prefix(data["url_img_thumb"])) : "../asset/images/empty_big.png"))
+					app.ajax(app.url('query/info/my_concern'), {
+							user_id: user_data.id,
+						},
+						function(res) {
+							if(res.code == 0) {
+
+								for(var i = 0; i < res.data.length; i++) {
+									facility_id_arr.push(res.data[i]["facility_id"])
+								}
+								if(facility_id_arr.indexOf(id) == -1) {
+									$("#btn_rectification_to_rectification").html("关注")
+								} else {
+									$("#btn_rectification_to_rectification").html("取消关注")
+								}
+							} else {
+								mui.toast(ret.error);
+							}
+						}
+					)
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+
+		})
+		var facility_id_arr = [];
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+
+		$("#btn_rectification_to_rectification").click(function() {
+			if($("#btn_rectification_to_rectification").html()=="取消关注"){
+				facility_id_arr.remove(id)
+			}
+			if($("#btn_rectification_to_rectification").html()=="关注"){
+				facility_id_arr.push(id)
+			}
+			
+			var xhr = new XMLHttpRequest();
+			var formData = new FormData();
+			xhr.timeout = 120000;
+			var upload = plus.nativeUI.showWaiting('上传中...');
+
+			xhr.ontimeout = function(e) {
+				mui.toast('请求超时，请再网络状态良好的地方重试');
+				upload.close()
+			};
+
+			formData.append("user_id", user_data.id);
+			for(var i = 0; i < facility_id_arr.length; i++) {
+
+				formData.append("items", facility_id_arr[i]);
+			}
+
+			xhr.onreadystatechange = function(e) {
+
+				if(xhr.readyState == 4) {
+					console.log(xhr.responseText)
+
+					if(xhr.status == 200) {
+						var ret = JSON.parse(xhr.responseText);
+						if(ret.code == 0) {
+							
+							if(facility_id_arr.indexOf(id) == -1) {
+								$("#btn_rectification_to_rectification").html("关注")
+								mui.toast('取消关注成功');
+							} else {
+								$("#btn_rectification_to_rectification").html("取消关注")
+								mui.toast('关注成功');
+							}
+						} else {
+							if(ret.error)
+								mui.toast(ret.error);
+							else
+								mui.toast(ret.desc);
+						}
+
+					} else {
+
+						mui.toast('关注失败');
+
+					}
+					upload.close()
+					return;
+				}
+			}
+
+			xhr.open('POST', app.url('save/my_concern'), true);
+			xhr.send(formData);
+
+		})
+	</script>
+
+</html>

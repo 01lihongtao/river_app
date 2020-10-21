@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/iconfont.css" rel="stylesheet" />
+		<link href="css/mui.picker.min.css" rel="stylesheet" />
+		<link href="css/mui.poppicker.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<style>
+					
+					
+				
+					
+					
+					
+					.card_number {
+						color: white;
+						font-size: 35px;
+						margin: 0px 15px 15px 15px;
+					}
+					.detail_title {
+						display: inline-block;
+						color: black;
+						text-align: center;
+						width: 33%;
+					}
+		
+					
+					
+				
+					
+				
+					#list{
+					
+						padding:60px 10px;
+					}
+					
+					.card_title{
+						height:35px;
+						line-height:35px;
+						font-size: 18px;
+						border:1px solid #E8E8E8;
+					}
+					.change_red{
+						color:red;
+					}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!-- 菜单容器 -->
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<h1 class="mui-title">详情</h1>
+				</header>
+				<div id="offCanvasContentScroll" class=" mui-slider-group mui-scroll mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul id="list" class="mui-table-view"></ul>
+				
+
+					</div>
+				
+
+				</div>
+			
+			</div>
+		</div>
+	</body>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/mui.min.js"></script>
+	<script src="js/mui.picker.min.js"></script>
+	<script src="js/mui.poppicker.js"></script>
+	<script src="js/app.js"></script>
+	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=231dea36dd38358b3fc4da76957a353b"></script>
+	<script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+
+	<script type="text/javascript" charset="utf-8">
+		// 这是新做功能  
+	
+		mui('#offCanvasContentScroll').scroll();
+		//这是首先加载 
+		mui.ready(function() {
+			// $('#page_loading').show();
+			// $('#page_ended').hide();
+			
+		})
+		mui.plusReady(function () {
+		    mui.init();
+		    init_html() //获取列表
+		})
+		 
+		function init_html() {
+			if (!app.isLogin()){
+				return;
+			}
+			var self = plus.webview.currentWebview();
+			var args2 = self.args;
+			var args =JSON.parse(args2)
+			console.log('传过来的值'+args)
+		    var duration=args&&args.coverRangeStandard?(Math.round(args.coverRangeStandard*10000)/100).toFixed(1)+'%':'0%';
+			var duration2=args&&args.workDuration?(args.workDuration/60).toFixed(1):'0';
+			var mileage=(args&&args.workLengthStandard?(args.workLengthStandard/1000).toFixed(1) :'0')
+			var mileage2=args&&args.workLength?(Math.round(args.workLength*100)/100000).toFixed(1):'0'
+			var cover=args&&args.coverRangeStandard?(Math.round(args.coverRangeStandard*10000)/100).toFixed(1)+'%':'0%'
+			var cover2=args&&args.coverRange?(Math.round(args.coverRange*10000)/100).toFixed(1)+'%':'0%'
+			var problem=(args&&args.reportCountStandard?args.reportCountStandard:'0')
+			var problem2=args&&args.reportCount?args.reportCount:'0'
+			
+			console.log(args)
+				var string='<div class="card_title">' + 
+				
+					'<span class="detail_title">' + '考核项目' + '</span>' +
+					'<span class="detail_title">' + '考核指标' + '</span>' +
+					'<span class="detail_title">' + '实际完成' + '</span>' +
+				
+				
+				'</div>' +
+				
+					'<div class="card_title">' + 
+					'<span class="detail_title">' + '时长/h' + '</span>' +
+					'<span class="detail_title change_red">' + duration + '</span>' +
+					'<span class="detail_title">' + duration2 + '</span>' + 
+					'</div>' +
+					'<div class="card_title">' + 
+					'<span class="detail_title">' + '里程/km' + '</span>' +
+					'<span class="detail_title change_red">' + mileage + '</span>' +
+					'<span class="detail_title">' + mileage2 + '</span>' +
+					'</div>' +
+					'<div class="card_title">' + 
+					 '<span class="detail_title">' + '覆盖率' + '</span>' +
+					 '<span class="detail_title change_red">' + cover + '</span>' +
+					 '<span class="detail_title">' + cover2 + '</span>' +
+					  '</div>' +
+					  '<div class="card_title">' +
+					   '<span class="detail_title">' + '问题上报' + '</span>' +
+					   '<span class="detail_title change_red">' + problem + '</span>' +
+					   '<span class="detail_title">' + problem2 + '</span>' +
+					    '</div>' 
+					
+					$("#list").html(string)
+					
+				
+				
+			
+			
+		}
+		
+	</script>
+
+</html>

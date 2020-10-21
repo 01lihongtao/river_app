@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta http-equiv="Content-Type" content="multipart/form-data; charset=utf-8" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../asset/css/mui.css" rel="stylesheet" />
+		<link href="../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../asset/css/style.css" rel="stylesheet" />
+		<!-- <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=366357a89ebbb8019eb0d86d19b3bacb&callback=init&plugin=AMap.Geocoder"></script> -->
+		<!-- <script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script> -->
+		<style>
+			body {
+				/* background: #FFFFFF; */
+			}
+
+			#header_img {
+				text-align: center;
+			}
+
+			#header_img img {
+				width: 75%;
+			}
+
+			.iconfont {
+				color: #5799d1;
+			}
+
+			.mui-grid-view.mui-grid-9 {
+				border-top: 0;
+				border-left: 0;
+				background-color: transparent;
+				color:
+			}
+
+			.mui-grid-view.mui-grid-9 .mui-table-view-cell {
+				border-right: 0;
+				border-bottom: 0;
+				padding: 10px 15px;
+			}
+
+			.mui-content {
+				/* background-color: #fff; */
+			}
+
+			#content_warp {
+				position: fixed;
+				bottom: 60px;
+				width: 100%;
+				background-color: transparent;
+			}
+
+			@media screen and (max-width: 321px) {
+
+				.mui-grid-view.mui-grid-9 .mui-table-view-cell>a:not(.mui-btn) {
+					padding: 5px 0;
+				}
+			}
+
+			.main-content{
+				/* display: flex; */
+				/* align-items: center; */
+				background:url('../asset/images/BG.png')  no-repeat ;
+				background-size: 100% 100%;
+				height:100vh; 
+				width:100vw
+			}
+		</style>
+	</head>
+	<body onload="app.route()">
+
+		<div class="main-content">
+			<!-- <div id="header_img">
+				<img style="width:60%;margin-top:80px" src="../asset/images/logon_small_.png" />
+			
+			</div> -->
+			
+			<div id="content_warp" class="mui-content">
+				<ul class="mui-table-view mui-grid-view mui-grid-9">
+					<!-- 地图导航  index.html   此是多个页面展示 -->
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 ">
+						<a class="link_open" href="index.html">
+								<img style="width:70%;" src="../asset/images/map_mh.png" />
+							<!-- <span class="mui-icon iconfont icon-ditu" id="map_nav"></span>
+							<div class="mui-media-body">地图导航</div> -->
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 ">
+						<a class="link_open" href="op_evidence.html">
+								<img style="width:63%;" src="../asset/images/xuncha.png" />
+							<!-- <span class="mui-icon iconfont icon-wentishangbao">
+			
+							</span>
+							
+							<div class="mui-media-body">巡查上报</div> -->
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 ">
+						<a class="link_open" href="list_ship_person.html">
+							<img style="width:65%;" src="../asset/images/baojing.png" />
+							<!-- <span class="mui-icon iconfont icon-lingdang2">
+			
+								<span class="mui-badge" style="display: none;" id="alert_count"></span>
+							</span>
+							<div class="mui-media-body">动态报警</div> -->
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 ">
+						<!-- 信息流转 list_evidence.html -->
+						<a class="link_open" href="list_evidence.html">
+							<img style="width:70%;" src="../asset/images/xinxi.png" />
+							<!-- <span class="mui-icon iconfont icon-fangan"></span>
+							<div class="mui-media-body">信息流转</div> -->
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 ">
+						
+						<a class="link_open" href="announcement.html">
+								<img style="width:75%;" src="../asset/images/gonggao.png" />
+							<!-- <span class="mui-icon iconfont icon-baobiao"></span>
+							<div class="mui-media-body">公告查看</div> -->
+						</a>
+					</li>
+			
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 ">
+						<!-- 功能设置  user.html -->
+						<a class="link_open" href="user.html">
+							<img style="width:68%;" src="../asset/images/gongneng.png" />
+							<!-- <span class="mui-icon iconfont icon-chilun1"></span>
+							<div class="mui-media-body">功能设置</div> -->
+						</a>
+					</li>
+					
+					
+				</ul>
+			</div>
+		</div>
+	
+	</body>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/coordtransform.js"></script>
+	<script src="css/iconfont.js"></script>
+	<script src="js/mui.min.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/to_file.js"></script>
+	<script src="js/check_gps.min.js"></script>
+	<script src="js/uploadService.js"></script>
+
+	<script src="./new_demo/js/base/versionService.js"></script>
+	<script>
+		var startAndEndTime = {};
+		//上传相关用
+		var uploadInterval = null; //上传定时器
+		//地图对象
+		var switchTiandi1 = null;
+		var switchTiandi2 = null;
+		var switchTiandi3 = null;
+		var switchQp1 = null;
+		var switchQp2 = null;
+		var switchQp3 = null;
+		var dituCenter = null;
+		var geocoderResult = null; //跳转到取证页面传的值，每一次传值后要设置为null
+		var btnEvidence = null;
+		var liOutlet = null;
+		var liWater = null;
+		var liOutletLayers = null;
+		var liWaterLayers = null;
+		var btnLayers = null;
+		var btnReview = null;
+		var btnMine = null;
+		var btnLayer = null;
+		var new_data = null;
+		var btn_location = null;
+		var watchGpsId;
+		// var alert_count = document.getElementById('alert_count')
+		var  map_nav=document.getElementById("map_nav");
+		$(document).ready(function() {
+			mui.init();
+			mui.plusReady(function() {
+				//初始化监听器
+				initListener();
+				//初始化一些网络请求
+				initNetworkData(); 
+				selectDic()
+				watchGps()
+				// setTimeout_new()
+			
+				checkVersion()
+				app.setSetting('move_location', [])
+			})
+		});
+		// alert_count.addEventListener('tap', function() {
+		// 	app.open('list_ship_person.html')
+		// })
+		// map_nav.addEventListener('tap',function(){
+		// 	console.log('7777')
+		// 	app.open('index.html')
+		// })
+		function initListener() {
+			/**
+			 * 监听上一个页面fire返回【上传】
+			 * @param {Object} e
+			 */
+			window.addEventListener('reloadWebview', function(e) {
+				// console.log("---》刷新图层数据！")
+				// var currentWebview = plus.webview.currentWebview();
+				// currentWebview.reload(true); //设置页面重新加载项(默认为false，改为true)
+				mapService.initVectorLayer();
+			});
+		}
+		// 数据字典
+		function selectDic() {
+			app.ajax2(app.url('getDict'), null, function(ret) {
+				// console.log('数据字典'+JSON.stringify(ret))
+				// 设置字典
+				app.setSetting("dic_selectDic", JSON.stringify(ret.data));
+			})
+		}
+		function watchGps() {
+			if (watchGpsId)
+				return;
+			var _options = {
+				provider: "system",
+				geocode: false,
+				enableHighAccuracy: true
+			};
+
+			if (mui.os.ios) {
+				_options = {
+					provider: "amap",
+					geocode: false,
+					enableHighAccuracy: true
+				};
+			}
+			//	console.log(JSON.stringify(_options));
+			watchGpsId = plus.geolocation.watchPosition(function(p) {
+				//				console.log(JSON.stringify(p))
+				//				mui.toast(JSON.stringify(p))
+				if (p.coords == undefined || p.coords == null || p.coords.longitude == undefined || p.coords.longitude == null) {
+					//			console.log("watchGps 4");
+					return;
+				}
+				//		console.log("watchGps 3");
+				var currentLon = p.coords.longitude;
+				var currentLat = p.coords.latitude;
+				var device_uuid = app.getSetting('device_uuid');
+				if (p.coordsType == "wgs84") {
+					//			console.log('wgs84 ' + currentLon + " " + currentLat);
+					var wgs84togcj02 = coordtransform.wgs84togcj02(currentLon, currentLat);
+					currentLon = wgs84togcj02[0];
+					currentLat = wgs84togcj02[1];
+					//			console.log('wgs84 ' + currentLon + " " + currentLat);
+				}
+				var _speed = p.coords.speed;
+				if (_speed == null || _speed == undefined)
+					_speed = 0;
+				var _accuracy = p.coords.accuracy;
+				if (_accuracy == null || _accuracy == undefined)
+					_accuracy = 0;
+				// mui.toast('current_gps'+currentLon + ',' + currentLat + ',' + _speed);
+				// console.log('current_gps'+currentLon + ',' + currentLat + ',' + _speed)
+				app.setSetting('current_gps', currentLon + ',' + currentLat + ',' + _speed + ',' + _accuracy);
+			}, function(e) {
+				// mui.toast("监听位置变化信息失败：" + e.message);
+			}, _options);
+		}
+
+		function initNetworkData() {
+			//启动定时上传任务
+			initUploadService();
+		}
+
+		function initUploadService() {
+			app.setSetting("intervalFlag", true);
+			uploadService.upload(uploadInterval, this.getUploadCode);
+		}
+		// 版本升级
+		function checkVersion() {
+			versionService.checkVersion();
+		}
+		
+		/****
+		这是老版升级版本
+		
+		
+		
+		
+		function checkVersion() {
+			if (!app.isLogin())
+				return;
+		
+			if (plus && plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
+				if (isFirstNoNetwork) {
+					mui.toast('无网络');
+					isFirstNoNetwork = false;
+				}
+				return;
+			}
+		
+			if (!isFirstNoNetwork)
+				isFirstNoNetwork = true;
+		
+			// //获取manifest.json中的版本
+			// plus.runtime.getProperty(plus.runtime.appid, function(inf) {
+			// 	console.log("---------->"+inf.version)
+			// 	return inf.version;
+			// });
+		
+			app.ajax(app.url('api/appcfg/upgrade'), {}, function(ret) {
+				if (ret.code == 200) {
+					app.setSetting('version_online', JSON.stringify(ret.data));
+		
+					var strVerOnline = '';
+					var strVerAddr = '';
+					if (ret.data.posCollectInterval) {
+						posCollectInterval = parseInt(ret.data.posCollectInterval)
+					}
+					if (ret.data.posReportInterval) {
+						posReportInterval = parseInt(ret.data.posReportInterval)
+					}
+		
+					app.setSetting('posCollectInterval', posCollectInterval);
+					app.setSetting('posReportInterval', posReportInterval);
+		
+		
+					if (mui.os.ios) {
+						strVerOnline = ret.data.iosVersion;
+						strVerAddr = ret.data.iosAddress;
+					} else {
+						strVerOnline = ret.data.andriodVersion;
+						strVerAddr = ret.data.andriodUrl;
+					}
+					console.log("--->下载路径：" + strVerAddr);
+					if (app.compare(strVerOnline, app.getSetting("app_ver"))) {
+						if (bFirstCheckVersion) {
+							bFirstCheckVersion = false;
+		
+							var btnArray = ['取消', '是'];
+							mui.confirm('是否升级新版本' + strVerOnline + '？', '确认', btnArray, function(e) {
+								if (e.index == 1) {
+									plus.runtime.openURL(strVerAddr);
+								}
+							})
+						}
+					}
+				}
+			})
+		}
+		
+		*****/
+	</script>
+
+</html>

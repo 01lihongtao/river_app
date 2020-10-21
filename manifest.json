@@ -1,0 +1,768 @@
+{
+    "@platforms" : [ "android", "iPhone", "iPad" ],
+    "id" : "H59C94558", /*应用的标识，创建应用时自动生成，勿手动修改*/
+    "name" : "闵行巡查", /*应用名称，程序桌面图标名称*/
+    "version" : {
+        "name" : "1.19", /*应用版本名称*/
+        "code" : 119
+    },
+    "description" : "闵行巡查", /*应用描述信息*/
+    "icons" : {
+        "72" : "icon.png"
+    },
+    "launch_path" : "fuse.html", /*应用的入口页面，默认为根目录下的index.html；支持网络地址，必须以http://或https://开头*/
+    "developer" : {
+        "name" : "James Wu", /*开发者名称*/
+        "email" : "jamecc@126.com", /*开发者邮箱地址*/
+        "url" : ""
+    },
+    "permissions" : {
+        "Cache" : {
+            "description" : "管理应用缓存"
+        },
+        "Console" : {
+            "description" : "跟踪调试输出日志"
+        },
+        "Orientation" : {
+            "description" : "方向传感器"
+        },
+        "Events" : {
+            "description" : "应用扩展事件"
+        },
+        "Maps" : {
+            "description" : "管理地图插件"
+        },
+        "Push" : {},
+        "Geolocation" : {}
+    },
+    "plus" : {
+        "splashscreen" : {
+            "autoclose" : false, /*是否自动关闭程序启动界面，true表示应用加载应用入口页面后自动关闭；false则需调plus.navigator.closeSplashscreen()关闭*/
+            "waiting" : true
+        },
+        "popGesture" : "none", /*设置应用默认侧滑返回关闭Webview窗口，"none"为无侧滑返回功能，"hide"为侧滑隐藏Webview窗口。参考http://ask.dcloud.net.cn/article/102*/
+        "runmode" : "normal", /*应用的首次启动运行模式，可取liberate或normal，liberate模式在第一次启动时将解压应用资源（Android平台File API才可正常访问_www目录）*/
+        "hardwareAccelerated" : true,
+        "signature" : "Sk9JTiBVUyBtYWlsdG86aHIyMDEzQGRjbG91ZC5pbw==", /*可选，保留给应用签名，暂不使用*/
+        "distribute" : {
+            "plugins" : {
+                "push" : {
+                    "igexin" : {
+                        "appid" : "111111",
+                        "appkey" : "111111",
+                        "appsecret" : "111111"
+                    }
+                },
+                "maps" : {
+                    "amap" : {
+                        "appkey_ios" : "c1feaf83a9128550f98311b1b142333e",
+                        "appkey_android" : "c1feaf83a9128550f98311b1b142333e",
+                        "description" : ""
+                    }
+                },
+                "ad" : {},
+                "geolocation" : {}
+            },
+            "apple" : {
+                "appid" : "", /*iOS应用标识，苹果开发网站申请的appid，如io.dcloud.HelloH5*/
+                "mobileprovision" : "", /*iOS应用打包配置文件*/
+                "password" : "", /*iOS应用打包个人证书导入密码*/
+                "p12" : "", /*iOS应用打包个人证书，打包配置文件关联的个人证书*/
+                "devices" : "universal", /*iOS应用支持的设备类型，可取值iphone/ipad/universal*/
+                "UIBackgroundModes" : [ "location" ],
+                "hardwareAccelerated" : true,
+                "plistcmds" : [
+                    "Set :NSPhotoLibraryUsageDescription 用于读取照片作为取证照片",
+                    "Set :NSCameraUsageDescription 用于拍摄取证照片",
+                    "Set :NSPhotoLibraryAddUsageDescription 取证照片将添加至相册",
+                    "Set :NSLocationAlwaysUsageDescription 您的地理位置将被记录，用于跟踪工作轨迹",
+                    "Set :locationAlwaysUsage 您的地理位置将被记录，用于跟踪工作轨迹",
+                    "Set :locationAlwaysAndInUse 您的地理位置将被记录，用于跟踪工作轨迹",
+                    "Set :NSLocationWhenInUseUsageDescription 您的地理位置将被记录，用于跟踪工作轨迹",
+                    "Set :NSLocationAlwaysAndWhenInUseUsageDescription 您的地理位置将被记录，用于跟踪工作轨迹"
+                ],
+                "frameworks" : [],
+                "urlschemewhitelist" : [ "baidumap", "iosamap" ]
+            },
+            "google" : {
+                "packagename" : "", /*Android应用包名，如io.dcloud.HelloH5*/
+                "keystore" : "", /*Android应用打包使用的密钥库文件*/
+                "password" : "", /*Android应用打包使用密钥库中证书的密码*/
+                "aliasname" : "", /*Android应用打包使用密钥库中证书的别名*/
+                "hardwareAccelerated" : true,
+                "permissions" : [
+                    "<uses-permission android:name=\"android.permission.SET_ORIENTATION\"/>",
+                    "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+                    "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
+                    "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
+                    "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
+                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+                    "<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
+                    "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+                    "<uses-permission android:name=\"android.permission.SYSTEM_ALERT_WINDOW\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>",
+                    "<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>",
+                    "<uses-permission android:name=\"android.permission.CAMERA\"/>"
+                ]
+            },
+            "orientation" : [
+                "portrait-primary",
+                "portrait-secondary",
+                "landscape-primary",
+                "landscape-secondary"
+            ], /*应用支持的方向，portrait-primary：竖屏正方向；portrait-secondary：竖屏反方向；landscape-primary：横屏正方向；landscape-secondary：横屏反方向*/
+            "icons" : {
+                "ios" : {
+                    "prerendered" : true, /*应用图标是否已经高亮处理，在iOS6及以下设备上有效*/
+
+                    /*应用图标，分辨率：512x512，用于自动生成各种尺寸程序图标*/
+                    "iphone" : {
+                        "normal" : "", /*iPhone3/3GS程序图标，分辨率：57x57*/
+                        "retina" : "", /*iPhone4程序图标，分辨率：114x114*/
+
+                        /*iPhone4S/5/6程序图标，分辨率：120x120*//*iPhone6 Plus程序图标，分辨率：180x180*/
+                        "spotlight-normal" : "", /*iPhone3/3GS Spotlight搜索程序图标，分辨率：29x29*/
+                        "spotlight-retina" : "", /*iPhone4 Spotlight搜索程序图标，分辨率：58x58*/
+
+                        /*iPhone4S/5/6 Spotlight搜索程序图标，分辨率：80x80*/
+                        "settings-normal" : "", /*iPhone4设置页面程序图标，分辨率：29x29*/
+
+                        /*iPhone4S/5/6设置页面程序图标，分辨率：58x58*/
+                        "app@2x" : "unpackage/res/icons/120x120.png",
+                        "app@3x" : "unpackage/res/icons/180x180.png",
+                        "settings@3x" : "unpackage/res/icons/87x87.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "spotlight@3x" : "unpackage/res/icons/120x120.png",
+                        "notification@3x" : "unpackage/res/icons/60x60.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png"
+                    },
+                    "ipad" : {
+                        "normal" : "", /*iPad普通屏幕程序图标，分辨率：72x72*/
+                        "retina" : "", /*iPad高分屏程序图标，分辨率：144x144*/
+
+                        /*iPad iOS7程序图标，分辨率：76x76*//*iPad iOS7高分屏程序图标，分辨率：152x152*/
+                        "spotlight-normal" : "", /*iPad Spotlight搜索程序图标，分辨率：50x50*/
+                        "spotlight-retina" : "", /*iPad高分屏Spotlight搜索程序图标，分辨率：100x100*/
+
+                        /*iPad iOS7 Spotlight搜索程序图标，分辨率：40x40*//*iPad iOS7高分屏Spotlight搜索程序图标，分辨率：80x80*//*iPad设置页面程序图标，分辨率：29x29*/
+                        "app" : "unpackage/res/icons/76x76.png",
+                        "app@2x" : "unpackage/res/icons/152x152.png",
+                        "settings" : "unpackage/res/icons/29x29.png",
+                        "proapp@2x" : "unpackage/res/icons/167x167.png",
+                        "spotlight" : "unpackage/res/icons/40x40.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "notification" : "unpackage/res/icons/20x20.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png"
+                    },
+                    "appstore" : "unpackage/res/icons/1024x1024.png"
+                },
+                "android" : {
+                    "mdpi" : "unpackage/res/icons/48x48.png", /*普通屏程序图标，分辨率：48x48*/
+                    "ldpi" : "unpackage/res/icons/48x48.png", /*大屏程序图标，分辨率：48x48*/
+                    "hdpi" : "unpackage/res/icons/72x72.png", /*高分屏程序图标，分辨率：72x72*/
+                    "xhdpi" : "unpackage/res/icons/96x96.png", /*720P高分屏程序图标，分辨率：96x96*/
+                    "xxhdpi" : "unpackage/res/icons/144x144.png",
+                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
+                }
+            },
+            "splashscreen" : {
+                "ios" : {
+                    "iphone" : {
+                        "default" : "", /*iPhone3启动图片选，分辨率：320x480*/
+                        "retina35" : "asset/images/slash_640_960.png", /*3.5英寸设备(iPhone4)启动图片，分辨率：640x960*/
+                        "retina40" : "asset/images/slash_640_1136.png", /*4.0 英寸设备(iPhone5/iPhone5s)启动图片，分辨率：640x1136*/
+                        "retina47" : "asset/images/slash_750_1334.png", /*4.7 英寸设备(iPhone6)启动图片，分辨率：750x1334*/
+                        "retina55" : "asset/images/slash_1242_2208.png", /*5.5 英寸设备(iPhone6 Plus)启动图片，分辨率：1242x2208*/
+                        "retina55l" : "asset/images/slash_2208_1242.png",
+                        "iphonex" : "asset/images/slash_1125_2436.png",
+                        "iphonexl" : "asset/images/slash_2436_1125.png"
+                    },
+                    "ipad" : {
+                        "portrait" : "asset/images/splash_768_1004.png", /*iPad竖屏启动图片，分辨率：768x1004*/
+                        "portrait-retina" : "asset/images/splash_1536_2008.png", /*iPad高分屏竖屏图片，分辨率：1536x2008*/
+                        "landscape" : "asset/images/splash_1024_748.png", /*iPad横屏启动图片，分辨率：1024x748*/
+                        "landscape-retina" : "asset/images/splash_2048_1496.png", /*iPad高分屏横屏启动图片，分辨率：2048x1496*/
+                        "portrait7" : "asset/images/slash_768_1024.png", /*iPad iOS7竖屏启动图片，分辨率：768x1024*/
+                        "portrait-retina7" : "asset/images/slash_1536_2048.png", /*iPad iOS7高分屏竖屏图片，分辨率：1536x2048*/
+                        "landscape7" : "asset/images/slash_1024_768.png", /*iPad iOS7横屏启动图片，分辨率：1024x768*/
+                        "landscape-retina7" : "asset/images/slash_2048_1536.png"
+                    }
+                },
+                "android" : {
+                    "mdpi" : "", /*普通屏启动图片，分辨率：240x282*/
+                    "ldpi" : "", /*大屏启动图片，分辨率：320x442*/
+                    "hdpi" : "C:/Users/LHT/Desktop/480-760.png", /*高分屏启动图片，分辨率：480x762*/
+                    "xhdpi" : "C:/Users/LHT/Desktop/720-720.png", /*720P高分屏启动图片，分辨率：720x1242*/
+                    "xxhdpi" : "C:/Users/LHT/Desktop/1080--1082.png"
+                }
+            }
+        },
+        "ads" : {
+            "rp" : false,
+            "splash" : false,
+            "push" : false,
+            "spot" : false
+        },
+        "adid" : "122501250505"
+    },
+    "dependencies" : {
+        "pages" : {
+            "login.html" : {
+                "resources" : [],
+                "refer" : [ "main.html", "qpsw/index.html" ],
+                "priority" : 0
+            },
+            "main.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/msg_exchange.html",
+                    "operation_and_maintenance/operation_record.html",
+                    "info/alert_realtime.html",
+                    "info/my_concern.html",
+                    "info/monitor_point_water_level.html",
+                    "info/personal.html",
+                    "info/facilities.html",
+                    "operation_and_maintenance/graph_normal_tour.html",
+                    "login.html",
+                    "search.html",
+                    "system_setting/settings_concern.html",
+                    "system_setting/settings_reset.html",
+                    "system_setting/settings_my.html",
+                    "query_statistics.html",
+                    "map.html",
+                    "base_info.html",
+                    "video_link.html",
+                    "video.html",
+                    "operation_plan.html"
+                ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/msg_exchange.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/info/patrol_coverage_query.html",
+                    "operation_and_maintenance/info/water_rectification.html",
+                    "operation_and_maintenance/info/patrol_scheduling.html",
+                    "operation_and_maintenance/info/inspection.html"
+                ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/patrol_coverage_query.html" : {
+                "resources" : [],
+                "refer" : [ "operation_and_maintenance/info/facility_coverage_query.html" ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/date_override_query.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/info/facility_coverage_query.html",
+                    "operation_and_maintenance/info/facility_coverage_details.html"
+                ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/facility_coverage_query.html" : {
+                "resources" : [],
+                "refer" : [ "operation_and_maintenance/info/date_override_query.html" ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/operation_record.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/operation/attendance.html",
+                    "operation_and_maintenance/operation/inspection_registration.html",
+                    "operation_and_maintenance/operation/problem_reporting.html",
+                    "main.html",
+                    "operation_and_maintenance/info/patrol_scheduling.html",
+                    "operation_and_maintenance/info/patrol_coverage_query.html",
+                    "operation_and_maintenance/info/water_rectification.html",
+                    "operation_and_maintenance/info/attendance_company_list.html",
+                    "operation_and_maintenance/info/inspection.html"
+                ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/operation/attendance.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/operation/attendance_upload.html",
+                    "operation_and_maintenance/operation/attendance_month.html",
+                    "step_number.html"
+                ],
+                "priority" : 0
+            },
+            "info/alert_realtime.html" : {
+                "resources" : [],
+                "refer" : [
+                    "info/equipment_maintenance_details.html",
+                    "info/equipment_maintenance_details_add.html"
+                ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/water_rectification.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/info/water_rectification_detail.html",
+                    "operation_and_maintenance/info/water_rectification_feedback.html",
+                    "operation_and_maintenance/operation/problem_reporting.html"
+                ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/patrol_scheduling.html" : {
+                "resources" : [],
+                "refer" : [ "operation_and_maintenance/info/patrol_schedule_list.html" ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/patrol_schedule_list.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/info/personal_detail.html",
+                    "operation_and_maintenance/info/patrol_schedule_detail.html",
+                    "operation_and_maintenance/info/patrol_scheduling.html"
+                ],
+                "priority" : 0
+            },
+            "info/my_concern.html" : {
+                "resources" : [],
+                "refer" : [ "system_setting/settings_concern.html" ],
+                "priority" : 0
+            },
+            "info/equipment_maintenance_details.html" : {
+                "resources" : [],
+                "refer" : [
+                    "info/alert_realtime.html",
+                    "info/equipment_maintenance_details_add.html"
+                ],
+                "priority" : 0
+            },
+            "info/facilities.html" : {
+                "resources" : [],
+                "refer" : [ "info/facilities_detail.html" ],
+                "priority" : 0
+            },
+            "info/facilities_detail.html" : {
+                "resources" : [],
+                "refer" : [ "info/facilities.html" ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/water_rectification_detail.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/info/water_rectification_feedback.html",
+                    "operation_and_maintenance/info/water_rectification_gaozhi.html"
+                ],
+                "priority" : 0
+            },
+            "info/personal.html" : {
+                "resources" : [],
+                "refer" : [ "info/personal_detail.html" ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/patrol_schedule_detail.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/info/patrol_schedule_my.html",
+                    "operation_and_maintenance/info/patrol_schedule_list.html"
+                ],
+                "priority" : 0
+            },
+            "info/monitor_point_water_level.html" : {
+                "resources" : [],
+                "refer" : [
+                    "main.html",
+                    "map.html",
+                    "info/my_concern.html",
+                    "form/report/history_water_detail.html",
+                    "form/report/history_water_level.html"
+                ],
+                "priority" : 0
+            },
+            "system_setting/settings_my.html" : {
+                "resources" : [],
+                "refer" : [ "login.html" ],
+                "priority" : 0
+            },
+            "base_info.html" : {
+                "resources" : [],
+                "refer" : [ "info/facilities.html", "info/personal.html" ],
+                "priority" : 0
+            },
+            "map.html" : {
+                "resources" : [],
+                "refer" : [
+                    "info/facilities_detail.html",
+                    "info/facilities.html",
+                    "info/base_info.html",
+                    "mainten_info.html"
+                ],
+                "priority" : 0
+            },
+            "list_unread_alarm.html" : {
+                "resources" : [],
+                "refer" : [ "detail_alarm.html" ],
+                "priority" : 0
+            },
+            "video_link.html" : {
+                "resources" : [],
+                "refer" : [ "list_unread_alarm.html", "report_sta_evidence.html" ],
+                "priority" : 0
+            },
+            "list_evidence.html" : {
+                "resources" : [],
+                "refer" : [ "detail_evidence.html" ],
+                "priority" : 0
+            },
+            "report_sta_evidence.html" : {
+                "resources" : [],
+                "refer" : [ "list_evidence.html" ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/operation/attendance_month.html" : {
+                "resources" : [],
+                "refer" : [ "operation_and_maintenance/operation/attendance_month_detail.html" ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/attendance_company_list.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/info/patrol_schedule_list.html",
+                    "operation_and_maintenance/info/attendance_month_list.html"
+                ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/operation/inspection_registration.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/operation/problem_reporting.html",
+                    "barcode_scan.html"
+                ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/inspection.html" : {
+                "resources" : [],
+                "refer" : [ "operation_and_maintenance/operation/inspection_registration.html" ],
+                "priority" : 0
+            },
+            "query_statistics.html" : {
+                "resources" : [],
+                "refer" : [
+                    "form/report/history_monitor.html",
+                    "form/report/history_rectification_report.html",
+                    "form/report/history_alert.html",
+                    "form/report/history_work_attendance.html",
+                    "form/account/daily_inspection_record.html",
+                    "form/report/facilities.html",
+                    "form/account/green_maintenance_monthly_report.html"
+                ],
+                "priority" : 0
+            },
+            "form/report/history_monitor.html" : {
+                "resources" : [],
+                "refer" : [
+                    "map.html",
+                    "form/report/history_water_detail.html",
+                    "info/my_concern.html",
+                    "form/report/history_water_level.html"
+                ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/attendance_month_list.html" : {
+                "resources" : [],
+                "refer" : [ "operation_and_maintenance/info/attendance_month.html" ],
+                "priority" : 0
+            },
+            "form/report/facilities.html" : {
+                "resources" : [],
+                "refer" : [
+                    "map.html",
+                    "form/account/facility_schedule_detail.html",
+                    "form/account/facility_rectification_detail.html",
+                    "form/account/facility_rectification_record.html"
+                ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/operation/problem_reporting.html" : {
+                "resources" : [],
+                "refer" : [ "barcode_scan.html" ],
+                "priority" : 0
+            },
+            "form/report/history_work_attendance.html" : {
+                "resources" : [],
+                "refer" : [
+                    "operation_and_maintenance/operation/attendance_month_detail.html",
+                    "form/report/history_work_attendance_detail.html"
+                ],
+                "priority" : 0
+            },
+            "form/report/history_work_attendance_detail.html" : {
+                "resources" : [],
+                "refer" : [ "operation_and_maintenance/operation/attendance_month_detail.html" ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/attendance_month.html" : {
+                "resources" : [],
+                "refer" : [ "operation_and_maintenance/info/attendance_month_detail.html" ],
+                "priority" : 0
+            },
+            "operation_and_maintenance/info/attendance_month_detail.html" : {
+                "resources" : [],
+                "refer" : [ "operation_and_maintenance/operation/attendance_month_detail.html" ],
+                "priority" : 0
+            },
+            "qpsw/index.html" : {
+                "resources" : [],
+                "refer" : [ "qpsw/op_evidence.html" ],
+                "priority" : 0
+            },
+            "qphd/index.html" : {
+                "resources" : [],
+                "refer" : [
+                    "qphd/riverlake_Manage.html",
+                    "qpsw/index.html",
+                    "qphd/maintenance_work.html"
+                ],
+                "priority" : 0
+            },
+            "qphd/riverlake_Manage.html" : {
+                "resources" : [],
+                "refer" : [ "qphd/index.html" ],
+                "priority" : 0
+            },
+            "info/base_info.html" : {
+                "resources" : [],
+                "refer" : [ "operation_state.html" ],
+                "priority" : 0
+            }
+        },
+        "idle" : {
+            "resources" : [
+                "api/example/apidoc.json",
+                "asset/css/style.css",
+                "api/doc/vendor/prettify/lang-vhd.js",
+                "api/doc/api_project.json",
+                "api/doc/vendor/prettify/lang-xquery.js",
+                "asset/images/splash_1242_2208.png",
+                "api/doc/vendor/prettify/run_prettify.js",
+                "operation_and_maintenance/info/green_conservation.html",
+                "form/account/ship_through_gate.html",
+                "asset/images/operation_logo.png",
+                "asset/images/splash_640_1136.png",
+                "api/doc/locales/fr.js",
+                "api/doc/vendor/prettify/lang-matlab.js",
+                "api/doc/vendor/prettify/lang-mumps.js",
+                "operation_and_maintenance/operation/health_duty.html",
+                "api/doc/utils/send_sample_request.js",
+                "asset/js/app.js",
+                "README.md",
+                "api/doc/vendor/prettify/lang-n.js",
+                "operation_and_maintenance/rule/daily_inspection_requirements.html",
+                "info/monitor_facilities_condition.html",
+                "api/doc/vendor/prettify/lang-ss.js",
+                "api/doc/api_data.json",
+                "asset/js/mui.min.js",
+                "api/doc/vendor/prettify/lang-dart.js",
+                "asset/css/iconfont.svg",
+                "api/doc/locales/tr.js",
+                "api/doc/vendor/prettify/lang-cl.js",
+                "evaluation/evaluation_of_maintenance.html",
+                "system_setting/settings_upgrade.html",
+                "api/doc/vendor/jquery.min.js",
+                "api/doc/vendor/prettify/lang-lisp.js",
+                "asset/images/iconfont-tianjia.png",
+                "water_gate.mobileprovision",
+                "api/doc/vendor/path-to-regexp/index.js",
+                "api/doc/vendor/prettify/lang-el.js",
+                "api/example/_apidoc.js",
+                "monitor/construction_situation.html",
+                "api/doc/api_data.js",
+                "api/doc/locales/ro.js",
+                "form/account/gate_opening_and_closing_record.html",
+                "asset/images/weixin.png",
+                "api/doc/vendor/prettify/prettify.js",
+                "api/doc/css/style.css",
+                "api/doc/vendor/prettify/lang-rust.js",
+                "api/doc/vendor/prettify/lang-lgt.js",
+                "api/doc/vendor/prettify/lang-sql.js",
+                "asset/images/logo_320.png",
+                "api/doc/vendor/prettify/lang-tex.js",
+                "asset/images/qihoo.png",
+                "asset/js/jquery-3.3.1.min.js",
+                "asset/images/splash_1080_1882.png",
+                "api/doc/vendor/prettify/prettify.css",
+                "api/example/example.js",
+                "asset/images/loading.gif",
+                "asset/js/echarts-all.js",
+                "asset/css/tree_style.css",
+                "asset/css/iconfont.woff",
+                "api/doc/vendor/prettify/lang-erlang.js",
+                "alarm/abnormal_diagnosis.html",
+                "api/doc/vendor/prettify/lang-Splus.js",
+                "api/doc/locales/nl.js",
+                "api/doc/vendor/prettify/lang-lsp.js",
+                "api/doc/vendor/prettify/lang-agc.js",
+                "api/doc/vendor/prettify/lang-vbs.js",
+                "asset/js/mui.js",
+                "system_setting/settings_clear_cache.html",
+                "asset/css/mui.css",
+                "api/doc/vendor/prettify/lang-fs.js",
+                "system_setting/settings_modify_pwd.html",
+                "api/doc/vendor/prettify/lang-tcl.js",
+                "form/account/water_transfer_record.html",
+                "asset/js/mui.previewimage.js",
+                "asset/images/sinaweibo.png",
+                "api/doc/vendor/prettify/lang-vb.js",
+                "api/doc/vendor/prettify/lang-latex.js",
+                "asset/fonts/mui.ttf",
+                "api/doc/utils/handlebars_helper.js",
+                "info/monitor_facilities_condition_detail.html",
+                "asset/js/mui.locker.js",
+                "api/doc/vendor/prettify/lang-lua.js",
+                "api/doc/vendor/prettify/lang-hs.js",
+                "asset/images/logo.jpeg",
+                "api/doc/vendor/prettify/lang-scala.js",
+                "operation_and_maintenance/rule/water_transfer_plan.html",
+                "asset/images/splash_768_1024.png",
+                "asset/images/normal_search.png",
+                "api/doc/api_project.js",
+                "api/doc/vendor/prettify/lang-lassoscript.js",
+                "asset/images/splash_1125_2436.png",
+                "api/doc/vendor/prettify.css",
+                "asset/images/empty_big.png",
+                "api/doc/vendor/prettify/lang-go.js",
+                "api/doc/locales/zh.js",
+                "operation_and_maintenance/graph_water_transfer.html",
+                "asset/images/splash_1024_768.png",
+                "api/doc/vendor/prettify/lang-lasso.js",
+                "api/doc/vendor/prettify/lang-nemerle.js",
+                "api/doc/vendor/prettify/lang-proto.js",
+                "operation_and_maintenance/operation/ship_pass_gate.html",
+                "api/doc/locales/ca.js",
+                "api/doc/vendor/semver.min.js",
+                "api/doc/vendor/prettify/lang-r.js",
+                "asset/images/splash_1024_748.png",
+                "api/doc/locales/vi.js",
+                "api/doc/vendor/prettify/lang-swift.js",
+                "api/doc/locales/it.js",
+                "api/doc/vendor/prettify/lang-llvm.js",
+                "asset/css/iconfont.js",
+                "api/doc/vendor/prettify/lang-wiki.js",
+                "api/doc/vendor/prettify/lang-erl.js",
+                "api/doc/vendor/bootstrap.min.css",
+                "operation_and_maintenance/info/water_transfer.html",
+                "asset/css/iconfont.ttf",
+                "asset/images/splash_1536_2008.png",
+                "api/doc/vendor/bootstrap.min.js",
+                "asset/js/mui.poppicker.js",
+                "api/doc/vendor/prettify/lang-ml.js",
+                "api/doc/vendor/prettify/lang-logtalk.js",
+                "test.html",
+                "asset/images/splash_768_1004.png",
+                "api/doc/vendor/prettify/lang-basic.js",
+                "asset/css/mui.poppicker.css",
+                "api/doc/locales/locale.js",
+                "form/account/health_records.html",
+                "water_gate_dev.mobileprovision",
+                "api/doc/index.html",
+                "asset/js/mui.enterfocus.js",
+                "asset/images/green_qp.png",
+                "asset/images/splash_480_762.png",
+                "asset/images/logo_128.png",
+                "api/doc/locales/pl.js",
+                "form/report/unit_estimate.html",
+                "api/doc/vendor/lodash.custom.min.js",
+                "asset/css/mui.picker.min.css",
+                "api/doc/vendor/require.min.js",
+                "form/account/green_maintenance_record.html",
+                "asset/images/splash_640_960.png",
+                "asset/images/ubilogo.png",
+                "asset/images/image.png",
+                "operation_and_maintenance/info/health_duty_scheduling.html",
+                "operation_and_maintenance/operation/green_conservation.html",
+                "asset/images/splash_2436_1125.png",
+                "asset/images/user.png",
+                "asset/images/splash_2048_1536.png",
+                "api/doc/vendor/prettify/lang-yaml.js",
+                "asset/images/splash_2208_1242.png",
+                "api/doc/img/favicon.ico",
+                "asset/images/splash_750_1334.png",
+                "api/doc/vendor/prettify/lang-apollo.js",
+                "api/doc/vendor/prettify/lang-css.js",
+                "api/doc/vendor/prettify/lang-cbm.js",
+                "asset/js/mui.picker.min.js",
+                "asset/css/iconfont.css",
+                "water_gate.keystore",
+                "asset/images/user-photo.png",
+                "api/doc/locales/ru.js",
+                "asset/images/splash_2048_1496.png",
+                "asset/css/mui.min.css",
+                "api/doc/vendor/prettify/lang-vhdl.js",
+                "api/doc/vendor/prettify/lang-rkt.js",
+                "asset/js/coordtransform.js",
+                "operation_and_maintenance/operation/water_registration.html",
+                "api/doc/vendor/prettify/lang-s.js",
+                "api/doc/vendor/path-to-regexp/LICENSE",
+                "api/readme.txt",
+                "form/report/history_cover.html",
+                "api/doc/locales/pt_br.js",
+                "operation_and_maintenance/info/health_duty.html",
+                "asset/css/animate.min.css",
+                "api/doc/fonts/glyphicons-halflings-regular.ttf",
+                "asset/images/logo_1024.png",
+                "api/doc/locales/de.js",
+                "api/doc/fonts/glyphicons-halflings-regular.svg",
+                "form/account/facility_maintenance_summary.html",
+                "info/performance.html",
+                "api/doc/vendor/prettify/lang-scm.js",
+                "asset/js/mui.view.js",
+                "api/doc/vendor/prettify/lang-rd.js",
+                "asset/images/plus.png",
+                "operation_and_maintenance/info/ship_pass_gate.html",
+                "api/doc/vendor/prettify/lang-ll.js",
+                "asset/images/splash_1536_2048.png",
+                "asset/images/qq.png",
+                "api/doc/vendor/list.min.js",
+                "form/account/facility_management_schedule.html",
+                "api/doc/vendor/handlebars.min.js",
+                "operation_and_maintenance/rule/facility_inspection_rules.html",
+                "api/doc/vendor/webfontloader.js",
+                "form/account/water_transfer_photo_record.html",
+                "operation_and_maintenance/operation/inspection_request.html",
+                "api/doc/vendor/diff_match_patch.min.js",
+                "api/doc/vendor/prettify/lang-aea.js",
+                "api/doc/vendor/prettify/lang-xq.js",
+                "form/account/facility_maintenance_record.html",
+                "api/doc/fonts/glyphicons-halflings-regular.eot",
+                "api/doc/locales/zh_cn.js",
+                "api/doc/main.js",
+                "api/doc/vendor/prettify/lang-clj.js",
+                "asset/images/sub.png",
+                "api/doc/vendor/polyfill.js",
+                "asset/js/mui.zoom.js",
+                "asset/images/logo_1024_icon.png",
+                "monitor/water_level.html",
+                "api/doc/fonts/glyphicons-halflings-regular.woff2",
+                "api/doc/fonts/glyphicons-halflings-regular.woff",
+                "asset/css/iconfont.eot",
+                "asset/images/evid1.png",
+                "api/doc/vendor/prettify/lang-yml.js",
+                "form/account/diesel_generator_set_operation_record.html",
+                "asset/images/splash_720_1242.png",
+                "api/doc/vendor/prettify/lang-pascal.js",
+                "api/doc/locales/es.js",
+                "api/doc/vendor/prettify/lang-ls.js"
+            ]
+        }
+    },
+    "screenOrientation" : [ "portrait-primary" ]
+}

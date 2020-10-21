@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		
+		<link href="../../asset/css/mui.min.css" rel="stylesheet">
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+ 
+		<link href="../../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #fff;
+			}
+			
+			#list {
+				/*margin-top: 55px;*/
+			}
+			
+			h4 {
+				font-size: 18px !important;
+			}
+			
+			.mui-table-view-cell {
+				font-size: 16px !important;
+			}
+			
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+			
+			.list {
+				font-size: 14px;
+			}
+			#offCanvasSideScroll {
+				background: white;
+			}
+			.h4_header {
+				margin-top: 55px;
+				background: #fff;
+				font-size: 24px;
+				padding: 10px;
+			}
+			
+			.right_warp img {
+				max-width: 100%;
+			}
+			
+			.div_warp {
+				margin: 0 15px;
+				font-size: 14px;
+				border-bottom: 1px solid #ccc;
+			}
+			
+			.list .div_warp:first-child {
+				padding: 10px 0;
+			}
+			
+			.left_warp {
+				width: 35%;
+				float: left;
+				text-align: center;
+				background: #000;
+				color: #fff;
+				padding: 11px 15px;
+			}
+			
+			.right_warp {
+				width: 65%;
+				float: left;
+				text-align: center;
+				padding: 11px 15px;
+			}
+			
+			.clear {
+				clear: both;
+				height: 1px;
+			}
+			
+			@media screen and (max-width: 321px) {
+				.left_warp {
+					width: 40%;
+				}
+				.right_warp {
+					width: 60%;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<!--侧滑菜单容器-->
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!--菜单部分-->
+			<aside id="offCanvasSide" class="mui-off-canvas-right">
+				<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<h6 style="padding:5px;">过滤</h6>
+						<ul id="list-option" class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<span><i class="iconfont icon-date1"></i> 时间</span>
+								<span id='selectDate' data-options='{"type":"date"}' style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请选择...</span>
+							</li>
+							
+							<li class="mui-table-view-cell ">
+								<i class="iconfont icon-icon-user"></i> 整改人
+								<span id="selectPerson" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+							</li>
+
+						</ul>
+						<div class="mui-content-padded" style="text-align: right;">
+							<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+							重置
+						</button>
+							<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+							确认
+						</button>
+						</div>
+					</div>
+				</div>
+			</aside>
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right selecting_hide">过滤</a>
+					<h1 class="mui-title">设施整改详细</h1>
+
+				</header>
+				
+				<div  class="mui-content">
+					<div id="offCanvasContentScroll"  class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<h4 class="h4_header">
+								<span id="current_month"></span>
+								<button id="facility_name" class="mui-pull-right name"  style="    margin-top: -8px;" ></button>
+		 					</h4>
+		 					<div id="data_warp">
+							<!--<div class="list">
+								<div class="div_warp">
+							 
+									<button class="mui-pull-left">2018-07-27</button>
+									<div class="clear"></div>
+								</div>
+								<div class="div_warp">
+									<div class="left_warp">编号</div>
+									<div class="right_warp">NO.HX20180727A</div>
+									<div class="clear"></div>
+								</div>
+								<div class="div_warp">
+									<div class="left_warp">整改内容</div>
+									<div class="right_warp">添加灭火器箱、启闭杆防尘套，清理杂物，修复石栏杆。</div>
+									<div class="clear"></div>
+								</div>
+								<div class="div_warp">
+									<div class="left_warp">整改人</div>
+									<div class="right_warp">陈元盛</div>
+									<div class="clear"></div>
+								</div>
+								<div class="div_warp">
+									<div class="left_warp">备注</div>
+									<div class="right_warp">日常清扫</div>
+									<div class="clear"></div>
+								</div>
+		 
+							</div>--> 
+							 </div>
+							 <div id="page_ended" class="page_loader">
+							列表已到最后
+						</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/mui.poppicker.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		var facility_id = app.getUrlParam('id');
+		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		var inspectionType = app.getUrlParam('inspectionType');
+		var selectDate = document.getElementById('selectDate');
+		var selectPerson = document.getElementById('selectPerson');
+		var facility_name = app.getUrlParam('facility_name');
+		$("#facility_name").html(facility_name)
+		if(inspectionType=="8502"){
+			$(".mui-title").html("设施维护详细")
+		}
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+		
+		
+		init_filter()
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		
+		
+		$(function(){
+			init_css()
+		})
+		function init_css(){
+			$(".right_warp").each(function(){
+				var height = $(this).height()
+				$(this).prev(".left_warp").height(height)
+				$(this).prev(".left_warp").css("line-height",height+"px")
+			})
+		}
+	 function init_filter(){
+			selectDate.innerHTML = new Date().format("yyyy-MM-dd")
+			selectDate.addEventListener('tap', function() {
+				app.pickDate(this, false);
+			}, false);
+			var ins_record_data = JSON.parse(app.getSetting("ins_record_data") || "[]")
+			
+			app.ajax(app.url("query/person_list"),{
+				
+			},function(ret){
+				if(ret.code == 0) {
+					var picker_data = [];
+					picker_data.push({
+						value: "",
+						text: "全部"
+					})
+					for (var i = 0; i < ret["data"].length; i++) {
+//						if(ret["data"][i]["user_type"]=="巡查员"){
+							picker_data.push({
+								value: ret["data"][i]["name"],
+								text: ret["data"][i]["name"]
+							})
+//						}
+						
+					}
+					 
+					var personPicker = new mui.PopPicker();
+					
+					personPicker.setData(picker_data);
+					selectPerson.addEventListener('tap', function(event) {
+						personPicker.show(function(items) {
+							console.log(items[0]["text"])
+							selectPerson.innerText = items[0]["text"];
+							$(selectPerson).attr('item_id', items[0]["text"]);
+						});
+					}, false);
+				}else{
+					
+				}
+			})
+		}
+ 
+	 mui.ready(function() {
+			init_html()
+		})
+ 		function init_html(){
+ 			
+			var conDate = new Date().format("yyyy-MM-dd")
+			var conTime = new Date().format("yyyy-MM")
+			
+			$("#current_month").html(conTime)
+			var isAbnormal = ""
+			var targetId = ""
+			var reporterName = ""
+			var post_data ={
+				"conservancyId":facility_id,
+				"conTime":conTime,
+				"conDate":conDate,
+				'inspectionType':inspectionType
+			}
+
+			
+			if(selectDate.innerHTML!="请选择..."){
+				conDate = selectDate.innerHTML
+				var split_time = conDate.split("-") 
+				conTime = split_time[0]+"-"+split_time[1]
+				post_data["conDate"] = conDate
+				post_data["conTime"] = conTime
+				$("#current_month").html(conDate)
+			}
+		
+
+			if(selectPerson.innerHTML!="全部"){
+				reporterName = $("#selectPerson").attr("item_id")
+				post_data["reporterName"] = reporterName
+			}
+			 
+			console.log(JSON.stringify(post_data))
+			app.ajaxJson(app.url1('/conservancyMaintenance/getConMainList'), JSON.stringify(post_data), function(ret) {
+				console.log(JSON.stringify(ret))
+				if(ret.code == 200) {
+				
+					var html = ""
+					var data = ret.data
+					 
+					for(var i = 0; i < data.length; i++){
+						html += '<div class="list">'
+						html += '		<div class="div_warp">'
+							 
+						html += '			<button class="mui-pull-left">'+data[i]["conDate"]+'</button>'
+						html += '			<div class="clear"></div>'
+						html += '		</div>'
+						html += '		<div class="div_warp">'
+						html += '			<div class="left_warp">编号</div>'
+						html += '			<div class="right_warp">'+data[i]["rectificationSerial"]+'</div>'
+						html += '			<div class="clear"></div>'
+						html += '		</div>'
+						html += '		<div class="div_warp">'
+						html += '			<div class="left_warp">整改内容</div>'
+						html += '			<div class="right_warp">'+(data[i]["content"]?data[i]["content"]:"&nbsp;")+'</div>'
+						html += '			<div class="clear"></div>'
+						html += '		</div>'
+						html += '		<div class="div_warp">'
+						html += '			<div class="left_warp">整改人</div>'
+						html += '			<div class="right_warp">'+(data[i]["reporterName"]?data[i]["reporterName"]:"&nbsp;")+'</div>'
+						html += '			<div class="clear"></div>'
+						html += '		</div>'
+						html += '		<div class="div_warp">'
+						html += '			<div class="left_warp">备注</div>'
+						html += '			<div class="right_warp">'+(data[i]["remark"]?data[i]["remark"]:"&nbsp;")+'</div>'
+						html += '			<div class="clear"></div>'
+						html += '		</div>'
+		 
+						html += '	</div>'
+						
+						
+						
+					}
+					$("#data_warp").html(html)
+					$("img").on('load', function() {
+						console.log("load")
+						init_css()
+					});
+//					setTimeout(function(){
+//						init_css()
+//					},100)
+				} else {
+					mui.toast(ret.error);
+				}
+			});
+			
+ 		}
+	 	function clickOk() {
+			
+			offCanvasWrapper.offCanvas('close');
+			init_html()
+		}
+		function clickReset() {
+			$("#selectDate").html(new Date().format("yyyy-MM-dd"))
+			$("#selectDate").attr("item_id",new Date().format("yyyy-MM-dd"))
+ 
+			$("#selectPatrolPoint").html('全部')
+			$("#selectPatrolPoint").attr("item_id","")
+			
+			$("#selectAbnormal").html('全部')
+			$("#selectAbnormal").attr("item_id","")
+			
+			$("#selectPerson").html('全部')
+			$("#selectPerson").attr("item_id","")
+			
+			
+		}
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+ 
+	</script>
+
+</html>

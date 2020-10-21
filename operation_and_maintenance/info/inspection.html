@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../asset/css/mui.min.css">
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			.mui-bar .mui-btn.mui-pull-right {
+				margin-left: 2px;
+			}
+			.func_btn {
+				margin:0 10px !important;
+			}
+			.left_checkbox {
+				width: 28px;
+				height: 26px;
+				border: 0;
+				outline: 0!important;
+				background-color: transparent;
+				-webkit-appearance: none;
+				display: block;
+				float: left;
+				margin-top: 10px;
+				position: unset !important;
+			}
+			
+			@media screen and (max-width: 321px) {
+				.op_btn {
+					font-size: 14px !important;
+				}
+				.func_btn {
+					margin:0 7px !important;
+				}
+				.mui-bar .mui-btn.mui-pull-right {
+					margin-left: 1px;
+				}
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a class=" mui-btn mui-btn-link mui-pull-left op_btn func_btn" id="select_all" >全选</a>
+			<a class=" mui-btn mui-btn-link mui-pull-left op_btn func_btn" id="cancel_select">取消</a>
+			<a class=" mui-btn mui-btn-link mui-pull-right op_btn" onclick="delete_data();">删除</a>
+			
+			<a class=" mui-btn mui-btn-link mui-pull-right op_btn" id="upload_data">上传&nbsp;
+			&nbsp;
+			&nbsp;
+			</a>
+			<h1 class="mui-title">巡检流转</h1>
+		</header>
+		<div class="mui-content">
+			<ul id="list" class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+				<li item_id="1" class="mui-table-view-cell mui-media">
+					<a class="mui-navigate-right">
+						<div class="mui-input-row mui-checkbox mui-left">
+
+							<input name="checkbox" class="left_checkbox" value="Item 1" type="checkbox">
+							<img class="mui-media-object mui-pull-left" style="margin: 0 5px;" src="../../asset/images/evid1.png">
+							<div class="mui-media-body">
+								火星水闸
+								<p class='mui-ellipsis'>登记时间： 2018-07-27 12:00:00</p>
+								<p class='mui-ellipsis'>登记人：王大海</p>
+							</div>
+						</div>
+
+					</a>
+				</li>
+				<li item_id="2" class="mui-table-view-cell mui-media">
+					<a class="mui-navigate-right">
+						<div class="mui-input-row mui-checkbox mui-left">
+
+							<input name="checkbox" class="left_checkbox" value="Item 1" type="checkbox">
+							<img class="mui-media-object mui-pull-left" style="margin: 0 5px;" src="../../asset/images/evid1.png">
+							<div class="mui-media-body">
+								火星水闸
+								<p class='mui-ellipsis'>登记时间： 2018-07-27 12:00:00</p>
+								<p class='mui-ellipsis'>登记人：王大海</p>
+							</div>
+						</div>
+
+					</a>
+				</li>
+
+			</ul>
+			<div id="page_loading" class="page_loader">
+				<img src="../../asset/images/loading.gif"> 加载中...
+			</div>
+			<div id="page_ended" class="page_loader">
+				列表已到最后
+			</div>
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		var user_data = app.getUserInfo();
+		var user_id = user_data.id
+		mui.init();
+		var save_time = ""
+		
+		mui.ready(function() {
+			app.setSetting("left_checkbox_uuid", "[]")
+			initCtrls()
+		})
+		document.getElementById("select_all").addEventListener('tap', function() {
+			$(".left_checkbox").prop("checked", true)
+
+		})
+		document.getElementById("cancel_select").addEventListener('tap', function() {
+
+			$(".left_checkbox").prop("checked", false)
+		})
+		var upload_data_timer;
+		document.getElementById("upload_data").addEventListener('tap', function() {
+			
+			clearInterval(upload_data_timer)
+			upload_data_timer = setInterval(function(){
+				console.log("#upload_data")
+				upload_data()
+			},1500)
+			
+		})
+		var left_checkbox_obj;
+		function upload_data() {
+			if($(".left_checkbox:checked").length==0){
+				clearInterval(upload_data_timer);
+				return false;
+			}
+			$(".left_checkbox").each(function() {
+				if($(this).prop("checked")) {
+					for(var i = 0; i < global_data.length; i++) {
+						if(global_data[i]["list_info"]["uuid"] == $(this).val()) {
+							if(fg) {
+								left_checkbox_obj = $(this);
+								uuid = $(this).val()
+								upload = plus.nativeUI.showWaiting('上传中...');
+							
+								globle_post_data = global_data[i]["post_json"]
+								
+								save_time = global_data[i]["list_info"]["time"]
+								fg = false;
+								getImgToBase64(global_data[i]["arr_imgs"])
+							}
+						}
+					}
+				}
+			})
+		}
+
+		function delete_data() {
+			mui.confirm('确定删除吗？', '巡检流转', ['否', '是'], function(e) {
+				console.log(e.index)
+				if(e.index == 1) {
+					$(".left_checkbox").each(function() {
+						if($(this).prop("checked")) {
+							for(var i = 0; i < global_data.length; i++) {
+								if(global_data[i]["list_info"]["uuid"] == $(this).val()) {
+									global_data.remove(global_data[i])
+								}
+							}
+						}
+					})
+					app.setSetting("inspection_info"+user_id, JSON.stringify(global_data));
+					initCtrls()
+					mui.toast("删除成功")
+				} else {
+
+				}
+			})
+
+		}
+		var global_data;
+		var uuid;
+
+		function initCtrls() {
+			$('#page_loading').show();
+			$('#page_ended').hide();
+			if(app.getSetting("inspection_info"+user_id)==""){
+				app.setSetting("inspection_info"+user_id, JSON.stringify([]));
+			}
+			var data = JSON.parse(app.getSetting("inspection_info"+user_id) ||"[]");
+			global_data = data;
+			var html = ""
+			for(var i = 0; i < data.length; i++) {
+				// console.log(JSON.stringify(data[i]))
+				html += '<li item_id="1" class="mui-table-view-cell mui-media">'
+
+				html += '<div class="mui-input-row mui-checkbox mui-left">'
+				html += '	<input name="checkbox" class="left_checkbox"  value="' + data[i]["list_info"]["uuid"] + '" type="checkbox" >'
+				html += '<a class="mui-navigate-right link_open_reg" href="../operation/inspection_registration.html?uuid=' + data[i]["list_info"]["uuid"] + '">'
+				if(data[i]["arr_imgs"].length>0){
+					html += '	<img class="mui-media-object mui-pull-left" style="width:45px;height:45px;margin: 5px;" src="'+data[i]["arr_imgs"][0]+'">'
+				}else{
+					html += '	<img class="mui-media-object mui-pull-left" style="margin: 0 5px;" src="../../asset/images/evid1.png">'
+				}
+				html += '	<div class="mui-media-body">'
+				html += data[i]["list_info"]["name"]
+				html += '		<p class="mui-ellipsis">登记时间:' + data[i]["list_info"]["time"] + '</p>'
+				html += '		<p class="mui-ellipsis">登记人:' + data[i]["list_info"]["user_name"] + '</p>'
+				html += '	</div>'
+				html += '</a>'
+				html += '</div>'
+
+				html += '</li>'
+			}
+			$("#list").html(html)
+			$('#page_loading').hide();
+			$('#page_ended').show();
+			var left_checkbox_uuid_arr = JSON.parse(app.getSetting('left_checkbox_uuid') || "[]")
+			for (var i = 0; i < left_checkbox_uuid_arr.length; i++) {
+				$(".left_checkbox").each(function(){
+					if($(this).val()==left_checkbox_uuid_arr[i]){
+						$(this).prop("checked",true)
+					}
+				})
+			}
+		}
+		mui('#list').on('tap', '.link_open_reg', function() {
+			app.open($(this).attr('href'));
+		})
+		mui.plusReady(function() {});
+		window.addEventListener('wga_refresh', function(event) {
+			initCtrls();
+		});
+
+		var upload;
+		var globle_post_data;
+
+		var count = 0;
+		var file_data_arr = [];
+		var fg = true;
+
+		function uploadImg() {
+			console.log("uploadImg")
+			var xhr = new XMLHttpRequest();
+			xhr.timeout = 120000;
+			xhr.ontimeout = function(e) { 
+				mui.toast('请求超时，请再网络状态良好的地方重试');
+				clearInterval(upload_data_timer);
+				upload.close()
+			};
+			var formData = new FormData();
+
+			for(var i = 0; i < file_data_arr.length; i++) {
+				formData.append('files', file_data_arr[i]);
+			}
+			console.log(JSON.stringify(globle_post_data))
+			for(var item in globle_post_data) {
+				if(item =="rectificationSerial"){
+					var rectificationSerialArr = JSON.parse(globle_post_data["rectificationSerial"])
+					if(rectificationSerialArr.length==0){
+						formData.append(item, "");
+					}else{
+						for (var i = 0; i < rectificationSerialArr.length; i++) {
+							
+							formData.append(item, rectificationSerialArr[i]);
+						}
+					}
+					
+				}else{
+					console.log(globle_post_data[item])
+					formData.append(item, globle_post_data[item]);
+				}
+			}
+			console.log(formData)
+			console.log(JSON.stringify(formData))
+
+			xhr.onreadystatechange = function(e) {
+				if(xhr.readyState == 4) {
+					console.log(xhr.responseText)
+					var ret = JSON.parse(xhr.responseText); 
+					file_data_arr = [];
+					count = 0;
+					fg = true;
+					if(xhr.status == 200) {
+						
+						if(ret.code == 200) {
+
+							console.log(ret.data)
+							var left_checkbox_uuid = []
+							$(".left_checkbox:checked").each(function(){
+								left_checkbox_uuid.push($(this).val())
+							})
+							
+							app.setSetting("left_checkbox_uuid", JSON.stringify(left_checkbox_uuid));
+							for(var i = 0; i < global_data.length; i++) {
+								if(global_data[i]["list_info"]["uuid"] == uuid) {
+									mui.toast(global_data[i]["list_info"]["name"] + '上传成功');
+									global_data.remove(global_data[i])
+								}
+
+							}
+							app.setSetting("inspection_info"+user_id, JSON.stringify(global_data));
+
+							initCtrls();
+
+						} else {
+							left_checkbox_obj.prop("checked",false)
+							mui.toast(ret.desc);
+						}
+
+					} else {
+						clearInterval(upload_data_timer);
+						mui.toast(get_error_msg(ret,'上传失败，请重新保存'));
+					
+					}
+					upload.close()
+					return;
+				}
+			}
+
+			xhr.open('POST', app.url('save/check_register'), true);
+			xhr.send(formData);
+		}
+
+		//将图片转换为Base64
+		function getImgToBase64(arr) {
+//			console.log("getImgToBase64")
+			var canvas = document.createElement('canvas'),
+				ctx = canvas.getContext('2d'),
+				img = new Image;
+			img.crossOrigin = 'Anonymous';
+
+			img.onload = function() {
+				var originWidth = img.width;
+		        var originHeight = img.height;
+		        // 最大尺寸限制
+		        var maxWidth = app.maxWidth(), maxHeight = app.maxWidth();
+		        // 目标尺寸
+		        var targetWidth = originWidth, targetHeight = originHeight;
+		        // 图片尺寸超过1000x1000的限制
+		        if (originWidth > maxWidth || originHeight > maxHeight) {
+		            if (originWidth / originHeight > maxWidth / maxHeight) {
+		                targetWidth = maxWidth;
+		                targetHeight = Math.round(maxWidth * (originHeight / originWidth));
+		            } else {
+		                targetHeight = maxHeight;
+		                targetWidth = Math.round(maxHeight * (originWidth / originHeight));
+		            }
+		        }
+				
+				// canvas对图片进行缩放
+		        canvas.width = targetWidth;
+		        canvas.height = targetHeight;
+		    
+		        // 清除画布
+		        ctx.clearRect(0, 0, targetWidth, targetHeight);
+		        // 图片压缩
+		        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+			
+				ctx.font = targetWidth / 20 + "px microsoft yahei";
+				ctx.fillStyle = "rgba(255,128,0,1)";
+				var txt = save_time ? save_time : new Date().format("yyyy-MM-dd hh:mm:ss")
+				var pos_x = targetWidth - ctx.measureText(txt).width
+				var pos_y = targetHeight - targetWidth / 20
+			 
+				ctx.fillText(txt, pos_x, pos_y);
+				console.log(targetWidth,targetHeight)
+				var dataURL = canvas.toDataURL('image/jpeg');
+
+				file_data_arr.push(dataURLtoFile(dataURL, 'img' + count + '.jpg'))
+				//						console.log("====")
+				count++;
+				getImgToBase64(arr)
+
+				canvas = null;
+			};
+			img.src = arr[count];
+			if(file_data_arr.length == arr.length) {
+				uploadImg()
+			}
+		}
+		//将base64转换为文件
+		function dataURLtoFile(dataurl, filename) {
+			var arr = dataurl.split(','),
+				mime = arr[0].match(/:(.*?);/)[1],
+
+				bstr = atob(arr[1]),
+				n = bstr.length,
+				u8arr = new Uint8Array(n);
+			//					console.log(mime)
+			while(n--) {
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+			return new File([u8arr], filename, {
+				type: mime
+			});
+		}
+	</script>
+
+</html>

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../asset/css/style.css" rel="stylesheet" />
+		<style>
+			#input-search {
+				width: 100%;
+				height: 28px;
+				margin-top: 6px;
+				background-color: rgba(0, 0, 0, 0.1);
+				border: 0;
+				border-radius: 6px;
+				padding-top: 0;
+				padding-bottom: 0;
+			}
+			
+			.div_search {
+				margin: 0 27px 0 0;
+			}
+			
+			#div_search_map {
+				margin-left: 27px;
+			}
+			
+			#div_person,
+			#div_layers {
+				position: absolute;
+				width: 28px;
+				height: 28px;
+				top: 0;
+				right: 0;
+				margin-left: 0;
+				margin-top: 5px;
+				margin-right: 10px;
+			}
+			
+			#a-user {
+				padding: 7px;
+				padding-right: 14px;
+			}
+			
+			#a_my_concern,
+			#btn_layers {
+				width: 28px;
+				height: 28px;
+				padding: 0px;
+				margin: 0;
+				margin-left: 4px;
+				border: 1px solid #999;
+				border-radius: 5px;
+				padding-left: 5px;
+			}
+			
+			.div_space_between {
+				display: flex;
+				-webkit-box-pack: justify;
+				-webkit-justify-content: space-between;
+				justify-content: space-between;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+			}
+			
+			.page_logo {
+				width: 100%;
+				height: 120px;
+			}
+			
+			.clr_red {
+				color: red;
+			}
+			
+			.div_msg_type {
+				background-color: white;
+			}
+			
+			.msg_item:first-child {
+				border-top: 1px solid #bbb;
+			}
+			
+			.msg_item {
+				padding: 8px 10px;
+				border-bottom: 1px solid #bbb;
+			}
+			
+			.msg_sub_item {
+				margin-top: 5px;
+			}
+			
+			#map_container {
+				width: 100%;
+				height: calc(100vh - 95px);
+				margin-top: 45px;
+			}
+			
+			#a-tree i {
+				border: 1px solid white;
+				padding: 3px;
+			}
+			
+			#a-tree.checked i {
+				border: 1px solid #007AFF;
+				padding: 3px;
+			}
+			
+			.checked,
+			.checked p {
+				color: #0062cc;
+				border-color: #0062cc;
+			}
+			
+			#div_tree {
+				position: absolute;
+				top: 0;
+				display: inline-block;
+			}
+			
+			#div_tree a {
+				padding: 4px;
+				padding-top: 9px;
+			}
+			
+			#div_tree a i {
+				font-size: 20px;
+			}
+			
+			#left-tree {
+				position: absolute;
+				width: 200px;
+				opacity: 0.8;
+				left: -150px;
+				top: 45px;
+				z-index: 10000;
+				max-height: calc( 100% - 45px);
+				overflow-y: auto;
+				display: none;
+			}
+			
+			#nav_type {
+				background-color: white;
+				width: 100%;
+			}
+			
+			#ul_tree_list2 {
+				display: none;
+			}
+			
+			#ul_tree_list3 {
+				display: none;
+			}
+			
+			#left-tree span.tree_item_text {
+				margin: 0;
+				padding: 0;
+				border: none;
+				display: inline;
+			}
+			
+			#left-tree .no_childnode {
+				margin: 0;
+				padding: 0;
+				border: none;
+				display: block !important;
+				float: right !important;
+			}
+			
+			.mui-btn .mui-badge-danger {
+				background-color: #dd524d;
+			}
+			
+			.form_left {
+				position: relative;
+				float: left;
+				width: 50%;
+				padding-left: 5px;
+				padding-right: 5px;
+			}
+			
+			.form_right {
+				position: relative;
+				float: left;
+				width: 50%;
+				padding-left: 5px;
+				padding-right: 5px;
+			}
+			
+			.form_item_title {
+				color: gray;
+				margin-top: 8px;
+			}
+			
+			.form_item_title_underline {
+				color: gray;
+				margin-top: 8px;
+				border-bottom: 1px solid gray;
+			}
+			
+			.sep_items {
+				border-left: 1px solid white;
+				padding-left: 6px;
+				padding-right: 6px;
+			}
+			
+			.operation_item {
+				margin-top: 0;
+				margin-bottom: 18px;
+				clear: both;
+			}
+			
+			.action_title {
+				color: gray;
+				padding: 0;
+				margin: 0;
+				padding-left: 15px;
+				border-bottom: 1px solid #DDD;
+				margin-bottom: 15px;
+				margin-top: 20px;
+				padding-bottom: 5px;
+			}
+			
+			.om_btn {
+				font-size: 14px;
+				display: block;
+				width: 43%;
+				margin: 10px;
+				float: left;
+				padding: 10px 0;
+			}
+			
+			.action_left {
+				text-align: center;
+				display: inline-block;
+				width: 120px;
+				position: relative;
+				float: left;
+				padding-left: 10px;
+				padding-right: 5px;
+			}
+			
+			.action_right {
+				font-size: 14px;
+				display: inline-block;
+				width: calc(100vw - 120px);
+				padding-left: 15px;
+				color: gray;
+			}
+			
+			.view_cell_a {
+				margin: 0;
+    			padding: 10px 0;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+
+		<div style="background-color:black;color:white;padding-top:15px;padding-bottom: 15px;padding-left: 10px;padding-right: 10px;">
+			<div>
+				<div style="display: inline-block;position: relative;float:left;margin:5px 10px;">
+					<img class="mui-media-object mui-pull-left head-img" style="width:40px;height: 40px;" src="../asset/images/user.png">
+				</div>
+				<div>
+					<div class="mui-ellipsis">
+						<span id="login_name" style="padding-right: 5px;display: none;" >ps</span>
+						<span id="user_name" class="" style="border-left:0"></span>
+						<!--<a class="sep_items" href="tel:15618677270" style="color:white"><i class="iconfont icon-phonenew"></i>15618677270</a>-->
+					</div>
+					<div class="mui-ellipsis" style="margin-top:5px;">
+						<span id="user_type" style="padding-right: 5px;"></span>
+						<span id="company_name" class="sep_items"></span>
+					</div>
+				</div>
+			</div>
+			<div style="margin-top:5px;padding-left: 10px;">
+				<span id="current_date" style="color:deepskyblue"></span> <span id="week" style="color:skyblue"></span> <span style="color:orangered"><span id="weather"></span> <span id="windDirection"></span> <span id="temperature"></span></span>
+			</div>
+		</div>
+		<div style="padding:15px;font-size: 20px;">
+			<i class="iconfont icon-wode" style="font-size: 20px;"></i> 用户设置
+		</div>
+		<div>
+			<ul class="mui-table-view mui-grid-view mui-grid-9">
+				<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-4">
+					<a class="link_open" href="settings_modify_pwd.html">
+						<i class="iconfont icon-xiugaimima" style="color:purple;font-size:26px;"></i>
+						<div class="mui-media-body">修改密码</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-4">
+					<a class="link_open" href="settings_concern.html">
+						<i class="iconfont icon-guanzhu1" style="color:darkslateblue;font-size:26px;"></i>
+						<div class="mui-media-body">关注设置</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-4">
+					<a class="link_open" href="settings_reset.html">
+						<i class="iconfont icon-reset" style="color:cadetblue;font-size:26px;"></i>
+						<div class="mui-media-body">恢复默认</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<div style="padding:15px;font-size: 20px;">
+			<i class="iconfont icon-settings" style="font-size: 20px;"></i> 系统设置
+		</div>
+		<div>
+			<ul class="mui-table-view mui-grid-view mui-grid-9">
+				<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a class="link_open" href="settings_upgrade.html">
+						<i class="iconfont icon-upgrade" style="color:#65B042;font-size:26px;"></i>
+						<div class="mui-media-body">系统升级</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<div id="div_clear_cache" class="view_cell_a">
+						<i class="iconfont icon-4" style="color:brown;font-size:26px;"></i>
+						<div class="mui-media-body">清除缓存</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="mui-content-padded">
+			<button id="a-logout" type="button" class="mui-btn mui-btn-warning mui-btn-block">
+						<i class="iconfont icon-tuichu"></i> 退出登录</button>
+		</div>
+		<header class="mui-bar " style="bottom: 0;border: #008000;   height: 36px;">
+			<a class="mui-action-back mui-icon mui-pull-left" style="color: #f0ad4e;font-size: 16px;">返回首页</a>
+			
+			 
+		</header>
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/app.js"></script>
+	<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=231dea36dd38358b3fc4da76957a353b&callback=init"></script>
+	<script src="http://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+	<script>
+		var a_logout = document.querySelector('#a-logout');
+		var isWaiting = false;
+		var user_data = JSON.parse(app.getSetting('user_data') || "[]")
+		$("#user_name").html(user_data.user_name)
+		$("#user_type").html(user_data.user_type)
+		$("#company_name").html(user_data.company_name)
+		$("#current_date").html(new Date().format("yyyy-MM-dd hh:mm:ss"))
+		var timer;
+		clearInterval(timer)
+		timer = setInterval(function() {
+			$("#current_date").html(new Date().format("yyyy-MM-dd hh:mm:ss"))
+		}, 1000)
+
+		$("#week").html(getMyDay(new Date()))
+
+		mui.init();
+
+		mui.ready(function() {
+			a_logout.addEventListener('tap', function() {
+				if(isWaiting)
+					return;
+
+				var btnArray = ['取消', '是'];
+				mui.confirm('是否退出登录？', '确认', btnArray, function(e) {
+					if(e.index == 1) {
+						app.removeSetting('remember_me');
+						app.removeSetting('user_name');
+						app.removeSetting('user_pwd');
+						app.removeSetting('user_data');
+
+						//	app.removeSetting('event_list');
+
+						//plus.webview.clear();
+
+						//	app.open('login.html');
+
+						app.openBack('../login.html');
+					}
+				})
+			})
+			
+			$('#div_clear_cache').click(function(){
+				var btnArray = ['取消', '是'];
+				mui.confirm('是否清除缓存？', '确认', btnArray, function(e) {
+					if(e.index == 1) {
+						//登录
+						app.removeSetting('remember_me');
+						app.removeSetting('user_name');
+						app.removeSetting('user_pwd');
+						//首页
+						app.removeSetting('current_gps');
+						app.removeSetting('event_list');
+						app.removeSetting('his_pos_save');
+						app.removeSetting('real_time_list_arr');
+						
+						//地图
+						app.removeSetting("map_facility_list");
+						app.removeSetting("switch_map");
+						app.removeSetting("switch_facility");
+						
+						//草稿
+						app.removeSetting("inspection_info_draft"+user_data.id);
+						app.removeSetting("problem_report_draft"+user_data.id);
+						//设施
+						app.removeSetting("ins_record_data");
+				
+						mui.toast('缓存已清除')
+						
+					}
+				})
+			})
+		})
+
+		mui.plusReady(function() {
+			
+			var _options = {
+				provider: "system",
+				geocode: false,
+				enableHighAccuracy: true
+			};
+
+			if(mui.os.ios) {
+				_options = {
+					provider: "amap",
+					geocode: false,
+					enableHighAccuracy: true
+				};
+			}
+			plus.geolocation.getCurrentPosition(translatePoint, function(e) {               
+				mui.toast("异常:" + e.message);      
+			}, _options);
+			plus.screen.lockOrientation("portrait-primary");
+
+		})
+		var currentLon;
+		var currentLat;
+		//获取地址
+		function translatePoint(position) {   
+			console.log(JSON.stringify(position))
+			currentLon = position.coords.longitude;   
+			currentLat = position.coords.latitude;   
+			get_weather() //获取天气
+		}
+
+		function init() {
+
+			var _zoom = 10;
+
+			var map = new AMap.Map('map_container', {
+				center: [121.0848100, 31.100000],
+				zoom: _zoom,
+				resizeEnable: true
+			});
+
+			g_map = map;
+			map.plugin(["AMap.ToolBar"], function() {
+				map.addControl(new AMap.ToolBar());
+			});
+
+			try {
+				var geolocation = null;
+				map.plugin('AMap.Geolocation', function() {
+					geolocation = new AMap.Geolocation({
+						enableHighAccuracy: true, //是否使用高精度定位，默认:true
+						timeout: 25000, //超过10秒后停止定位，默认：无穷大
+						convert: true,
+						zIndex: 100,
+						buttonOffset: new AMap.Pixel(10, 20), //定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+						zoomToAccuracy: true, //定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+						buttonPosition: 'LB'
+					});
+					map.addControl(geolocation);
+					//	        geolocation.getCurrentPosition();
+					AMap.event.addListener(geolocation, 'complete', onComplete); //返回定位信息
+					AMap.event.addListener(geolocation, 'error', onError); //返回定位出错信息
+				});
+				console.log(JSON.stringify(geolocation))
+			} catch(err) {
+				//			console.log(err);
+			}
+			//解析定位结果
+			function onComplete(data) {
+
+			}
+			//解析定位错误信息
+			function onError(data) {
+
+			}
+
+		}
+		//获取天气
+		function get_weather() {
+			AMap.service('AMap.Geocoder', function() { //回调函数
+				//实例化Geocoder
+				geocoder = new AMap.Geocoder({
+					city: "" //城市，默认：“全国”
+				});
+				var lnglatXY = [currentLon, currentLat]; //地图上所标点的坐标
+				geocoder.getAddress(lnglatXY, function(status, result) {
+					if(status === 'complete' && result.info === 'OK') {
+						//获得了有效的地址信息:
+						//即，result.regeocode.formattedAddress
+						//console.log(result);
+						var city = result.regeocode.addressComponent.city;
+						AMap.plugin('AMap.Weather', function() {
+							var weather = new AMap.Weather();
+							//查询实时天气信息, 查询的城市到行政级别的城市，如朝阳区、杭州市
+							weather.getLive(city, function(err, data) {
+								if(!err) {
+									console.log(JSON.stringify(data))
+									$("#weather").html(data.weather)
+									$("#windDirection").html(data.windDirection + "风")
+									$("#temperature").html(data.temperature + "℃")
+
+								}
+							});
+
+						});
+					} else {
+						//                  var city = '获取失败';
+						//获取地址失败
+						mui.toast("获取地址失败")
+					}
+
+				});
+			})
+
+		}
+
+		function getMyDay() {
+			var date = new Date()
+			var week;
+			if(date.getDay() == 0) week = "周日"
+			if(date.getDay() == 1) week = "周一"
+			if(date.getDay() == 2) week = "周二"
+			if(date.getDay() == 3) week = "周三"
+			if(date.getDay() == 4) week = "周四"
+			if(date.getDay() == 5) week = "周五"
+			if(date.getDay() == 6) week = "周六"
+			return week;
+		}
+	</script>
+
+</html>

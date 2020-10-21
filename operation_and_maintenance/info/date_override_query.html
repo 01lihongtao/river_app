@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../asset/css/mui.min.css">
+		<link href="../../asset/css/mui.picker.min.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			#list {
+				margin-top: 55px;
+			}
+			
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!-- 菜单容器 -->
+			<aside class="mui-off-canvas-right" id="offCanvasSideScroll" style="background: #fff;">
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<form class="mui-input-group" action="">
+							<div class="mui-input-row">
+								<p> </p>
+							</div>
+							<div class="mui-input-row mui-radio">
+								<div style="line-height: 40px;height: 40px;padding: 0 10px">
+									<span class="mui-pull-left" style="color: grey">选择时间</span>
+									
+									<span id='selectDate' class="mui-pull-right" style="color: grey"></span>
+									<span class=" mui-icon mui-icon-search mui-pull-right" style="  color: grey;  line-height: 40px;" id="search"></span>
+								</div>
+							</div>
+
+							<!--<div class="mui-content-padded" style="text-align: right;">
+
+								<button onclick="clickOk()" type="button" style="width:30%" class="mui-btn mui-btn-primary">
+									确认
+								</button>
+							</div>-->
+						</form>
+					</div>
+				</div>
+			</aside>
+
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right">过滤</a>
+					<h1 class="mui-title">日期覆盖查询</h1>
+
+				</header>
+				<div class="mui-content">
+					<div class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<ul id="list" class="mui-table-view">
+
+								<li class="mui-table-view-cell">
+									<!--<a class="link_open mui-navigate-right" href="personal_detail.html">
+										龚联<span style="color:red">&nbsp;&nbsp;●</span>
+									</a>-->
+
+								</li>
+
+							</ul>
+							<div id="page_ended" class="page_loader">
+								列表已到最后
+							</div>
+							<div class="mui-off-canvas-backdrop"></div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.picker.min.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		var facility_id = app.getUrlParam('facility_id');
+		var selectDate = document.getElementById('selectDate');
+		selectDate.addEventListener('tap', function() {　　
+			var dtpicker = new mui.DtPicker({
+				type: "month", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDate.innerText = items.value;
+			offCanvasWrapper.offCanvas('close');
+			init_html(selectDate.innerHTML)
+			})
+		})
+		selectDate.innerHTML = new Date().format("yyyy-MM");
+		mui.ready(function() {
+			mui(".mui-scroll-wrapper").scroll();
+//			init_html(new Date().format("yyyy-MM"))
+			//		var startTime = selectDateStart.innerText + '  00:00:00';
+			//		var endTime = selectDateEnd.innerText + ' 23:59:59';
+			
+			mui('#list').on('tap', '.link_open', function() {
+				app.open($(this).attr('href'));
+			})
+
+		})
+		$(function(){
+			init_html(new Date().format("yyyy-MM"))
+		})
+		 
+		var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		btn_filter.addEventListener('tap', function() {
+			offCanvasWrapper.offCanvas('show');
+		});
+
+		function getDaysInOneMonth(year_month) {
+
+			var arr = year_month.split("-");
+			year = arr[0];
+			month = arr[1];
+			month = parseInt(month, 10);
+			var d = new Date(year, month, 0);
+			var return_arr = [];
+			for(var i = 1; i <= d.getDate(); i++) {
+				var ii = i;
+				if(ii < 10) {
+					ii = "0" + ii
+				}
+				return_arr.push(year_month + "-" + ii)
+			}
+			return return_arr;
+		}
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+		
+		function init_html(year_mouth){
+			var data_arr = getDaysInOneMonth(year_mouth);
+			var html = "";
+			for(var i = 0; i < data_arr.length; i++) {
+				html += '<li  class="mui-table-view-cell">'
+				html += '<a  class="link_open mui-navigate-right"  href="facility_coverage_details.html?date=' + data_arr[i] + '&facility_id='+facility_id+'">'
+				html += data_arr[i]
+				html += '<span id="date-' + data_arr[i] + '" style="color:red;display:none;">&nbsp;&nbsp;●（未达标）</span>'
+				html += '</a>'
+				html += '</li>'
+			}
+			$("#list").html(html)
+			
+			console.log(JSON.stringify({
+				facilityId: facility_id,
+				startTime: data_arr[0],
+				endTime: data_arr[data_arr.length-1]
+			}))
+			app.ajax(app.url('query/cover_report'), {
+				facilityId: facility_id,
+				startTime: data_arr[0],
+				endTime: data_arr[data_arr.length-1]
+			}, function(ret) {
+				console.log(JSON.stringify(ret))
+				if(ret.code == 0) {
+					var data = ret.data;
+					for(var i in data) {
+						if(data[i] == 1) {
+							$("#date-" + i).show()
+						}
+					}
+				} else {
+					mui.toast(ret.error);
+				}
+
+			});
+		}
+	</script>
+
+</html>

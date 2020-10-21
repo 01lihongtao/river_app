@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../asset/css/mui.min.css">
+		<link rel="stylesheet" href="../asset/css/iconfont.css" />
+		<link rel="stylesheet" href="../asset/css/style.css">
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			.mui-bar-nav{
+				
+			}
+			
+			.operation_item {
+				margin-top: 5px;
+				margin-bottom: 10px;
+				clear: both;
+			}
+			
+			.action_left {
+				text-align: center;
+				display: inline-block;
+				width: 180px;
+				position: relative;
+				float: left;
+				padding-left: 5px;
+				padding-right: 5px;
+			}
+			
+			.action_right {
+				font-size: 14px;
+				display: inline-block;
+				width: calc(100vw - 180px);
+				padding-left: 15px;
+				color: gray;
+			}
+			.mui-slider-title{
+				top: 0;
+			}
+			.mui-slider-indicator{
+				top: 8px;
+				left: 0;
+				width: 50px; 
+			}
+			.mui-slider-title{
+				text-align: right;
+				background-color:none;
+				color: #fff;
+				padding-right: 10px;
+				font-size: 18px;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		
+		<div class="mui-content">
+			<img class="img_width_100" src="../asset/images/normal_search.png">
+			<!--<div id="slider" class="mui-slider">
+				<div class="mui-slider-group mui-slider-loop">
+				 
+					<div class="mui-slider-item mui-slider-item-duplicate">
+						<a href="#">
+							<img src="../asset/images/normal_search.png">
+							<p class="mui-slider-title">调水方案</p>
+						</a>
+					</div>
+					<div class="mui-slider-item">
+						<a href="#">
+							<img src="../asset/images/normal_search.png">
+							<p class="mui-slider-title">日常巡查要求</p>
+						</a>
+					</div>
+					
+					<div class="mui-slider-item">
+						<a href="#">
+							<img src="../asset/images/normal_search.png">
+							<p class="mui-slider-title">调水方案</p>
+						</a>
+					</div>
+			 
+					<div class="mui-slider-item mui-slider-item-duplicate">
+						<a href="#">
+							<img src="../asset/images/normal_search.png">
+							<p class="mui-slider-title">日常巡查要求</p>
+						</a>
+					</div>
+				</div>
+				<div class="mui-slider-indicator mui-text-right">
+					<div class="mui-indicator mui-active"></div>
+					<div class="mui-indicator"></div>
+					
+				</div>
+			</div>-->
+			
+			
+			<nav id="form_type" class="mui-bar-tab" style="background-color:white;border-bottom: 1px dashed darkgray;">
+				<a class="mui-tab-item mui-active" href="#">操作登记</a>
+				<a class="mui-tab-item" href="#">信息流转</a>
+			</nav>
+			<div id="caozuo">
+				<div id="div_attendance" class="operation_item">
+					<div class="action_left">
+						<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="operation/attendance.html">签到考勤</a>
+						<p>日常巡查 | 巡查/监理单位</p>
+					</div>
+					<div class="action_right">进行巡查工作前，于指定时间内在指定位置进行签到，以完成当天的考勤，与绩效息息相关。</div>
+				</div>
+				<div id="xunjian" class="operation_item">
+					<div class="action_left">
+						<a class="mui-btn mui-btn-primary yuny-w100" >巡检登记</a>
+						<p>日常巡查 | 巡查/监理单位</p>
+					</div>
+					<div class="action_right">对水利设施的各项内容进行全方位巡查，并进行巡查结果登记，如发现问题则及时上报。</div>
+				</div>
+				<div id="problem_report" class="operation_item">
+					<div class="action_left">
+						<a class="mui-btn mui-btn-primary yuny-w100">问题上报</a>
+						<p>日常巡查 | 巡查/监理单位</p>
+					</div>
+					<div class="action_right">日常巡查时发现的问题需要及时上报，填写报告时需要注意对问题的描述必须清晰明确，并附上照片。</div>
+				</div>
+				<div id="maintenance" class="operation_item" style="display: none;">
+					<div class="action_left">
+						<a class="mui-btn mui-btn-primary yuny-w100">维修养护</a>
+						<p>日常巡查 | 巡查单位</p>
+					</div>
+					<div class="action_right">站内驻扎的巡查维护人员按要求对水闸进行日常的养护和维护修工作，并提交工作过程和结果</div>
+				</div>
+				<!--			 	
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="operation/green_conservation.html">绿化养护</a>
+			 			<p>日常养护 | 养护单位</p>
+			 		</div>
+			 		<div class="action_right">养护单位对水利设施的绿化植被进行日常养护，养护完成后，由绿化负责人填写该报告。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="operation/water_registration.html">调水登记</a>
+			 			<p>调水活动 | 巡查单位</p>
+			 		</div>
+			 		<div class="action_right">根据既定调水方案和规则，通过水利设施进行调水操作，并由负责人填写报告。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="operation/health_duty.html">卫生值勤</a>
+			 			<p>日常管理 | 巡查单位</p>
+			 		</div>
+			 		<div class="action_right">巡查单位自行负责设施内的卫生状况，并安排人员对各处卫生状况进行专项检查并上报结果。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="operation/ship_pass_gate.html">船舶过闸</a>
+			 			<p>日常巡查 | 巡查单位</p>
+			 		</div>
+			 		<div class="action_right">当有船舶需要过闸时，巡查单位负责开闸将船舶放行，并将放行的相关信息进行记录。</div>
+			 	</div>-->
+			</div>
+
+			<div id="xinxi">
+				<div class="operation_item">
+					<div class="action_left">
+						<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/patrol_scheduling.html">巡查排班</a>
+					</div>
+					<div class="action_right">查看各单位排班表，相关权限可进行修改，巡查员可查看本人排班。</div>
+				</div>
+				<div class="operation_item">
+					<div class="action_left">
+						<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/patrol_coverage_query.html">巡检覆盖查询</a>
+					</div>
+					<div class="action_right">按月对本年度各单位的巡检状况及覆盖率进行查询。</div>
+				</div>
+				<div id="water_rectification" class="operation_item">
+					<div class="action_left">
+						<a class="mui-btn mui-btn-primary yuny-w100">整改维护</a>
+					</div>
+					<div class="action_right">巡查问题上报后，于该列表内查看状态和详情，并执行流转操作。</div>
+				</div>
+				<div id="xunjian_list" class="operation_item">
+					<div class="action_left">
+						<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/inspection.html">巡检信息</a>
+					</div>
+					<div class="action_right">巡检登记信息上报后，于该列表内查看状态和详情。</div>
+				</div>
+				<div id="maintenance_list" class="operation_item" style="display: none;">
+					<div class="action_left">
+						<a class="mui-btn mui-btn-primary yuny-w100" >维修养护</a>
+					</div>
+					<div class="action_right">维修和养护信息上报后，于该列表内查看并执行上传操作。</div>
+				</div>
+				<div class="operation_item mui-hidden">
+					<div class="action_left">
+						<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/attendance_company_list.html">日常考勤记录表</a>
+					</div>
+					<div class="action_right">管理方及各运营单位对整体的考勤签到情况进行查看。</div>
+				</div>
+				<!--			 	
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/green_conservation.html">绿化养护信息流转</a>
+			 		</div>
+			 		<div class="action_right">绿化养护信息上报后，于该列表内查看状态和详情，并执行流转操作。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/water_transfer.html">调水信息流转</a>
+			 		</div>
+			 		<div class="action_right">调水登记信息上报后，于该列表内查看状态和详情，并执行流转操作。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/health_duty.html">卫生值勤信息流转</a>
+			 		</div>
+			 		<div class="action_right">卫生值勤信息上报后，于该列表内查看状态和详情，并执行流转操作。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/ship_pass_gate.html">船舶过闸信息流转</a>
+			 		</div>
+			 		<div class="action_right">船舶过闸信息上报后，于该列表内查看状态和详情。</div>
+			 	</div>
+			 	-->
+			</div>
+		</div>
+		
+		<header class="mui-bar " style="bottom: 0;border: #008000;   height: 36px;">
+			<a class="mui-action-back mui-icon mui-pull-left" style="color: #f0ad4e;font-size: 16px;">返回首页</a>
+			
+			<!--<a class="mui-action-back mui-icon mui-pull-right" style="color: #f0ad4e;font-size: 16px;">巡查要求</a>-->
+			
+		</header>
+		<!-- 这是信息流转 -->
+		<div id="popover-list-maintenance-list" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul  class="mui-table-view">
+				
+				<li class="mui-table-view-cell" onclick="open_maintenance_list(8803)"  >
+					信息日常养护
+				</li>
+				<li class="mui-table-view-cell" onclick="open_maintenance_list(8801)"  >
+					汛前讯后养护
+				</li>
+				<li class="mui-table-view-cell" onclick="open_maintenance_list(8802)">
+					维修作业 
+				</li>
+			</ul> 
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#popover-list-maintenance-list"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+		 <!-- 这是操作列表 -->
+		<div id="popover-list-maintenance" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul  class="mui-table-view">
+				<li class="mui-table-view-cell" onclick="open_maintenance(8803)"  >
+					日常养护上报
+				</li>
+				<li class="mui-table-view-cell" onclick="open_maintenance(8801)"  >
+					汛前讯后养护上报
+				</li>
+				<li class="mui-table-view-cell"  onclick="open_maintenance(8802)">
+					维修作业上报
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#popover-list-maintenance"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+		<div id="popover-list-xunjian" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul  class="mui-table-view">
+				<li class="mui-table-view-cell" onclick="open_xunjian(8501)"  >
+					日常监理巡查
+				</li>
+				<li class="mui-table-view-cell"  onclick="open_xunjian(8502)">
+					日常维护巡查
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#popover-list-xunjian"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+		<div id="popover-list-report" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul  class="mui-table-view">
+				<li class="mui-table-view-cell" onclick="open_report(8501)"  >
+					水利整改上报
+				</li>
+				<li class="mui-table-view-cell"  onclick="open_report(8502)">
+					日常维护上报
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#popover-list-report"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+		<div id="popover-list-rectification" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul  class="mui-table-view">
+				<li class="mui-table-view-cell" onclick="open_rectification(8501)"  >
+					水利整改
+				</li>
+				<li class="mui-table-view-cell"  onclick="open_rectification(8502)">
+					设备维护
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#popover-list-rectification"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+		
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		
+		$("#xunjian a").on("tap", function() {
+			if(app.isAdmin()){
+				setTimeout(function(){ 
+					mui('#popover-list-xunjian').popover('show')
+				},500)
+				return
+			}
+			if(app.isYw()){
+				app.open("operation/inspection_registration.html?inspectionType=8502")
+				return
+			}
+			
+			app.open("operation/inspection_registration.html")
+			return
+		})
+		
+		$("#problem_report a").on("tap", function() {
+			if(app.isAdmin()){
+				setTimeout(function(){
+					mui('#popover-list-report').popover('show')
+				},500)
+				return false
+			}
+			if(app.isYw()){
+				app.open("operation/problem_reporting.html?inspectionType=8502")
+				return
+			}
+			
+			app.open("operation/problem_reporting.html?inspectionType=8501")
+			return
+		})
+		
+		$("#water_rectification a").on("tap", function() {
+			if(app.isAdmin()){
+				setTimeout(function(){
+					mui('#popover-list-rectification').popover('show')
+				},500)
+				return
+			}
+			if(app.isYw()){
+				app.open("info/water_rectification.html?inspectionType=8502")
+				return
+			}
+			
+			app.open("info/water_rectification.html?inspectionType=8501")
+			return
+		})
+		$("#maintenance a").on("tap", function() {
+			setTimeout(function(){
+				mui('#popover-list-maintenance').popover('show')
+			},500)
+			
+			return
+		})
+		$("#maintenance_list a").on("tap", function() {
+			setTimeout(function(){
+				mui('#popover-list-maintenance-list').popover('show')
+			},500)
+			
+			return
+		})
+		function open_xunjian(inspectionType){
+			app.open("operation/inspection_registration.html?inspectionType="+inspectionType)
+			mui('#popover-list-xunjian').popover('hide')
+			return
+		}
+		function open_report(inspectionType){
+			app.open("operation/problem_reporting.html?inspectionType="+inspectionType)
+			mui('#popover-list-report').popover('hide')
+			return
+		}
+		function open_rectification(inspectionType){
+			app.open("info/water_rectification.html?inspectionType="+inspectionType)
+			mui('#popover-list-rectification').popover('hide')
+			return
+		}
+		// 操作维修养护的日常养护 新增功能
+		function handle_maintenance(){
+			app.open("info/handle_maintenance.html")
+			mui('#popover-list-rectification').popover('hide')
+			return
+		}
+		// 信息流转 的新增日常养护
+		// function handle_maintenance_list(){
+		// 	// 数据暂时使用的是和操作的日常养护一个页面
+		// 	app.open("info/handle_maintenance.html")
+		// 	mui('#popover-list-rectification').popover('hide')
+		// 	return
+		// } 
+		
+		
+		// 这是操作信息的维修养护
+		function  open_maintenance(inspectionType){
+			app.open("operation/maintenance.html?maintenaceRepairType="+inspectionType)
+			mui('#popover-list-maintenance').popover('hide')
+			return 
+		}
+		
+		// 这是信息流转的维修养护的事件
+		function open_maintenance_list(inspectionType){
+			app.open("info/maintenance_list.html?maintenaceRepairType="+inspectionType)
+			
+			mui('#popover-list-maintenance-list').popover('hide')
+			return
+		}
+		$(function(){
+			$("#caozuo").show()
+			$("#xinxi").hide()
+			// if(app.isZz()){
+			// 	$("#xunjian").hide()
+			// 	$("#problem_report").hide()
+			// 	$("#xunjian_list").hide()
+			// }
+			if(app.isJl() || app.isGly()){
+				
+			}
+			// if(app.isZz() || app.isAdmin()){
+				$("#maintenance").show()
+				$("#maintenance_list").show()
+			// }
+//			if(app.needAttendance())
+//			{
+//				$('#div_attendance').show();
+//			}
+//			else
+//			{
+//				$('#div_attendance').hide();
+//			}
+		})
+//		var slider = mui("#slider");
+//		document.getElementById("switch").addEventListener('toggle', function(e) {
+//			if (e.detail.isActive) {
+//				slider.slider({
+//					interval: 5000
+//				});
+//			} else {
+//				slider.slider({
+//					interval: 0
+//				});
+//			}
+//		});
+		mui.ready(function() {
+			mui('#form_type').on('tap', '.mui-tab-item', function() {
+				current_tree_type = this.innerText;
+				console.log(current_tree_type)
+				if(current_tree_type == '操作登记') {
+					$("#caozuo").show()
+					$("#xinxi").hide()
+				}
+				// person
+				else if(current_tree_type == '信息流转') {
+					$("#caozuo").hide()
+					$("#xinxi").show()
+				}
+			})
+		})
+
+		mui.plusReady(function() {});
+	</script>
+
+</html>

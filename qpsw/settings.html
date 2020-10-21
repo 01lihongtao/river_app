@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="./css/mui.min.css">
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			.mui-views,
+			.mui-view,
+			.mui-pages,
+			.mui-page,
+			.mui-page-content {
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				width: 100%;
+				height: 100%;
+				background-color: #efeff4;
+			}
+			.mui-pages {
+				top: 46px;
+				height: auto;
+			}
+			.mui-scroll-wrapper,
+			.mui-scroll {
+				background-color: #efeff4;
+			}
+			.mui-page.mui-transitioning {
+				-webkit-transition: -webkit-transform 300ms ease;
+				transition: transform 300ms ease;
+			}
+			.mui-page-left {
+				-webkit-transform: translate3d(0, 0, 0);
+				transform: translate3d(0, 0, 0);
+			}
+			.mui-ios .mui-page-left {
+				-webkit-transform: translate3d(-20%, 0, 0);
+				transform: translate3d(-20%, 0, 0);
+			}
+			.mui-navbar {
+				position: fixed;
+				right: 0;
+				left: 0;
+				z-index: 10;
+				height: 44px;
+				background-color: #f7f7f8;
+			}
+			.mui-navbar .mui-bar {
+				position: absolute;
+				background: transparent;
+				text-align: center;
+			}
+			.mui-android .mui-navbar-inner.mui-navbar-left {
+				opacity: 0;
+			}
+			.mui-ios .mui-navbar-left .mui-left,
+			.mui-ios .mui-navbar-left .mui-center,
+			.mui-ios .mui-navbar-left .mui-right {
+				opacity: 0;
+			}
+			.mui-navbar .mui-btn-nav {
+				-webkit-transition: none;
+				transition: none;
+				-webkit-transition-duration: .0s;
+				transition-duration: .0s;
+			}
+			.mui-navbar .mui-bar .mui-title {
+				display: inline-block;
+				width: auto;
+			}
+			.mui-page-shadow {
+				position: absolute;
+				right: 100%;
+				top: 0;
+				width: 16px;
+				height: 100%;
+				z-index: -1;
+				content: '';
+			}
+			.mui-page-shadow {
+				background: -webkit-linear-gradient(left, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .01) 50%, rgba(0, 0, 0, .2) 100%);
+				background: linear-gradient(to right, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, .01) 50%, rgba(0, 0, 0, .2) 100%);
+			}
+			.mui-navbar-inner.mui-transitioning,
+			.mui-navbar-inner .mui-transitioning {
+				-webkit-transition: opacity 300ms ease, -webkit-transform 300ms ease;
+				transition: opacity 300ms ease, transform 300ms ease;
+			}
+			.mui-page {
+				display: none;
+			}
+			.mui-pages .mui-page {
+				display: block;
+			}
+			.mui-page .mui-table-view:first-child {
+				margin-top: 15px;
+			}
+			.mui-page .mui-table-view:last-child {
+				margin-bottom: 30px;
+			}
+			
+			.mui-table-view span.mui-pull-right {
+				color: #999;
+			}
+			.mui-table-view-divider {
+				background-color: #efeff4;
+				font-size: 14px;
+			}
+			.mui-table-view-divider:before,
+			.mui-table-view-divider:after {
+				height: 0;
+			}
+			.head {
+				height: 40px;
+			}
+			#head {
+				line-height: 40px;
+			}
+			.head-img {
+				width: 40px;
+				height: 40px;
+			}
+			#head-img1 {
+				position: absolute;
+				bottom: 10px;
+				right: 40px;
+				width: 40px;
+				height: 40px;
+			}
+			.update {
+				font-style: normal;
+				color: #999999;
+				margin-right: -25px;
+				font-size: 15px
+			}
+			.mui-fullscreen {
+				position: fixed;
+				z-index: 20;
+				background-color: #000;
+			}
+			.mui-ios .mui-navbar .mui-bar .mui-title {
+				position: static;
+			}
+			.title {
+			    margin: 20px 15px 7px;
+			    color: #6d6d72;
+			    font-size: 15px;
+			}
+			
+			.mui-table-view-cell>.mui-numbox {
+			    position: absolute;
+			    top: 50%;
+			    right: 15px;
+			    -webkit-transform: translateY(-50%);
+			    transform: translateY(-50%);
+			}
+			
+			#li_method_report {
+				display: none;
+			}
+			
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">设置</h1>
+		</header>
+		<div class="mui-content">
+			<div class="title" style="display: none;">
+				服务器
+			</div>
+			<ul class="mui-table-view" style="display: none;">
+				<li class="mui-table-view-cell">升级服务器URI
+					<span id="uri_upgrade_srv" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span></li>
+				<li class="mui-table-view-cell">上传服务器URI
+					<span id="uri_upload_srv" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span></li>
+			</ul>
+			<div class="title">
+				通用
+			</div>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">屏幕常亮
+					<div id="switch_wake_lock" class="mui-switch mui-switch-blue">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<!-- <li class="mui-table-view-cell">轨迹点采集间隔(秒)
+					<span id="interval_gps_get" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span></li>
+				</li> -->
+				<!-- <li class="mui-table-view-cell">轨迹点上传间隔(秒)
+					<span id="interval_gps_upload" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span></li>
+				</li> -->
+				<!-- <div id="" style="display: none;">
+					<li id="li_method_report" class="mui-table-view-cell">绩效查看方式(按对象/日期)
+						<div id="switch_jx_mode" class="mui-switch mui-switch-blue">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</li>
+				</div> -->
+			</ul>
+			<div class="title">
+				其它
+			</div>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a class="link_open mui-navigate-right" href="settings_upgrade.html">
+						系统升级&nbsp;
+						<span id='strVerCurrent' style="color:gray;">1.0.0</span>&nbsp;
+						<span id='strVerOnline' style="color:red;font-size:14px;" class="mui-hidden">有新版本</span>
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a class="link_open mui-navigate-right" href="settings_modify_pwd.html">
+						修改密码
+					</a>
+				</li>
+			</ul>
+			<div class="mui-content-padded">
+				<button type="button" class="mui-btn mui-btn-primary mui-btn-block" onclick="clearCache();return false;">清除缓存</button>
+				<button type="button" class="mui-btn mui-btn-warning mui-btn-block" onclick="resetSettings();return false;">恢复默认设置</button>
+			</div>
+		</div>
+	</body>
+
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="./js/mui.min.js"></script>
+	<script src="./js/app.js"></script>
+	<script>
+		var currentUserId = app.getUserId();
+		mui.init();
+
+		var switch_wake_lock = document.getElementById('switch_wake_lock');
+		// var switch_jx_mode = document.getElementById('switch_jx_mode');
+		// var interval_gps_upload = document.getElementById('interval_gps_upload');
+		var uri_upgrade_srv = document.getElementById('uri_upgrade_srv');
+
+		mui.ready(function() {
+
+			$('.link_open').click(function() {
+				app.open($(this).attr('href'));
+				return false;
+			})
+
+			/*
+			// uri
+			uri_upgrade_srv.addEventListener('tap',function(event){
+				urlUpgradeSrv(this,event,'升级服务器URI');
+			})
+			
+			uri_upload_srv.addEventListener('tap',function(event){
+				urlUpgradeSrv(this,event,'上传服务器URI');
+			})
+			*/
+
+			// switch_jx_mode
+			if (app.getSetting('jx_mode') == 'true') {
+				switch_jx_mode.classList.add('mui-active');
+			}
+
+			// switch_jx_mode.addEventListener('toggle', function(event) {
+			// 	app.setSetting('jx_mode', this.classList.contains('mui-active'));
+			// })
+
+			initCtrls();
+		})
+
+		mui.plusReady(function() {
+			// switch_wake_lock
+			if (app.getSetting('wake_lock') == 'true') {
+				switch_wake_lock.classList.add('mui-active');
+			}
+
+			switch_wake_lock.addEventListener('toggle', function(event) {
+				app.setSetting('wake_lock', this.classList.contains('mui-active'));
+				//	plus.device.setWakelock(app.getSetting('wake_lock') == 'true');
+			})
+
+			initVersion();
+		});
+
+		function clearCache() {
+			var btnArray = ['取消', '是'];
+			mui.confirm('是否清除缓存？', '确认', btnArray, function(e) {
+				if (e.index == 0) {
+					return;
+				}
+
+				var lst_events = JSON.parse(app.getSetting('event_list') || '[]');
+				var bUpdated = false;
+				for (var i = lst_events.length - 1; i >= 0; --i) {
+					// evidence, correct
+					if (lst_events[i].event_type != 1 &&
+						lst_events[i].event_type != 2 &&
+						lst_events[i].userId == currentUserId) {
+						lst_events.splice(i, 1);
+						bUpdated = true;
+					}
+				}
+
+				if (bUpdated)
+					app.setSetting('event_list', JSON.stringify(lst_events));
+				mui.toast('清除缓存成功');
+			})
+		}
+
+		function resetSettings() {
+			var btnArray = ['取消', '是'];
+			mui.confirm('是否恢复默认设置？', '确认', btnArray, function(e) {
+				if (e.index == 1) {
+					app.setSetting('wake_lock', 'false');
+					//	plus.device.setWakelock(false);
+					app.setSetting('jx_mode', 'false');
+
+					app.setSetting('switch_ship', 'true');
+					app.setSetting('switch_person', 'true');
+					app.setSetting('switch_inclosure', 'true');
+					app.setSetting('switch_map', 'true');
+
+					window.location.reload();
+
+					var indexViewer = plus.webview.getWebviewById('index.html');
+					mui.fire(indexViewer, 'qpsw_refresh');
+				}
+			})
+		}
+
+		function initCtrls() {
+			// var data = JSON.parse(app.getSetting('default_cfg') || '{}');
+
+			//			console.log(app.getSetting('default_cfg'));
+			// if (data.dataUpdateUrl != undefined)
+				// uri_upgrade_srv.innerText = data.dataUpdateUrl;
+			// if (data.dataUploadUrl != undefined)
+				// uri_upload_srv.innerText = data.dataUploadUrl;
+
+			// $('#interval_gps_get').text(app.getSetting('posCollectInterval'));
+			// $('#interval_gps_upload').text(app.getSetting('posReportInterval'));
+
+			// if (app.isTest()) {
+			// 	$('#li_method_report').show();
+			// }
+		}
+
+		function initVersion() {
+			document.getElementById('strVerCurrent').innerText = app.getSetting("app_ver"); 
+
+			// var mapOnline = JSON.parse(app.getSetting('version_online') || '{}')
+			var mapOnline=''
+			mui.getJSON(app.url("version/mh_version.json"), function(ret) {
+				console.log(JSON.stringify(ret));
+				mapOnline = ret.versionName;
+				// versionCodeService = ret.versionCode;
+				// url_version = ret.urlVersion;
+				
+				})
+			// var strVerOnline = '';
+
+			// if (mui.os.ios) {
+			// 	strVerOnline = mapOnline.iosVersion;
+			// } else {
+			// 	strVerOnline = mapOnline.androidVersion;
+			// }
+
+			if (mapOnline < app.getSetting("app_ver")) {
+				document.getElementById('strVerOnline').classList.remove('mui-hidden');
+			}
+		}
+	</script>
+</html>

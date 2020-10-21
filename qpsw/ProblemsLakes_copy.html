@@ -1,0 +1,408 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/mui.picker.min.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="css/mui.poppicker.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-bar {
+				height: 85px;
+				border-bottom: 1px solid #ddd;
+			}
+
+			.mui-bar-nav~.mui-content {
+				padding-top: 85px;
+			}
+
+			.page_loader {
+				text-align: center;
+				color: gray;
+				border-top: 1px solid #ccc;
+				padding-top: 5px;
+			}
+
+			.init-html-h3 {
+				text-align: center;
+				font-size: 18px;
+				font-weight: 100;
+				margin-left: 13px;
+				line-height: 30px;
+			}
+
+			.kq-row {
+				padding: 15px;
+			}
+
+			.kq-6 {
+				width: 50%;
+				float: left;
+			}
+
+			.kq-6:last-child {
+				text-align: right;
+			}
+
+			.kq-6 p {
+				font-size: 16px;
+			}
+
+			.card_show {
+				/* height: 80px; */
+				background-color: rgb(109, 164, 247);
+				border-radius: 0px 0px 5px 5px;
+				margin: -10px 5px 0px 5px;
+			}
+
+			.detail_title {
+				display: inline-block;
+				color: white;
+				text-align: center;
+				width: 25%;
+			}
+
+			.search_style {
+				background-color: rgb(109, 164, 247);
+				color: white;
+				padding: 10px;
+				margin: 0px 5px 0px 5px;
+			}
+
+			.detail_title_one {
+				display: inline-block;
+				width: 25%;
+				margin: 0px 5px;
+			}
+
+			.select_color {
+
+				/* background-color: rgb(109, 164, 247) !important; */
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<!-- 侧滑导航根容器 -->
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+			<!-- 主页面容器 -->
+			<div class="mui-inner-wrap">
+				<!-- 主页面标题 -->
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<!-- <a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right">过滤</a> -->
+					<h1 class="mui-title">河湖问题</h1>
+					<div class="mui-bar-tab">
+						<a class="mui-tab-item mui-active" href="#">
+							市区管
+						</a>
+						<a class="mui-tab-item" href="#">
+							镇村管
+						</a>
+					</div>
+					<button style="display:none" class="mui-btn mui-btn-blue mui-btn-outlined mui-pull-left" id="btn_date_range">本日</button>
+				</header>
+				<div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<!-- 这是时间选择 -->
+						<div class="search_style">
+							<span style="color: white;margin-left:11px;" class="mui-icon mui-icon-search" id="search"></span>
+							<span id='selectDateStart' style="color: white">开始时间</span> -
+							<span id='selectDateEnd' style="color: white">结束时间</span>
+							<div id="selectType" style="color: white;margin-left:9.5%;margin-top:10px;">全部问题</div>
+						</div>
+						<!-- 这是问题类型 -->
+						<!-- <span class="select_color">
+							
+					 </span> -->
+
+
+						<div class="mui-content" id="list">
+
+						</div>
+					</div>
+				</div>
+
+				<div id="page_ended" class="page_loader">
+					列表已到最后
+				</div>
+				<div class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+	</body>
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/mui.min.js "></script>
+	<script src="js/mui.picker.min.js "></script>
+	<script src="js/app.js"></script>
+	<script src=".js/mui.poppicker.js"></script>
+	<script type="text/javascript ">
+		var selectDateStart = document.getElementById('selectDateStart');
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var btn_date_range = document.getElementById('btn_date_range');
+		var selectType = document.getElementById('selectType'); //这是类型选择
+		var currentUnitType = 3;
+		var currentUnitTypeName = '养护单位';
+		var currentCityType = 1;
+		var currentCityTypeName = '市区';
+		var global_data=[];
+		var g_type=0;
+
+		var cunPicker = new mui.PopPicker();
+		mui.init();
+		initDateRange();
+		mui('#offCanvasSideScroll').scroll();
+		mui('#offCanvasContentScroll').scroll();
+		mui.plusReady(function() {
+			loadData(1,'');
+		});
+
+		// button filter
+		// var btn_filter = document.getElementById('btn_filter');
+		var offCanvasWrapper = mui('#offCanvasWrapper');
+		// btn_filter.addEventListener('tap', function() {
+		// 	offCanvasWrapper.offCanvas('show');
+		// });
+
+		function clickReset() {
+			$('#rdo_all').prop('checked', true);
+		}
+		// 点击 类型
+		var arrTypeData = JSON.parse(app.getSetting('all_evid_types') || '[]');
+		var typePicker = new mui.PopPicker({
+			layer: 2
+		});
+		if (arrTypeData.length)
+			typePicker.setData(arrTypeData);
+		selectType.addEventListener('tap', function() {
+			typePicker.show(function(items) {
+				console.log('看看item值'+JSON.stringify(items[1].value))
+				selectType.innerText = items[0].text + "-" + items[1].text
+				$('#selectType').attr('item_id', items[0].value);
+				$('#selectType').attr('item_id_sub', items[1].value);
+				if(g_type==0){
+					loadData(1,items[1].value);
+				}else if(g_type==1){
+					loadData(2,items[1].value)
+				}
+				
+				//  var global=global_data.regionProblemVoList
+				// // console.log('是是'+JSON.stringify(global_data))
+				// for(var i=0;i<global.length;i++){
+				// 	var data=global[i]
+				// 	// console.log('这是类型'+JSON.stringify(data))
+				// }
+			});
+		})
+		function clickOk() {
+			offCanvasWrapper.offCanvas('close');
+			_f_city_type = $("input[name='cityType']:checked").val();
+			currentCityType = _f_city_type
+			loadData();
+		}
+		mui('.mui-bar-tab').on('tap', 'a', function(e) {
+			if (currentUnitTypeName == this.innerText)
+				return;
+			if (this.innerText == '市区管') {
+				currentUnitType = 1;
+				g_type=0;
+				loadData(currentUnitType);
+			} else if (this.innerText == '镇村管') {
+				currentUnitType = 2;
+				g_type=1;
+				loadData(currentUnitType);
+			}
+			currentUnitTypeName = this.innerText;
+		})
+		var pickerDateRanges = new mui.PopPicker();
+		// pickerDateRanges.setData(arrDateRanges);
+		btn_date_range.addEventListener('tap', function() {
+			pickerDateRanges.show(function(items) {
+				btn_date_range.innerText = items[0].text;
+				initDateRange();
+				loadData(1);
+				//返回 false 可以阻止选择框的关闭
+				//return false;
+			});
+		})
+		//选择时间
+		var selectDateStart = document.getElementById('selectDateStart');
+		    selectDateStart.addEventListener('tap', function() {
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateStart.innerText = items.value;
+				if(g_type==0){
+					loadData(1);
+				}else if(g_type==1){
+					loadData(2)
+				}
+			})
+		})
+		var selectDateEnd = document.getElementById('selectDateEnd');
+		var startTime = selectDateStart.innerText + '  00:00:00';
+		var endTime = selectDateEnd.innerText + ' 23:59:59';
+		selectDateEnd.addEventListener('tap', function() {
+			var dtpicker = new mui.DtPicker({
+				type: "date", //设置日历初始视图模式    
+			})
+			dtpicker.show(function(items) {
+				selectDateEnd.innerText = items.value;
+				if(g_type==0){
+					loadData(1);
+				}else if(g_type==1){
+					loadData(2)
+				}
+				// loadData(1);
+			})
+		})
+		//跳转
+		mui('#list').on('tap', '.mui-table-view-cell', function() {
+			return;
+			var regionId = this.getAttribute('regionId');
+			var url = "report_sta_detail_alarm.html?regionId=" + regionId;
+			if (selectDateStart.innerText != '开始时间' && selectDateEnd.innerText != '结束时间') {
+				var startTime = selectDateStart.innerText;
+				var endTime = selectDateEnd.innerText;
+				url += '&start=' + startTime + '&end=' + endTime;
+			}
+			app.open(url);
+		})
+
+		function DateDiff(sDate1, sDate2) { //sDate1和sDate2是2002-12-18格式  
+			var aDate, oDate1, oDate2, iDays
+			aDate = sDate1.split("- ")
+			oDate1 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]) //转换为12-18-2002格式  
+			aDate = sDate2.split("- ")
+			oDate2 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0])
+			iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24) //把相差的毫秒数转换为天数  
+			return iDays + 1;
+		}
+		//读取数据
+		function loadData(value,type) {
+			//			console.log(currentCityType)
+			var startTime = selectDateStart.innerText + ' 00:00:00';
+			var endTime = selectDateEnd.innerText + ' 23:59:59';
+			var mapData = {
+				start: startTime,
+				end: endTime,
+				subProblemId:type?type:'',
+				regionType: value == 1 ? 2001 : 2002,
+
+			};
+			var diff_day = DateDiff(selectDateStart.innerText, selectDateEnd.innerText);
+			console.log(JSON.stringify(mapData));
+			app.showProgressBar();
+			app.ajax(app.getQPVMS_IP() + "riverWar/findRegionProblemPro", mapData, function(result) {
+
+				//				console.log(JSON.stringify(result)) 
+
+				app.showProgressBar(false);
+
+				if (result.code == 200) {
+					var datas = result.data;
+					global_data=result.data
+					var html = '';
+
+					html = init_html(datas);
+					console.log('市区管2' + JSON.stringify(datas))
+					document.getElementById("list").innerHTML = html;
+				} else {
+					mui.toast("加载数据错误:" + result.error);
+				}
+			})
+		}
+
+		function init_html(datas) {
+			var subCount = datas.regionProblemVoList;
+			var string = '';
+			string +=
+				'<div class="card_show">' +
+				'<div style="margin:10px">' +
+				'<span class="detail_title">' + '名称' + '</span>' +
+				'<span class="detail_title">' + '上报数' + '</span>' +
+				'<span class="detail_title">' + '整改数' + '</span>' +
+				'<span class="detail_title">' + '整改率' + '</span>' +
+				'</div>' +
+				//这是下面展示部分 
+				'<div>' +
+				'<span class="detail_title">' +
+				'<div class="TextCenter">' + datas.reportCountSum + '个' +
+				'</div>' +
+				//这是时间 
+				'</span>' +
+				'<span class="detail_title">' +
+				'<div class="TextCenter">' + datas.correctCountSum + '个' +
+				'</div>' +
+				'</span>' +
+				'<span class="detail_title">' +
+				'<div class="TextCenter">' + ((datas.correctCountSum / datas.reportCountSum)>=1?1:(datas.correctCountSum / datas.reportCountSum)).toFixed(1) * 100 + '%' +
+				'</div>' +
+				'</span>' +
+				'</div>'
+			console.log('看看' + JSON.stringify(subCount))
+			for (var i = 0; i < subCount.length; i++) {
+				var sonData = subCount[i].riverDetailList; //这是每个片区的值
+				var parentdata = subCount[i]
+				var sonStr = ''
+				for (var j = 0; j < sonData.length; j++) {
+					var app = sonData[j];
+					sonStr += '<li class="mui-table-view-cell">' + '<a class="mui-navigate-right" href="#">' +
+						'<span class="detail_name detail_title_one">' + app.riverName + '</span>' +
+						'<span class="detail_title_one">' + '上报' + app.reportCount + '</span>' +
+						'<span class="detail_title_one">' + '整改' + app.correctCount + '</span>' +
+						'<span class="detail_title_one">' + ((app.correctCount / app.reportCount)>=1?1:(app.correctCount / app.reportCount)).toFixed(1) * 100 + '%' + '</span>' +
+						'</a>' +
+						'</li>'
+				}
+				string +=
+					'<div class="count_style">' +
+					'<ul class="mui-table-view mui-table-view-chevron">' +
+					'<li class="mui-table-view-cell mui-collapse">' + '<a class="mui-navigate-right" href="#">' +
+
+					'<span  class="detail_title_one detail_name">' + parentdata.regionName + '</span>' +
+					'<span class="detail_title_one">' + '上报' + parentdata.reportCount +
+
+					'</span>' +
+					'<span class="detail_title_one">' + '整改' + parentdata.correctCount + '</span>' +
+					'<span class="detail_title_one">' + ((parentdata.correctCount / parentdata.reportCount)>=1?1:(parentdata.correctCount / parentdata.reportCount)).toFixed(1) * 100 + '%' +
+					'</span>' +
+
+
+					'</a>' +
+					'<ul class="mui-table-view mui-table-view-chevron">' +
+					sonStr +
+					'</ul>' +
+					'</li>' +
+					'</ul>'
+				'</div>'
+			}
+
+			return string;
+		}
+
+		function initDateRange() {
+			if (btn_date_range.innerText == '本日') {
+				selectDateStart.innerText = app.getDay();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本周') {
+				selectDateStart.innerText = app.getWeekBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本月') {
+				selectDateStart.innerText = app.getMonthBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本季度') {
+				selectDateStart.innerText = app.getSeasonBegin();
+				selectDateEnd.innerText = app.getDay();
+			} else if (btn_date_range.innerText == '本年') {
+				selectDateStart.innerText = app.getYearBegin();
+				selectDateEnd.innerText = app.getDay();
+			}
+		}
+	</script>
+
+</html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="./css/mui.picker.min.css" rel="stylesheet" />
+    <link href="./css/mui.poppicker.css" rel="stylesheet" />
+    <link href="css/iconfont.css" rel="stylesheet"/>
+    <link href="css/style.css" rel="stylesheet"/> 
+    <style>
+    	#offCanvasSideScroll {
+    		background: white;
+    	}
+    	
+		#div_search {
+			margin-left:27px;
+		}
+		#div_left {
+			position: absolute;
+			top: 0;
+		}
+    </style>
+</head>
+<body onload="app.route()">
+<!--侧滑菜单容器-->
+	<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+		<!--菜单部分-->
+		<aside id="offCanvasSide" class="mui-off-canvas-right">
+			<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<h6 style="padding:5px;">过滤</h6>
+					<ul id="list-option" class="mui-table-view">
+						<li class="mui-table-view-cell">
+							<i class="iconfont icon-chuan"></i> 名称
+							<span id="inputShip" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请输入...</span>
+						</li>
+						<li class="mui-table-view-cell">
+							<i class="iconfont icon-dituleiwanggequ"></i> 片区
+							<span id="selectArea" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">全部</span>
+						</li>
+						<li class="mui-table-view-cell">
+							<i class="iconfont icon-dituleiwanggequ"></i> 所属单位
+							<span id="inputCompany" style="max-width: 100%;" class="mui-pull-right mui-ellipsis">请输入...</span>
+						</li>
+					</ul>
+					<div class="mui-content-padded" style="text-align: right;">
+						<button onclick="clickReset()" type="button" style="width:30%" class="mui-btn mui-btn-primary mui-btn-outlined">
+							重置
+						</button>
+						<button onclick="clickOk()" type="button" style="width:30%"  class="mui-btn mui-btn-primary">
+							确认
+						</button>
+					</div>
+
+				</div>
+			</div>
+		</aside>
+		<div class="mui-inner-wrap">
+			<header class="mui-bar mui-bar-nav">
+				<a id="btn_filter" class="mui-btn mui-btn-link mui-pull-right selecting_hide">过滤</a>
+				<div id="div_search" class="mui-input-row" >
+					<input id="input_search" style="text-align: left;" type="search" placeholder="输入搜索内容">
+				</div>
+				<div id="div_left">
+					<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+						<span class="mui-icon mui-icon-left-nav"></span>
+					</button>
+				</div>
+			</header>
+			<div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+			    <div id="part_obj">
+					<nav id="nav_type" class="mui-bar-tab">
+					    <a id="jx_type_ship" class="mui-tab-item mui-active" href="#">
+					        船舶
+					    </a>
+					    <a class="mui-tab-item" href="#">
+					        人员
+					    </a>
+					</nav>
+				    <ul id="list" class="mui-table-view">
+				    	<!--
+						<li item_id="1" class="mui-table-view-cell mui-media">
+							<a class="mui-navigate-right">
+								<img class="mui-media-object mui-pull-left" src="./images/evid1.png">
+								<div class="mui-media-body">
+									保洁船1
+									<p class='mui-ellipsis'>工作时间：<span style="color:red">200</span>小时</p>
+									<p class='mui-ellipsis'>巡检里程：<span style="color:red">300</span>公里</p>
+									<p class='mui-ellipsis'>水域覆盖：<span style="color:red">90%</span></p>
+									<p class='mui-ellipsis'>监控报警：<span style="color:red">0</span>次</p>
+								</div>
+							</a>
+						</li>
+						<li item_id="1" class="mui-table-view-cell mui-media">
+							<a class="mui-navigate-right">
+								<img class="mui-media-object mui-pull-left" src="./images/evid1.png">
+								<div class="mui-media-body">
+									保洁船2
+									<p class='mui-ellipsis'>工作时间：<span style="color:red">200</span>小时</p>
+									<p class='mui-ellipsis'>巡检里程：<span style="color:red">300</span>公里</p>
+									<p class='mui-ellipsis'>水域覆盖：<span style="color:red">90%</span></p>
+									<p class='mui-ellipsis'>监控报警：<span style="color:red">0</span>次</p>
+								</div>
+							</a>
+						</li>
+						<li item_id="3" class="mui-table-view-cell mui-media">
+							<a class="mui-navigate-right">
+								<img class="mui-media-object mui-pull-left" src="./images/evid1.png">
+								<div class="mui-media-body">
+									保洁船3
+									<p class="mui-ellipsis">工作时间：<span style="color:red">200</span>小时</p>
+									<p class="mui-ellipsis">巡检里程：<span style="color:red">300</span>公里<br /></p>
+									<p class="mui-ellipsis">水域覆盖：<span style="color:red">90%</span></p>
+									<p class="mui-ellipsis">监控报警：<span style="color:red">0</span>次</p>
+								</div>
+							</a>
+						</li>-->
+				    </ul>
+			    </div>
+			</div>
+			<div class="mui-off-canvas-backdrop"></div>
+		</div>
+	</div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/mui.min.js"></script>
+<script src="js/mui.picker.min.js"></script>
+<script src="js/mui.poppicker.js"></script>
+<script src="js/app.js"></script>
+<script type="text/javascript" charset="utf-8">
+	mui.init();
+	
+	mui('#offCanvasSideScroll').scroll();
+	mui('#offCanvasContentScroll').scroll();
+	
+	var inputShip = document.getElementById('inputShip');
+	var selectArea = document.getElementById('selectArea');
+	var inputCompany = document.getElementById('inputCompany');
+	
+	var bSearched = false;
+	
+	var _name = '', _area = '', _company = '';
+	var current_type = '船舶';
+	
+	function generateHtml(items)
+	{
+//		console.log(JSON.stringify(items));
+		var strHtml = '';
+		items.forEach(function(item){
+			if(item.shipName)
+			{
+				strHtml += '<li class="mui-table-view-cell" ship_id="' + item.id + '" lat="' + item.lat + '" lon="' + item.lon + '">' + 
+					'<div class="">' + 
+						item.shipName + 
+						'<p class="mui-h5 mui-ellipsis">' + item.shipOwner + '</p>' + 
+					'</div>' + 
+				'</li>';
+			}
+			else
+			{
+				strHtml += '<li class="mui-table-view-cell" person_id="' + item.id + '" lat="' + item.lat + '" lon="' + item.lon + '">' + 
+					'<div class="">' + 
+						item.description + 
+						'<p class="mui-h5 mui-ellipsis">更新时间 ' + item.update_time + '</p>' + 
+					'</div>' + 
+				'</li>';
+			}
+
+	  	});
+		
+		$('#list').html(strHtml);
+	}
+	
+	// 保洁船
+	function generateHtml_bjc(items)
+	{
+		if(current_type != '船舶')
+			return;
+			
+		var strHtml = '';
+		items.forEach(function(item){
+			strHtml += '<li class="mui-table-view-cell mui-media" ship_id="' + item.id + '" lat="' + item.lat + '" lon="' + item.lon + '">' +
+				'<a class="mui-navigate-right">' +
+					'<img class="mui-media-object mui-pull-left" src="' + app.url(item.url) + '">' +
+					'<div class="mui-media-body">' +
+						item.shipName + 
+						'<p class="mui-ellipsis">工作时间：<span style="color:red">' + app.formatSecondsStr(item.workingTime) + '</span></p>' +
+						'<p class="mui-ellipsis">巡检里程：<span style="color:red">' + app.formatMeters(item.workingDistance) + '</span> 米</p>' +
+						'<p class="mui-ellipsis">监控报警：<span style="">0</span>次</p>' +
+					'</div>' + 
+				'</a>' +
+			'</li>';
+		});
+		
+		$('#list').html(strHtml);
+	}
+	
+	// 人员
+	function generateHtml_jly(items)
+	{
+		if(current_type != '人员')
+			return;
+			
+		var strHtml = '';
+		items.forEach(function(item){
+			strHtml += '<li class="mui-table-view-cell mui-media" person_id="' + item.id + '" lat="' + item.lat + '" lon="' + item.lon + '">' +
+				'<a class="mui-navigate-right">' +
+					'<img class="mui-media-object mui-pull-left" src="./images/user.png">' +
+					'<div class="mui-media-body">' +
+						item.description + 
+						'<p class="mui-ellipsis">所属部门：<span style="color:red">' + item.department + '</span></p>' +
+						'<p class="mui-ellipsis">巡检里程：<span style="color:red">' + app.formatMeters(item.mileage) + '</span> 米</p>' +
+					'</div>' + 
+				'</a>' +
+			'</li>';
+		});
+		
+		$('#list').html(strHtml);
+	}
+	
+	var timeout1 = 0;
+	$('#input_search').on('input keyup',function(event){
+		if(event.type == 'keyup' && event.keyCode != 13)
+			return;
+			
+        if(timeout1 > 0)
+        {
+            clearTimeout(timeout1);
+            timeout1 = 0;
+        }
+
+		var inputValue = $(this).val();
+        var arrInfo = {name: inputValue}
+        
+        if(event.type == 'keyup'){
+        	if(inputValue.trim() == '')
+        	{
+        		$('#list').html('');
+        		bSearched = false;
+        		loadData();
+        		return;
+        	}
+        	
+    	    $('#nav_type').hide();
+    		app.showProgressBar();
+            app.ajax(app.url('api/search/findByCondition'),arrInfo,function(ret){
+            	app.showProgressBar(false);
+                if(ret.code == 200)
+                {
+                	bSearched = true;
+                    generateHtml(ret.data);
+                }
+                else
+                {
+                	mui.toast(ret.error);
+                }
+            });
+        }
+        else
+        {
+	        timeout1 = setTimeout(function(){
+	        	if(inputValue.trim() == '')
+	        	{
+	        		$('#list').html('');
+	        		bSearched = false;
+	        		loadData();
+	        		return;
+	        	}
+        	
+        		$('#nav_type').hide();
+        		app.showProgressBar();
+	            app.ajax(app.url('api/search/findByCondition'),arrInfo,function(ret){
+	            	app.showProgressBar(false);
+	                if(ret.code == 200)
+	                {
+	                	bSearched = true;
+	                	generateHtml(ret.data);
+	                }
+	                else
+	                {
+	                    mui.toast(ret.error);
+	                }
+	            })
+	            //               console.log($(_this).parents('li').attr('item_id') + $(_this).val());
+	        },2000);
+        }
+    })
+	
+	/*
+	var nativeWebview, imm, InputMethodManager;
+	var initNativeObjects = function() {
+		if (mui.os.android) {
+			var main = plus.android.runtimeMainActivity();
+			var Context = plus.android.importClass("android.content.Context");
+			InputMethodManager = plus.android.importClass("android.view.inputmethod.InputMethodManager");
+			imm = main.getSystemService(Context.INPUT_METHOD_SERVICE);
+		} else {
+			nativeWebview = plus.webview.currentWebview().nativeInstanceObject();
+		}
+	};
+	var showSoftInput = function() {
+		if (mui.os.android) {
+			imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+		} else {
+			nativeWebview.plusCallMethod({
+				"setKeyboardDisplayRequiresUserAction": false
+			});
+		}
+		setTimeout(function() {
+			var inputElem = document.querySelector('input');
+			inputElem.parentNode.classList.add('mui-active'); //第一个是search，加上激活样式
+			inputElem.focus();
+		}, 200);
+	};
+	*/
+
+	mui.ready(function(){
+		loadData();
+		
+		mui('#nav_type').on('tap','.mui-tab-item',function(){
+			current_type = this.innerText;
+			$('#list').html('');
+			
+			loadData();
+		})
+	})
+
+	mui.plusReady(function() {
+		plus.screen.lockOrientation("portrait-primary");
+		
+	//	initNativeObjects();
+	//	showSoftInput();
+
+		mui('#list').on('tap', '.mui-table-view-cell', function() {
+			$('#input_search').blur();
+			/*
+			var parentViewer = mui.currentWebview.opener();	
+			var lat = $(this).attr('lat');
+			var lon = $(this).attr('lon');
+			mui.fire(parentViewer,'setCenter',{'lon':lon,'lat':lat});
+			mui.back(); */
+			var ship_id = $(this).attr('ship_id');
+			var person_id = $(this).attr('person_id');
+//			console.log('1111')
+			if(ship_id)
+			{
+				var parentViewer = mui.currentWebview.opener();	
+				var lat = $(this).attr('lat');
+				var lon = $(this).attr('lon');
+				mui.fire(parentViewer,'setCenter',{'lon':lon,'lat':lat, objId:ship_id,objType:1});
+				mui.back(); 
+			}
+			else if(person_id)
+			{
+				var parentViewer = mui.currentWebview.opener();	
+				var lat = $(this).attr('lat');
+				var lon = $(this).attr('lon');
+				mui.fire(parentViewer,'setCenter',{'lon':lon,'lat':lat, objId:person_id,objType:0});
+				mui.back(); 
+			}
+		})
+	});
+	
+	// button filter
+	var btn_filter = document.getElementById('btn_filter');
+	var offCanvasWrapper = mui('#offCanvasWrapper');
+	btn_filter.addEventListener('tap', function() {
+		offCanvasWrapper.offCanvas('show');
+	});
+	
+	// ship
+	inputShip.addEventListener('tap',function(e){
+		app.inputCtrl(this,e,'请输入名称','请输入...');
+	})
+	
+	// area
+	var areaPicker = new mui.PopPicker();
+	var arrArea = [{text:'全部',value:''}];
+	arrArea = arrArea.concat(JSON.parse(app.getSetting('all_areas') || '[]'));
+	areaPicker.setData(arrArea);
+	
+	selectArea.addEventListener('tap',function(){
+		areaPicker.show(function(items) {
+			selectArea.innerText = items[0].text;
+			$(selectArea).attr('item_id',items[0].value);
+			//返回 false 可以阻止选择框的关闭
+			//return false;
+		});
+	})
+	
+	// company
+	inputCompany.addEventListener('tap',function(e){
+		app.inputCtrl(this,e,'请输入公司名','请输入...');
+	})
+		
+	function clickReset() {
+		inputShip.innerText = '请输入...';
+		selectArea.innerText = '全部';
+		$('#selectArea').attr('item_id','');
+		inputCompany.innerText = '请输入...';
+	}
+	
+	function clickOk() {
+		offCanvasWrapper.offCanvas('close');
+		
+		_name = '';
+		_area = '';
+		_company = '';
+		
+		if(inputShip.innerText != '请输入...')
+		{
+			_name = inputShip.innerText;
+		}
+		
+		if(selectArea.innerText != '全部')
+		{
+			_area = selectArea.innerText
+		}
+		
+		if(inputCompany.innerText != '请输入...')
+		{
+			_company = inputCompany.innerText;
+		}
+		
+		loadData();
+	}
+	
+	function loadData() {
+		$('#nav_type').show();
+
+		if(current_type == '船舶')
+		{
+			app.showProgressBar();
+//			console.log(app.url('api/search/findByMoreCondition'));
+			app.ajax(app.url('api/search/findByMoreCondition'),{'name':_name,'area':_area,'company':_company},function(ret){
+				app.showProgressBar(false);
+	            if(ret.code == 200)
+	            {
+	            	generateHtml_bjc(ret.data);
+	            }
+	            else
+	            {
+	                mui.toast(ret.error);
+	            }
+			})
+		}
+		else if(current_type == '人员')
+		{
+			// （3管理员，4巡查员，5监理员）
+			app.showProgressBar();
+			app.ajax(app.url('api/search/findUserInfoByMoreCondition'),{type:'',description:_name,department:_company,regionName:_area},function(ret){
+				app.showProgressBar(false);
+	            if(ret.code == 200)
+	            {
+	            	generateHtml_jly(ret.data);
+	            }
+	            else
+	            {
+	                mui.toast(ret.error);
+	            }
+			})
+		}
+
+	}
+	
+
+</script>
+</html>

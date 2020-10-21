@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/iconfont.css" rel="stylesheet"/>
+    <link href="./css/mui.picker.min.css" rel="stylesheet" />
+    <link href="./css/mui.poppicker.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet"/> 
+    <style>
+		#list-option .mui-table-view-cell button{
+			position: relative;
+			right: inherit;
+    		-webkit-transform: inherit;
+    		transform: inherit;
+		}
+		
+		.mui-table-view span.mui-pull-right {
+		    color: #999;
+		}
+		.mui-bar {
+			height:140px;
+		}
+		.mui-bar-nav~.mui-content {
+			padding-top: 140px;
+		}
+    </style>
+</head>
+<body onload="app.route()">
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<a class="mui-btn mui-btn-link mui-pull-right" href="report_list_jx.html">按年份</a>
+		<h1 class="mui-title">绩效列表</h1>
+		<nav class="mui-bar-tab">
+		    <a id="jx_type_ship" class="mui-tab-item mui-active" href="#">
+		        保洁船
+		    </a>
+		    <a class="mui-tab-item" href="#">
+		        巡查员
+		    </a>
+		    <a class="mui-tab-item" href="#">
+		        监理员
+		    </a>
+		</nav>
+		<div class="mui-input-row mui-search">
+			<input type="search" class="mui-input-clear" placeholder="输入搜索内容">
+		</div>
+	</header>
+	<div class="mui-content">
+		<ul id="list" class="mui-table-view">
+			<li dt="201801" class="mui-table-view-cell">
+				<a class="mui-navigate-right">
+					保洁船1
+				</a>
+			</li>
+			<li dt="201802" class="mui-table-view-cell">
+				<a class="mui-navigate-right">
+					保洁船2
+				</a>
+			</li>
+			<li dt="201803" class="mui-table-view-cell">
+				<a class="mui-navigate-right">
+					保洁船3
+				</a>
+			</li>
+			<li dt="201804" class="mui-table-view-cell">
+				<a class="mui-navigate-right">
+					保洁船4
+				</a>
+			</li>
+			<li dt="201805" class="mui-table-view-cell">
+				<a class="mui-navigate-right">
+					保洁船5
+				</a>
+			</li>
+		</ul>
+	</div>
+</body>
+<script src="js/mui.min.js"></script>
+<script src="./js/mui.picker.min.js"></script>
+<script src="./js/mui.poppicker.js"></script>
+<script src="js/app.js"></script>
+<script type="text/javascript" charset="utf-8">
+	mui.ready(function(){
+		mui.init();
+		
+		mui('#list').on('tap', '.mui-table-view-cell', function() {
+			app.open("report_list_jx_year.html?dt=" + this.getAttribute('dt'));
+		})
+	})
+	
+	mui.plusReady(function() {
+		plus.screen.lockOrientation("portrait-primary");
+	});
+
+</script>
+</html>

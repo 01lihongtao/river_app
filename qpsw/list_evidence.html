@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/iconfont.css" rel="stylesheet" />
+		<link href="./css/mui.picker.min.css" rel="stylesheet" />
+		<link href="./css/mui.poppicker.css" rel="stylesheet" />
+		<link href="css/style.css" rel="stylesheet" />
+		<style>
+			.mui-bar {
+            height:86px;
+        }
+        .mui-bar-nav~.mui-content {
+            padding-top: 86px;
+        }
+        
+        #header {
+            box-shadow: 0 1px 6px #ccc;
+        }
+        
+        #offCanvasSideScroll {
+            background: white;
+        }
+        #list-option .mui-table-view-cell button{
+            position: relative;
+            right: inherit;
+            -webkit-transform: inherit;
+            transform: inherit;
+        }
+        
+        .mui-table-view span.mui-pull-right {
+            color: #999;
+        }
+        
+        .has_filter {
+            color: red;
+        }
+        
+        .check_item {
+            width:24px;
+            height:24px;
+            z-index: 10000;
+        }
+        
+        .page_loader {
+            text-align: center;
+            color:gray; 
+            border-top:1px solid #ccc;
+            padding-top:5px;
+        }
+        
+        #header .btn_selecting {
+            margin-left: 20px;
+        }
+        
+        #page_loading {
+            display: none;
+        }
+        .mui-search:before{
+            margin-top: -10px;
+        }
+        
+        .label-p {
+            display: flex;
+            flex: 1;
+            /* background-color: green; */
+            line-height: 33px;
+            padding: 0;
+            margin: 0px 0px 0px 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .div-input {
+            line-height: 100px;
+        }
+        
+        .mui-content .mui-input-group label {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: left;
+            /* background-color: red; */
+            padding: 0;
+            margin: 0;
+        }
+	
+		
+    </style>
+	</head>
+	<body onload="app.route()">
+		<!--侧滑菜单容器-->
+		<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+
+			<div class="mui-inner-wrap">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<button id="btnSelectAll" class="mui-btn mui-btn-link mui-pull-left" style="margin-left: 8px;z-index: 999;">全选</button>
+					<button id="btnCancelSelectAll" class="mui-btn mui-btn-link mui-pull-left" style="">取消</button>
+					<button id="btnUpload" class="mui-btn mui-btn-link mui-pull-right" style="">上传</button>
+					<button id="btnDelete" class="mui-btn mui-btn-link mui-pull-right " style="">删除</button>
+					<h1 id="page_title" class="mui-title selecting_hide">信息流转</h1>
+					<nav class="mui-bar-tab item-enter">
+
+						<a id="tab_mine" class="mui-tab-item  mui-active" href="#">
+							已上传
+						</a>
+						<a id="tab_upload" class="mui-tab-item" href="#">
+							待上传
+						</a>
+					</nav>
+				</header>
+				<div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<!-- <div style="background: #fff;    padding: 5px 0;">
+							<div class="mui-input-row mui-search" style="margin: 5px 15px;">
+								<input type="search" id="query_search" class="mui-input-clear" placeholder="输入查询" style="    margin-bottom: 0;">
+							</div>
+
+						</div> -->
+						<ul id="list" class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+						</ul>
+						<!-- 待上传 -->
+						<ul id="list2" class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+						</ul>
+						<div id="page_loading" class="page_loader">
+							<img src="./images/loading.gif"> 加载中...
+						</div>
+						<div id="page_ended" class="page_loader">
+							列表已到最后
+						</div>
+					</div>
+				</div>
+				<div class="mui-off-canvas-backdrop"></div>
+			</div>
+		</div>
+		<!--侧滑菜单容器-->
+	</body>
+	<script src="./js/jquery-3.3.1.min.js"></script>
+	<script src="./js/mui.min.js"></script>
+	<script src="./js/mui.picker.min.js"></script>
+	<script src="./js/mui.poppicker.js"></script>
+	<script src="./js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		
+		// mui('#offCanvasContentScroll').scroll();
+		// var btnSelectAll = document.getElementById('btnSelectAll');
+		// var btnCancelSelectAll = document.getElementById('btnCancelSelectAll');
+		var uploadDatas; //所有待上传的数据
+		var uploadDataArr = []; //待上传的数据在所有数组中的下标
+		var uploadIndexArr = []; //待上传的数据在界面列表数组中的下标
+		var btnSelectAll = null; //"全选"按钮
+		var btnCancelSelectAll = null; //"取消"按钮
+		var btnUpload = null; //"上传"按钮
+		var btnDelete = null; //"删除"按钮
+		// var btnUpload = document.getElementById('btnUpload')
+		// var btnDelete = document.getElementById('btnDelete');
+
+
+
+		$(document).ready(function() {
+			mui.init();
+			mui.plusReady(function() {
+				okUpload()
+				initView();
+				initListener()
+			})
+		});
+		$('#btnSelectAll').hide()
+		$('#btnCancelSelectAll').hide()
+		$('#btnUpload').hide()
+		$('#btnDelete').hide()
+		$("#list2").hide()
+		
+
+		var _list = document.getElementById('list')
+		var _list2=document.getElementById("list2")
+
+		// 让a 标签跳转
+		mui('body').on('tap', 'a', function() {
+			document.location.href = this.href;
+		})
+		window.onload = function() {
+		
+			mui('#offCanvasContentScroll').scroll();
+		}
+		// 这是点击tab
+		var currentTab = '';
+		mui('.mui-bar-tab').on('tap', 'a', function(e) {
+			if (currentTab == this.innerText)
+				return;
+			currentTab = this.innerText;
+			if (this.innerText == '待上传') {
+				// _list.innerHTML=''
+				console.log('待上传')
+				$('#btnSelectAll').show()
+				$('#btnCancelSelectAll').show()
+				$('#btnUpload').show()
+				$('#btnDelete').show()
+				$('#query_search').hide()
+				$("#list2").show()
+				$('#list').hide()
+				loadLocalData()
+			} else if (this.innerText == '已上传') {
+				// _list.innerHTML=''
+				console.log('已上传')
+				$('#btnSelectAll').hide()
+				$('#btnCancelSelectAll').hide()
+				$('#btnUpload').hide()
+				$('#btnDelete').hide()
+				$('#query_search').show()
+				$("#list2").hide()
+				$('#list').show()
+				
+				
+				okUpload()
+
+			}
+
+		})
+		// 这是模糊搜索
+		document.getElementById("query_search").addEventListener('input', function() {
+			var this_value = this.value
+			console.log('Input的值'+JSON.stringify(this_value))
+			polder_areas(this_value);
+			
+		});
+
+	
+		
+		
+
+		function getDictDataObj(data, type) {
+			var arr = []
+			data && data.forEach(function(item) {
+				if (item.category == type) {
+					arr.push({
+						text: item.typeName,
+						value: item.typeCode
+					})
+				}
+			})
+			return arr;
+		}
+
+		function every_dict(data, index) {
+			var ab = null;
+			data && data.forEach(function(item) {
+				if (item.value == index) {
+					ab = item.text
+				}
+			})
+			return ab
+		}
+		// 已上传的方法
+		function okUpload(value) {
+			var params = {
+                 
+			}
+			app.ajax2(app.url('report/river/selectReport'), params, function(ret) {
+				// console.log('data' + JSON.stringify(ret))
+				if (ret.code == 200) {
+					var data = ret.data.items
+					var strHtml = '';
+					var strImg = './images/empty_big.png';
+
+					var dic_selectDic = JSON.parse(app.getSetting('dic_selectDic') || "[]");
+					// console.log('类型'+JSON.stringify(dic_selectDic))
+					var state_new = getDictDataObj(dic_selectDic, 'mh_report_status') //作业类型
+					data.forEach(function(item) {
+						var detail = item.detail
+
+						strHtml += '<li  class="mui-table-view-cell search_list">' +
+							'<a  class="link_open mui-navigate-right"href="detail_evidence_pai.html?reportSerial=' + item.reportSerial +
+							'">' +
+							'<img class="mui-media-object mui-pull-left" src="' + strImg + '">' +
+							'<div class="mui-media-body">' +
+
+							'<p class="mui-ellipsis">单号：' + item.reportSerial + '</p>' +
+							'<p class="mui-ellipsis">状态：' + every_dict(state_new, item.status) + '</p>' +
+							// '<p class="mui-ellipsis">状态：' +item.status + '</p>' +
+							'</div>' +
+							'</a>' +
+							'</li>';
+
+					})
+
+					_list.innerHTML = strHtml;
+
+				}
+			})
+		}
+	function initView() {
+			btnSelectAll = document.getElementById('btnSelectAll');
+			btnCancelSelectAll = document.getElementById("btnCancelSelectAll");
+			btnUpload = document.getElementById("btnUpload");
+			btnDelete = document.getElementById("btnDelete");
+		}
+
+
+
+		function initListener() {
+		
+			//"全选"按钮监听
+			btnSelectAll.addEventListener('tap', function() {
+				console.log('全选')
+				uploadDatas = (JSON.parse(app.getSetting("uploadDatas"))).data;
+				$(".left_checkbox").each(function(index, e) {
+					// console.log(index);
+					$(this).prop("checked", true);
+				})
+			});
+		
+			//"取消"按钮监听
+			btnCancelSelectAll.addEventListener('tap', function(){
+				$(".left_checkbox").each(function() {
+					$(this).prop("checked", false)
+				})
+			});
+		
+			//"上传"按钮监听
+			btnUpload.addEventListener('tap', function() {
+				console.log('上传')
+				var flag = false;
+		
+				var tmpUploadDatas = JSON.parse(app.getSetting("uploadDatas"));
+				uploadDatas = tmpUploadDatas.data;
+				uploadIndexArr = [];
+				$(".left_checkbox").each(function(index, element) {
+					var checked = $(this).prop("checked");
+					if (checked) {
+						flag = true;
+						// console.log("index--->" + index + " ,checked--->" + checked);
+						uploadIndexArr.push(index);
+		
+						// console.log(uploadDataArr[index]);
+						uploadDatas[uploadDataArr[index]].toUpload = 1;
+					}
+				});
+				console.log("待上传数据下标--->" + JSON.stringify(uploadIndexArr));
+		
+				if (flag) {
+					app.setSetting("intervalFlag", true);
+					app.setSetting("uploadDatas", JSON.stringify(tmpUploadDatas));
+				}
+		
+				mui.back();
+			});
+		
+			//"删除"按钮监听
+			btnDelete.addEventListener('tap', function(){
+				uploadIndexArr = []; //待上传的数据在数组中的下标
+				$(".left_checkbox").each(function(index, element) {
+					if ($(this).prop("checked")) {
+						uploadIndexArr.push(index);
+					}
+				});
+				// console.log(JSON.stringify(uploadDatas));
+				// console.log(JSON.stringify(uploadIndexArr));
+				for (var i = 0; i < uploadIndexArr.length; i++) {
+					uploadDatas.splice(0, 1);
+				}
+				// console.log(JSON.stringify(uploadDatas));
+				var d = {};
+				d.data = uploadDatas;
+				app.setSetting("uploadDatas", JSON.stringify(d));
+		loadLocalData()
+				// initList();
+			});
+		
+			$("label").each(function(index, element) {
+				$(this).click(function() {
+					console.log(index);
+					var data = uploadDatas[index];
+					// console.log(JSON.stringify(data))
+		
+					if (data.eventType == 2) {
+						app.open("waterEditAndUpload.html?index=" + index);
+					} else if (data.eventType == 1) {
+						app.open("editAndUpload.html?index=" + index);
+					}
+				})
+			});
+		
+		}
+	// function initListener() {
+		// //"删除"按钮监听
+		// btnDelete.addEventListener('tap', function() {
+		// 	console.log('删除')
+		// 	uploadIndexArr = []; //待上传的数据在数组中的下标
+		// 	$(".left_checkbox").each(function(index, element) {
+		// 		if ($(this).prop("checked")) {
+		// 			uploadIndexArr.push(index);
+		// 		}
+		// 	});
+		// 	// console.log(JSON.stringify(uploadDatas));
+		// 	// console.log(JSON.stringify(uploadIndexArr));
+		// 	for (var i = 0; i < uploadIndexArr.length; i++) {
+		// 		uploadDatas.splice(0, 1);
+		// 	}
+		// 	// console.log(JSON.stringify(uploadDatas));
+		// 	var d = {};
+		// 	d.data = uploadDatas;
+		// 	app.setSetting("uploadDatas", JSON.stringify(d));
+		// 	loadLocalData()
+		// 	// initList();
+		// });
+		
+		// //"全选"按钮监听
+		// btnSelectAll.addEventListener('tap', function() {
+		// 	console.log('全选')
+		// 	uploadDatas = uploadDatas = JSON.parse(app.getSetting('uploadDatas') || "[]");
+		// 	$(".left_checkbox").each(function(index, e) {
+		// 		// console.log(index);
+		// 		$(this).prop("checked", true);
+		// 	})
+		// });
+	
+		// //"取消"按钮监听
+		// btnCancelSelectAll.addEventListener('tap', function() {
+		// 	console.log('取消')
+		// 	$(".left_checkbox").each(function() {
+		// 		$(this).prop("checked", false)
+		// 	})
+		// });
+		//"上传"按钮监听
+	// 	btnUpload.addEventListener('tap', function() {
+	
+	// 		var flag = false;
+	// 		var tmpUploadDatas = JSON.parse(app.getSetting("uploadDatas"));
+	// 		uploadDatas = tmpUploadDatas.data;
+	// 		uploadIndexArr = [];
+	// 		$(".left_checkbox").each(function(index, element) {
+	// 			var checked = $(this).prop("checked");
+	// 			if (checked) {
+	// 				flag = true;
+	// 				// console.log("index--->" + index + " ,checked--->" + checked);
+	// 				uploadIndexArr.push(index);
+	
+	// 				// console.log(uploadDataArr[index]);
+	// 				uploadDatas[uploadDataArr[index]].toUpload = 1;
+	// 			}
+	// 		});
+	// 		console.log("待上传数据下标--->" + JSON.stringify(uploadIndexArr));
+	
+	// 		if (flag) {
+	// 			console.log('调取------------')
+	// 			app.setSetting("intervalFlag", true);
+	// 			app.setSetting("uploadDatas", JSON.stringify(tmpUploadDatas));
+	// 		}
+	// 		mui.back();
+	
+	// 	});
+		//"删除"按钮监听
+	// 	$("label").each(function(index, element) {
+	// 		$(this).addEventListener('tap', function() {
+	// 			console.log(index);
+	// 			var data = uploadDatas[index];
+	// 			// console.log(JSON.stringify(data))
+	
+	// 			if (data.eventType == 2) {
+	// 				app.open("waterEditAndUpload.html?index=" + index);
+	// 			} else if (data.eventType == 1) {
+	// 				app.open("editAndUpload.html?index=" + index);
+	// 			}
+	// 		})
+	// 	});
+	
+	// }
+
+
+		function loadLocalData() {
+
+			uploadDatas = (JSON.parse(app.getSetting("uploadDatas"))).data;
+			// console.log("删减后重组大小--->" + uploadDatas.length);
+			console.log("initList和获取到要传的数据--->" + JSON.stringify(uploadDatas));
+			uploadDataArr = [];
+			var indexI = 0;
+			var indexJ = 0;
+			var html = '<form class="mui-input-group">';
+			for (value of uploadDatas) {
+				// console.log('每个' + JSON.stringify(value));
+				html += '<div class="mui-left mui-input-row mui-checkbox" style="height: 100px;">';
+				html += '<label>';
+				html += '<p class="label-p">' + '时间：' + value.foundTime + '</p>';
+				html += '<p class="label-p">' + '整改描述：' + value.describe + '</p>';
+
+				html += '</label>';
+				html += '<input class="div-input left_checkbox" name="subcheck" type="checkbox">';
+				html += '</div>';
+
+				uploadDataArr[indexI] = indexJ;
+				indexI = indexI + 1;
+
+
+				indexJ = indexJ + 1;
+			}
+
+			_list2.innerHTML = html
+
+			$(".left_checkbox").each(function(index, element) {
+				for (var i = 0; i < uploadIndexArr.length; i++) {
+					if (uploadIndexArr[i] == index) {
+						$(this).prop("checked", true);
+					}
+				}
+			});
+
+
+
+		}
+	</script>
+</html>

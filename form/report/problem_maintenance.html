@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../asset/css/mui.min.css" rel="stylesheet" />
+		<link href="../../asset/css/iconfont.css" rel="stylesheet" />
+		<link href="../../asset/css/style.css" rel="stylesheet" />
+		<style>
+			.mui-preview-image.mui-fullscreen {
+				position: fixed;
+				z-index: 20;
+				background-color: #000;
+			}
+			.mui-preview-header,
+			.mui-preview-footer {
+				position: absolute;
+				width: 100%;
+				left: 0;
+				z-index: 10;
+			}
+			.mui-preview-header {
+				height: 44px;
+				top: 0;
+			}
+			.mui-preview-footer {
+				height: 50px;
+				bottom: 0px;
+			}
+			.mui-preview-header .mui-preview-indicator {
+				display: block;
+				line-height: 25px;
+				color: #fff;
+				text-align: center;
+				margin: 15px auto 4;
+				width: 70px;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 12px;
+				font-size: 16px;
+			}
+			.mui-preview-image {
+				display: none;
+				-webkit-animation-duration: 0.5s;
+				animation-duration: 0.5s;
+				-webkit-animation-fill-mode: both;
+				animation-fill-mode: both;
+			}
+			.mui-preview-image.mui-preview-in {
+				-webkit-animation-name: fadeIn;
+				animation-name: fadeIn;
+			}
+			.mui-preview-image.mui-preview-out {
+				background: none;
+				-webkit-animation-name: fadeOut;
+				animation-name: fadeOut;
+			}
+			.mui-preview-image.mui-preview-out .mui-preview-header,
+			.mui-preview-image.mui-preview-out .mui-preview-footer {
+				display: none;
+			}
+			.mui-zoom-scroller {
+				position: absolute;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				-webkit-backface-visibility: hidden;
+			}
+			.mui-zoom {
+				-webkit-transform-style: preserve-3d;
+				transform-style: preserve-3d;
+			}
+			.mui-slider .mui-slider-group .mui-slider-item img {
+				width: auto;
+				height: auto;
+				max-width: 100%;
+				max-height: 100%;
+			}
+			.mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+				width: 100%;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+				display: inline-table;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			.mui-preview-loading {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				display: none;
+			}
+			.mui-preview-loading.mui-active {
+				display: block;
+			}
+			.mui-preview-loading .mui-spinner-white {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-left: -25px;
+				margin-top: -25px;
+				height: 50px;
+				width: 50px;
+			}
+			.mui-preview-image img.mui-transitioning {
+				-webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+				transition: transform 0.5s ease, opacity 0.5s ease;
+			}
+			@-webkit-keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@-webkit-keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			@keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			
+    	.img_item {
+    		max-height: 200px;
+    		max-width: 200px;
+    	}
+    	
+    	.div_correct_title {
+    		margin: 10px;
+    	}
+    	
+    	#div_correct {
+    		display: none;
+    	}
+    </style>
+	</head>
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">问题详情</h1>
+		</header>
+		<div class="mui-content">
+			<ul id="list-option" class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-list4f"></i> 状态
+					<span id="idState" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-list4f"></i> 养护记录编号
+					<span id="idReport" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-list4f"></i> 登记时间
+					<span id="idEvidence" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-date1"></i> 养护内容
+					<span id="txtFoundtime" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-kaishixuncha"></i> 工作量(单位)
+					<span id="txtArea" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					登记人
+					<span id="txtRiver" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-wode"></i> 备注
+					<span id="txt_cun" style="max-width: 100%;" class="mui-pull-right mui-ellipsis"></span>
+				</li>
+
+
+
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-image"></i> 养护前描述
+					<br>
+					<div id="list_imgs">
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-image"></i> 养护中描述
+					<br>
+					<div id="list_imgs2">
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<i class="iconfont icon-image"></i> 养护后描述
+					<br>
+					<div id="list_imgs3">
+					</div>
+				</li>
+			</ul>
+			<div id="div_correct">
+				<div class="div_correct_title">
+					整改
+				</div>
+				<ul id="list-option" class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<i class="iconfont icon-camera"></i> 整改描述
+						<p id="txtCorrectDesc" class=""></p>
+					</li>
+					<li class="mui-table-view-cell">
+						<i class="iconfont icon-image"></i> 整改照片
+						<br>
+						<div id="list_imgs_correct">
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</body>
+	<script src="../../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../../asset/js/mui.min.js"></script>
+	<script src="../../asset/js/mui.zoom.js"></script>
+	<script src="../../asset/js/mui.previewimage.js"></script>
+	<script src="../../asset/js/app.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		var currentUserId = app.getUserId();
+
+		var item_id = app.getUrlParam('item_id');
+		var time_id = app.getUrlParam('time_id');
+		var personnelType = app.getUrlParam('type'); // 1是巡查2是监理
+		var list_imgs = document.getElementById('list_imgs');
+		var list_imgs_correct = document.getElementById('list_imgs_correct');
+		var item_no = '';
+		var itemState = 0;
+		mui.init();
+		mui.previewImage();
+		var timerCheckUpload = 0;
+		var timerExpired = 0;
+		var waiterUpload = 0;
+
+		function changeState(nState) {
+			var currentUrl = app.url('api/forensics/change');
+			var arrData = {
+				forensicsId: item_id,
+				state: nState
+			};
+			if (personnelType == 2) {
+				currentUrl = app.url('api/supervisor/change');
+				arrData = {
+					supervisorId: item_id,
+					state: nState
+				};
+			}
+			app.ajax(currentUrl, arrData, function(ret) {
+				//			console.log(JSON.stringify(ret));
+				if (ret.code == 200) {
+					mui.toast('成功修改状态');
+					loadData(false);
+					var parentViewer = mui.currentWebview.opener();
+					mui.fire(parentViewer, 'qpsw_refresh');
+				} else {
+					mui.toast('修改状态失败');
+				}
+			})
+		}
+
+
+		mui.ready(function() {
+			loadData();
+		})
+
+		mui.plusReady(function() {
+			plus.screen.lockOrientation("portrait-primary");
+		});
+
+		function loadData() {
+			var _id = app.getUrlParam('id');
+			var _index = app.getUrlParam('index');
+			console.log('父组件传过来的值' + JSON.stringify(_id))
+			console.log('父组件传过来的索引' + JSON.stringify(_index))
+			app.showProgressBar();
+			var param = {
+				time: '',
+				facilityInfoId: _id,
+				maintenaceRepairType: 8803,
+			}
+			app.ajax(app.url1('repair/findRepair'), param, function(ret) {
+				console.log('详细信息' + JSON.stringify(ret.data[_index]))
+				app.showProgressBar(false);
+				if (ret.code == 200) {
+					var newData = ret.data[_index];
+					document.getElementById('idState').innerText = newData.processStageName; //状态
+					document.getElementById('idReport').innerText = newData.rectificationSerial; //编号
+					document.getElementById('idEvidence').innerText = newData.gmtCreate; //登记时间
+					document.getElementById('txtFoundtime').innerText = newData.maintenanceEntry; //养护内容
+					// document.getElementById('txtReporter').innerText =newData;
+					document.getElementById('txtArea').innerText = newData.number + (newData.unit); //工作量
+
+					document.getElementById('txt_cun').innerText = newData.remark; //备注
+					document.getElementById('txtRiver').innerText = newData.reporterName; //登记人
+					// 养护前照片
+
+					// list_imgs
+					var beforeHtml = '';
+					var beforeImg = newData.list[0].images;
+					for (var i = 0; i < beforeImg.length; i++) {
+						addImg(app.url1(beforeImg[i]));
+						//  addImg(app.url(item2.slice(7),0));
+					}
+					// 养护中 
+					var inTime_img=newData.list[1].images;
+					for(var i=0;i<inTime_img.length;i++){
+						addImg2(app.url1(inTime_img[i]));
+					}
+					// 养护后
+					var afterImg=newData.list[2].images;
+					for(var i=0;i<afterImg.length;i++){
+						addImg3(app.url1(afterImg[i]));
+					}
+					
+					if (ret.data.supervisorDesc)
+						document.getElementById('txtEvidDesc').innerText = ret.data.supervisorDesc;
+					else
+						document.getElementById('txtEvidDesc').innerText = ret.data.forensicsDesc;
+
+				} else {
+					mui.toast(ret.desc);
+				}
+			})
+		}
+		// 养护前照片描述
+		function addImg(strSrc) {
+
+			console.log('图片的信息' + strSrc);
+			//	console.log('addImg:' + encodeURI(strSrc));
+			var newImg = document.createElement('img');
+			$(newImg).attr('data-preview-src', '');
+			$(newImg).attr('data-preview-group', '1');
+			newImg.src = encodeURI(strSrc);
+			//	newImg.src = strSrc;
+			newImg.classList.add("img-selected");
+			newImg.classList.add("img_item");
+              console.log('这是什么值'+encodeURI(strSrc))
+			list_imgs.appendChild(newImg);
+		}
+		// 养护中照片描述 list_imgs2
+		function addImg2(strSrc) {
+
+			// console.log('图片的信息' + strSrc);
+			//	console.log('addImg:' + encodeURI(strSrc));
+			var newImg = document.createElement('img');
+			$(newImg).attr('data-preview-src', '');
+			$(newImg).attr('data-preview-group', '1');
+			newImg.src = encodeURI(strSrc);
+			//	newImg.src = strSrc;
+			newImg.classList.add("img-selected");
+			newImg.classList.add("img_item");
+
+			list_imgs2.appendChild(newImg);
+		}
+		// 养护后描述 
+		function addImg3(strSrc) {
+
+			// console.log('图片的信息' + strSrc);
+			//	console.log('addImg:' + encodeURI(strSrc));
+			var newImg = document.createElement('img');
+			$(newImg).attr('data-preview-src', '');
+			$(newImg).attr('data-preview-group', '1');
+			newImg.src = encodeURI(strSrc);
+			//	newImg.src = strSrc;
+			newImg.classList.add("img-selected");
+			newImg.classList.add("img_item");
+
+			list_imgs3.appendChild(newImg);
+		}
+
+
+
+		$('#img_preview').click(function() {
+			$('.mui-content').show();
+			$('#img_preview').animate({
+				opacity: "0"
+			}, 400, function() {
+				$('#img_preview').hide();
+			})
+		})
+		// refresh
+		window.addEventListener('qpsw_refresh', function(event) {
+			loadData(true);
+
+			var parentViewer = mui.currentWebview.opener();
+			mui.fire(parentViewer, 'qpsw_refresh');
+		});
+	</script>
+</html>

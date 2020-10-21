@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../asset/css/mui.min.css">
+		<link rel="stylesheet" href="../asset/css/iconfont.css">
+		<link href="../asset/css/mui.picker.min.css" rel="stylesheet" />
+    		<link href="../asset/css/mui.poppicker.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../asset/css/style.css">
+		<style>
+			html, 
+			body {
+				background-color: #efeff4;
+			}
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">关注设置</h1>
+			<a class="mui-action-back mui-btn mui-btn-link mui-pull-right " id="cancel_btn">取消</a>
+
+			<a class="mui-btn mui-btn-link mui-pull-right" id="save_btn">保存</a>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<!--<h4 style=" padding: 11px 15px;">设施关注管理</h4>-->
+				<p style="padding: 11px 15px 0 15px;font-size: 16px;font-weight: bold;color: #000000;">新增关注</p>
+				<li class="mui-table-view-cell" style="position: relative;">
+					<input type="text" id="facility_input" class="mui-pull-left" style="height:33px;font-size:12px;width: 35%;margin-right: 15px;" placeholder="输入设施名称">
+					<button id="all_facility">请选择</button>
+					<button id="confirm" class="mui-pull-right" style="background:#06f;color: #fff;border: #008000;">确定</button>
+
+				</li>
+				<p style="padding: 11px 15px 0 15px;font-size: 16px;font-weight: bold;color: #000000;">已关注</p>
+				<div id="list">
+					
+				</div>
+				<div id="page_loading" class="page_loader">
+					<img src="../asset/images/loading.gif"> 加载中...
+				</div>
+				<div id="page_ended" class="page_loader">
+					列表已到最后
+				</div>
+				<br>
+				 
+				
+			</ul>
+		</div>
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/mui.picker.min.js"></script>
+	<script src="../asset/js/mui.poppicker.js"></script>
+	<script src="../asset/js/app.js"></script>
+	<script>
+		var g_facility_name = "";
+		var goback=false;
+		var goback_stye=false;
+		mui.init();
+		var user_data = JSON.parse(app.getSetting('user_data') || '[]')
+		var g_facility_id = {};
+		
+		var timerInputName;
+		document.getElementById("facility_input").addEventListener('input', function() {
+			clearTimeout(timerInputName);
+			timerInputName = setTimeout(function(){
+				g_facility_name = $("#facility_input").val()
+				init_facility_list();
+			},1000);
+		});
+		var all_facility_picker = new mui.PopPicker();
+		mui.ready(function() {
+			
+			$('#page_loading').show();
+			$('#page_ended').hide();
+		
+			 
+
+			var all_facility_button = document.getElementById('all_facility');
+
+			all_facility_button.addEventListener('tap', function(event) {
+				
+				all_facility_picker.show(function(items) {
+					
+					all_facility_button.innerHTML = items[0]["text"]
+					$("#all_facility").attr("item_id",items[0]["value"])
+					$("#all_facility").attr("item_name",items[0]["text"])
+				});
+			}, false);
+			
+			app.ajax(app.url('query/info/my_concern'), {
+				user_id: user_data.id,
+			}, function(res) {
+				$('#page_loading').hide();
+				$('#page_ended').show();
+				if(res.code == 0) {
+
+					var html = ""
+					for(var i = 0; i < res.data.length; i++) {
+						html += add_item(res.data[i]["facility_id"], res.data[i]["facility_name"])
+
+					}
+					$("#list").html(html)
+				} else {
+					mui.toast(res.error)
+				}
+			})
+
+		})
+
+		$("#confirm").click(function() {
+			var facility_name = $("#all_facility").attr("item_name")
+			var facility_name_flag = false
+			$(".post_btn").each(function(){
+				if(facility_name == $(this).html()){
+					facility_name_flag = true
+				}
+				
+			})
+	 
+			if(!facility_name){
+				mui.toast("请选择设施");
+				return false;
+			}
+			
+			if(facility_name_flag){
+				mui.toast("该设施已存在");
+				return false;
+			}
+			var html = ""
+			html += add_item($("#all_facility").attr("item_id"), $("#all_facility").attr("item_name"))
+			html += $("#list").html()
+			$("#list").html(html)
+			mui.toast("添加成功");
+		})
+		$("#save_btn").click(function() {
+		
+			mui.confirm('确定保存吗？', '保存', ['否', '是'], function(e) {
+				console.log(e.index)
+				if(e.index == 1) {
+					var xhr = new XMLHttpRequest();
+					var formData = new FormData();
+					xhr.timeout = 120000;
+					var upload = plus.nativeUI.showWaiting('保存中...');
+					goback=true;
+					xhr.ontimeout = function(e) {
+						mui.toast('请求超时，请在网络状态良好的地方重试');
+						upload.close()
+					};
+
+					formData.append("user_id", user_data.id);
+					console.log("======")
+					for(var i = 0; i < $(".post_btn").length; i++) {
+						// console.log($(".post_btn").eq(i).attr("facility_id"))
+						formData.append("items", $(".post_btn").eq(i).attr("facility_id"));
+					}
+					console.log("======")
+					xhr.onreadystatechange = function(e) {
+						if(xhr.readyState == 4) {
+							console.log(xhr.responseText)
+							if(xhr.status == 200) {
+								var ret = JSON.parse(xhr.responseText);
+								if(ret.code == 0) {
+									mui.toast('保存成功');
+									var parentViewer = mui.currentWebview.opener();
+									mui.fire(parentViewer, 'wga_refresh');
+									console.log(ret.data)
+									// goback=true
+									mui.back();
+								} else {
+									mui.toast('保存失败，请重新保存');
+								}
+
+							} else {
+
+								mui.toast('保存失败，请重新保存');
+
+							}
+							upload.close()
+							return;
+						}
+					}
+
+					xhr.open('POST', app.url('save/my_concern'), true);
+					xhr.send(formData);
+				} else {
+
+				}
+			})
+
+		})
+		function init_facility_list(){
+			//初始化
+			$("#all_facility").html("请选择")
+			$("#all_facility").attr("item_id","")
+			$("#all_facility").attr("item_name","")
+			var wDlg = plus.nativeUI.showWaiting("加载中...");
+			console.log(JSON.stringify({
+				// page_size:30,
+				facilityName:g_facility_name
+			}))-
+			app.ajax(app.url1('app/queryFacilityList'), {
+				// uid:app.getUserId(),
+				// page_size:30,
+				facilityName:g_facility_name
+			}, function(ret) {
+				wDlg.close();
+				
+				if(ret.code == 200) {
+					var data = ret.data
+					console.log('关注的水利设施'+JSON.stringify(data))
+					var var_all_facility_arr =  []
+					var var_flag = true
+					for(var i = 0; i < data.length; i++) {
+						var_all_facility_arr.push({
+							value:  data[i]["facilityId"],
+							text: data[i]["facilityName"]
+						})
+						//默认选 中第一个
+						if(var_flag){
+							$("#all_facility").html(data[i]["facilityName"])
+							$("#all_facility").attr("item_id",data[i]["facilityId"])
+							$("#all_facility").attr("item_name",data[i]["facilityName"])
+							var_flag = false;
+						}
+					}
+					all_facility_picker.setData(var_all_facility_arr);
+
+				} else {
+					mui.toast(ret.error);
+				}
+			})
+		}
+		function add_item(facility_id, facility_name) {
+			g_facility_id[facility_name] = facility_id
+			var html = ""
+			html += '<li class="mui-table-view-cell">'
+			html += '	<button class="post_btn facility_' + facility_id + '" facility_id="' + facility_id + '" facility_name="' + facility_name + '">' + facility_name + '</button>'
+			html += '	<button class="mui-icon mui-icon-arrowup" onclick="move_up($(this))" style="padding:3px;"></button>'
+			html += '	<button class="mui-icon mui-icon-arrowdown" onclick="move_down($(this))" style="padding:3px;"></button>'
+			html += '	<button class="mui-pull-right " onclick="remove($(this))" remove_id="facility_' + facility_id + '" style="background:red;color: #fff;border: #008000;">删除</button>'
+			html += '</li>'
+			return html
+		}
+		function move_up(obj){
+			console.log(obj.parent().prev().length)
+			if(obj.parent().prev().length){
+				obj.parent().insertBefore(obj.parent().prev())
+			}
+		}
+		function move_down(obj){
+			console.log(obj.parent().next().length)
+			if(obj.parent().next().length){
+				obj.parent().insertAfter(obj.parent().next())
+			}
+		}
+		function remove(obj) {
+			mui.confirm('确定删除吗？', '删除已关注', ['否', '是'], function(e) {
+				console.log(e.index)
+				if(e.index == 1) {
+					console.log(obj)
+					obj.parent().remove()
+					goback_stye=true;
+
+					mui.toast("删除成功")
+				} else {
+					goback_stye=false
+				}
+			})
+
+		}
+		function initSystem() {
+			// if(goback){
+			// 	plus.runtime.quit();
+			// }else {
+			// 	plus.nativeUI.toast('请点击保存!');
+			// }
+		// 	var backButtonPress = 0;
+			mui.back = function(event) {
+				console.log('7777')
+				if (goback&&goback_stye) {
+				mui.back();
+				} else if(goback_stye&&!goback) {
+				plus.nativeUI.toast('请点击保存!');
+				}else if(!goback&&!goback_stye){
+				mui.back();
+				}
+				// setTimeout(function() {
+				// 	backButtonPress = 0;
+				// }, 1000);
+				return false;
+			};
+		
+			plus.webview.currentWebview().setStyle({
+				'popGesture': 'none'
+			});
+		}
+		
+		mui.plusReady(function() {
+           // initSystem()
+		});
+	</script>
+
+</html>

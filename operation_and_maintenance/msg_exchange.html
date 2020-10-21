@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../asset/css/mui.min.css">
+		<link rel="stylesheet" href="../asset/css/iconfont.css" />
+		<link rel="stylesheet" href="../asset/css/style.css">
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			.operation_item {
+				margin-top: 5px;
+				margin-bottom: 10px;
+				clear: both;
+			}
+			
+			.action_left {
+				text-align: center;
+				width:40%;
+				position: relative;
+				float: left;
+				padding-left:5px;
+				padding-right:5px;
+			}
+			
+			.action_right {
+				font-size:14px;
+				display: inline-block;
+				width:60%;
+				padding-left:15px;
+				color: gray;
+			}
+			
+		</style>
+	</head>
+
+	<body onload="app.route()">
+		<header class="mui-bar mui-bar-nav">
+			<a  class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">信息流转</h1>
+		</header>
+		<div class="mui-content">
+			 <img class="img_width_100" src="../asset/images/normal_search.png">
+			 <div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/patrol_scheduling.html">巡查排班</a>
+			 		</div>
+			 		<div class="action_right">查看各单位排班表，相关权限可进行修改，巡查员可查看本人排班。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/patrol_coverage_query.html">巡检覆盖查询</a>
+			 		</div>
+			 		<div class="action_right">按月对本年度各单位的巡检状况及覆盖率进行查询。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/water_rectification.html">水利整改信息流转</a>
+			 		</div>
+			 		<div class="action_right">巡查问题上报后，于该列表内查看状态和详情，并执行流转操作。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/inspection.html">巡检信息流转</a>
+			 		</div>
+			 		<div class="action_right">巡检登记信息上报后，于该列表内查看状态和详情。</div>
+			 	</div>
+<!--			 	
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/green_conservation.html">绿化养护信息流转</a>
+			 		</div>
+			 		<div class="action_right">绿化养护信息上报后，于该列表内查看状态和详情，并执行流转操作。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/water_transfer.html">调水信息流转</a>
+			 		</div>
+			 		<div class="action_right">调水登记信息上报后，于该列表内查看状态和详情，并执行流转操作。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/health_duty.html">卫生值勤信息流转</a>
+			 		</div>
+			 		<div class="action_right">卫生值勤信息上报后，于该列表内查看状态和详情，并执行流转操作。</div>
+			 	</div>
+			 	<div class="operation_item">
+			 		<div class="action_left">
+			 			<a class="mui-btn mui-btn-primary yuny-w100 link_open" href="info/ship_pass_gate.html">船舶过闸信息流转</a>
+			 		</div>
+			 		<div class="action_right">船舶过闸信息上报后，于该列表内查看状态和详情。</div>
+			 	</div>
+			 	-->
+			 </div>
+		</div>
+	</body>
+	<script src="../asset/js/jquery-3.3.1.min.js"></script>
+	<script src="../asset/js/mui.min.js"></script>
+	<script src="../asset/js/app.js"></script>
+	<script>
+		mui.init();
+		
+		mui.ready(function(){
+		})
+		
+		mui.plusReady(function() {
+		});
+	</script>
+
+</html>
